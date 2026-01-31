@@ -22,13 +22,12 @@ public class Config {
     
     @SafeVarargs
     public static <T> T robotSpecific(T first, T... more) {
-    try {
+    if (more.length>getRobotId() && getRobotId()>0) {
         return more[getRobotId()-1];
-    } catch (Exception e) {
+    } else {
         return first;
     }
     }
-
 
     public static int getRobotId() {
 
