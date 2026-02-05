@@ -58,56 +58,11 @@ public class RobotContainer {
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
   }
 
-  /** Read the knob voltage and convert it into an autonomous mode number (0-11). */
-  private int getAutoMode() {
-    double voltage = m_AutoSelectorKnobSubsystem.getVoltage(); // 0-5V
-    System.out.println(voltage);
-    if (voltage <= 2.64) {
-      return 0;
-    }
-    else if (voltage <= 3.01){
-      return 1;
-    }
-    else if (voltage <= 3.27){
-      return 2;
-    }
-    else if (voltage <= 3.62){
-      return 3;
-    }
-    else if (voltage <= 3.86){
-      return 4;
-    }
-    else if (voltage <= 4.01){
-      return 5;
-    }
-    else if (voltage <= 4.13){
-      return 6;
-    }
-    else if (voltage <= 4.22){
-      return 7;
-    }
-    else if (voltage <= 4.29){
-      return 8;
-    }
-    else if (voltage <= 4.38){
-      return 9;
-    }
-    else if (voltage <= 4.45){
-      return 10;
-    }
-    else if (voltage <= 4.60){
-      return 11;
-    }
-    else{
-      return 0;
-    }
-    }
   
-
 
   /** This function returns the autonomous command based on the knob position. */
   public Command getAutonomousCommand() {
-    int mode = getAutoMode();
+    int mode = m_AutoSelectorKnobSubsystem.getAutoMode();
     System.out.println("Auto Mode = " + mode); // debug print
     
     switch (mode) {
