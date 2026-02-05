@@ -45,7 +45,11 @@ public class PhotonSubsystem extends SubsystemBase {
         if (!hasTarget()) return 0;
         return target.getYaw();
     }
-
+    //Returns Skew(angle of the target), or 0 if no target
+    public double getSkew() {
+        if (!hasTarget()) return 0;
+        return target.getSkew();
+    }
     // Returns pitch (up/down angle), or 0 if no target
     public double getPitch() {
         if (!hasTarget()) return 0;
