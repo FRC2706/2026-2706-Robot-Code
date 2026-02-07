@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.spark.SparkMax;
 
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import frc.robot.Constants;
 import frc.robot.Constants.*;
 
 
@@ -21,15 +21,15 @@ import frc.robot.Constants.*;
  * It controls the intake motor and provides methods to set the motor power,
  * stop the motor, and get the motor's RPM.
  */
-public class IntakeInOutSubsystem extends SubsystemBase {
-    private SparkFlex intakeMotor;
+public class IntakeSubsystem extends SubsystemBase {
+    private SparkMax intakeMotor;
 
     /**
      * Constructs a new Intake subsystem.
      * Initializes the intake motor and PID controller.
      */
-    public IntakeInOutSubsystem() {
-        intakeMotor = new SparkFlex(45, MotorType.kBrushless);
+    public IntakeSubsystem() {
+        intakeMotor = new SparkMax(Constants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
 
     }
 
@@ -73,21 +73,6 @@ public class IntakeInOutSubsystem extends SubsystemBase {
     public double getRPM(){
 
         return getRawMotorRPM() * RobotConstants.kRPMConversionFactor;
-
-    }
-
-    public void setBothPowers(double side_power, double top_power) {
-        intakeMotor.set(-side_power);
-    }
-
-    /**
-     * Sets the power of the intake motor.
-     * 
-     * @param power The power to set for the side intake motor.
-     */
-    public void setSideIntakePower(double power) {
-
-        intakeMotor.set(power);
 
     }
 
