@@ -22,10 +22,10 @@ public class Config {
     
     @SafeVarargs
     public static <T> T robotSpecific(T first, T... more) {
-    if (more.length>getRobotId() && getRobotId()>0) {
-        return more[getRobotId()-1];
-    } else {
+    if (more.length < getRobotId() || getRobotId() < 1) {
         return first;
+    } else {
+        return more[getRobotId()-1];
     }
     }
 

@@ -116,6 +116,9 @@ public class BlingSubsystem extends SubsystemBase {
   //public void setAnimation(Animation animation) {
   //  candle.animate(animation);
   //}
+
+  // speed in phoenix5 was from 0-1 
+  // framerate in phoenix6 is from 0-1000
   
   public void setRainbow() {
      //* @param brightness The brightness of the LEDs 1
