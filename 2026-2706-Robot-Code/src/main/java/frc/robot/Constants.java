@@ -16,4 +16,12 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+   public static class RobotConstants {
+    public static final int kSelectorSwitchPort = 0;
+    public static final int kRPMConversionFactor = 1 / 3;
+  }
+
+  public static class UtilityConstants {
+    public static final boolean debugMode = true;
+}
 }
