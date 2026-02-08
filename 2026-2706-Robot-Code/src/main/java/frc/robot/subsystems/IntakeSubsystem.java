@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,7 +26,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /**
      * Constructs a new Intake subsystem.
-     * Initializes the intake motor and PID controller.
+     * Initializes the intake motor.
      */
     public IntakeSubsystem() {
         intakeMotor = new SparkMax(Constants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
@@ -49,7 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * Stops the intake motor.
      */
     public void stopIntake(){
-
+        
         intakeMotor.set(0);
 
     }
