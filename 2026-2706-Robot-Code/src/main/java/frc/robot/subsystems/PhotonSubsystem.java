@@ -6,10 +6,19 @@ package frc.robot.subsystems;
 
 // Imports
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.SwerveSubsystem; // For gyro, gives error because it's on a different branch
 
 // Class
 public class PhotonSubsystem extends SubsystemBase {
@@ -17,7 +26,12 @@ public class PhotonSubsystem extends SubsystemBase {
     private PhotonCamera camera1; //declares new camera object, not sure if it should be private or private final
     private PhotonPipelineResult result;
     private PhotonTrackedTarget target;
-
+    public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    private static final double kCameraHeight = 0; // TODO: measure camera height
+    private static final double kTargetHeight = 0; // TODO: measure target height
+    private static final double kCameraPitch = 0; // TODO: measure camera pitch
+    private static final double kTargetPitch = 90; // TODO: measure target pitch
+                            
     private PhotonSubsystem() { //private? or public?
         camera1 = new PhotonCamera(""); //make sure this name matches the camera name in photonvision interface
     }
@@ -33,6 +47,9 @@ public class PhotonSubsystem extends SubsystemBase {
         else {
             target = null;
         }
+
+        // Calculate robot's field relative pose
+        double distanceToTarget = PhotonUtils.getDistanceToPose(robotPose, targetPose); // Make code publish to networktable so can be put on the thing and driver can see
     }
 
     // Returns true if the camera detects an AprilTag
@@ -45,16 +62,27 @@ public class PhotonSubsystem extends SubsystemBase {
         if (!hasTarget()) return 0;
         return target.getYaw();
     }
-    //Returns Skew(angle of the target), or 0 if no target
+    //Returns Skew (angle of the target), or 0 if no target
     public double getSkew() {
         if (!hasTarget()) return 0;
         return target.getSkew();
     }
+
     // Returns pitch (up/down angle), or 0 if no target
     public double getPitch() {
         if (!hasTarget()) return 0;
         return target.getPitch();
     }
+
+    // Returns cameraToTarget transform3d things???
+    public Transform3d cameraToTarget() {
+        if (!hasTarget()) return new Transform3d();
+        return target.getBestCameraToTarget();
+    }
+
+    Pose2d targetPose = new Pose2d(cameraToTarget().getX(), cameraToTarget().getY(), new Rotation2d(cameraToTarget().getRotation().getZ()));
+    Pose2d robotPose = PhotonUtils.estimateFieldToRobot(kCameraHeight, kTargetHeight, kCameraPitch, kTargetPitch, Rotation2d.fromDegrees(-target.getYaw()), SwerveSubsystem.getOdometryHeading(), targetPose, cameraToTarget()); // SwerveSubsystem.getOdometryHeading() is the gyro angle, gives error because it's on a different branch and should work once merged
+        //gyro.getRotation2d()
 
     // Returns AprilTag ID, or -1 if no target
     public int getTagID() {
