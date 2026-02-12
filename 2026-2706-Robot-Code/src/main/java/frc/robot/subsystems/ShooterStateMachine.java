@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 public class ShooterStateMachine {
 
-    private boolean isInRange = false;
+    private boolean isRPMInRange = false;
     //private static double distanceFromHub  = 0.0;
 
     //Two different modes we are using
@@ -32,9 +34,9 @@ public class ShooterStateMachine {
 
   //Defining states we are using
   public static enum States {
-    IN_IDLE,
-    SPINING_UP,
-    READY
+    IN_IDLE, // shooter, feeder, indexer off
+    SPINNING_UP, // shooter spinning to desired rpm, feeder, indexer off
+    READY // everything on
   }
   //Setting desired mode and parameters
   public void setMode (ShooterModes desiredMode){
@@ -63,23 +65,23 @@ public class ShooterStateMachine {
   }
 
   //Sets the variable inRange to know weather the RPM is correct for shooting or not
-  public void isRPMInRange(BooleanSupplier toRun){
+  public void checkShooterRPM(BooleanSupplier toRun){
     if (toRun != null)
-        isInRange = toRun.getAsBoolean();
+        isRPMInRange = toRun.getAsBoolean();
     else 
-        isInRange = false;
+        isRPMInRange = false;
   }
  //Changes state based on Range and Mode
   public void updateState(){
     switch (desiredMode){
-        case STOP_SHOOTER:
+        case STOP_SHOOTER: // is the button pressed down
             currentState= States.IN_IDLE;
             break;
-        case SHOOT:
-            if (isInRange ==false){
-                currentState = States.SPINING_UP;
+        case SHOOT: // button is pressed down
+            if (isRPMInRange ==false){
+                currentState = States.SPINNING_UP;
             } 
-            else if (isInRange) {
+            else if (isRPMInRange) {
                 currentState = States.READY;
             }
             break;
@@ -89,3 +91,7 @@ public class ShooterStateMachine {
   }
     
 }
+
+// in_idle: switch to spinning_up when the button is held down
+// spinning_up: switch to ready when the rpm is reached (isRPMInRange==true)
+// switch back to in_idle as soon as button is no longer held down
