@@ -5,13 +5,19 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+
+
 import frc.robot.commands.IntakeDownUpCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.RunIntakeCommandReversed;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.AutoSelectorKnobSubsystem;
+
 import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +35,7 @@ public class RobotContainer {
 
   // Subsystem
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final AutoSelectorKnobSubsystem m_AutoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
 
   // Controller
   private final XboxController driverController = new XboxController(0);
@@ -55,20 +62,6 @@ public class RobotContainer {
         intakeToggleButton.toggleOnTrue(new RunIntakeCommand(intakeSubsystem));
         reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
     }
-  
-
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
-    
-  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -76,6 +69,49 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    int mode = m_AutoSelectorKnobSubsystem.getAutoMode();
+    System.out.println("Auto Mode = " + mode); // debug print
+    
+    switch (mode) {
+      case 0:
+        return null; // do nothing
+      case 1:
+        return new PrintCommand("1");
+        //DriveDistance(39, 0.3, m_robotDrive);
+      case 2:
+        return new PrintCommand("2");
+        //DriveTimed(2.0, 0.3, m_robotDrive);
+      case 3:
+        return new PrintCommand("3");
+        //null;
+      case 4:
+        return new PrintCommand("4");
+        //null;
+      case 5:
+        return new PrintCommand("5");
+        //null;
+      case 6:
+        return new PrintCommand("6");
+        //null;
+      case 7:
+        return new PrintCommand("7");
+        //null;
+      case 8:
+        return new PrintCommand("8");
+        //null;
+      case 9:
+        return new PrintCommand("9");
+        //null;
+      case 10:
+        return new PrintCommand("10");
+        //null;
+      case 11:
+        return new PrintCommand("11");
+        //null;
+      default:
+        return null;
+    }}}
+
     return Commands.none();
   }
 }
