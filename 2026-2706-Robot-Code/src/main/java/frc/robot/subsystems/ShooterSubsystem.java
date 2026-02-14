@@ -77,15 +77,12 @@ public class ShooterSubsystem extends SubsystemBase {
   
    * @return 
    */
-  public Command exampleMethodCommand() {
-    return runOnce(
-        () -> {
-
-
-    
-      
-         
-        });
+  public void stop(){
+        System.out.println("stop cmd called");
+        shooterMotor1.stopMotor(); 
+        shooterMotor2.stopMotor(); 
+        feederMotor.stopMotor();
+        indexerMotor.stopMotor();
   }
 
 
