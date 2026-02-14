@@ -3,12 +3,14 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-import edu.wpi.first.math.controller.PIDController;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
-
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import frc.robot.Constants;
@@ -24,6 +26,8 @@ import frc.robot.Constants.*;
 public class IntakeSubsystem extends SubsystemBase {
     private SparkMax intakeMotor;
     private SparkMax intakeUpDownMotor;
+    private final RelativeEncoder intakeUpDownEncoder;
+    private final SparkClosedLoopController intakeUpDownPID;
 
     /**
      * Constructs a new Intake subsystem.
@@ -31,7 +35,12 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public IntakeSubsystem() {
         intakeMotor = new SparkMax(Constants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
+
         intakeUpDownMotor = new SparkMax(Constants.RobotConstants.kIntakeUpDownMotorID, MotorType.kBrushless);
+        intakeUpDownEncoder = intakeUpDownMotor.getEncoder();
+        intakeUpDownPID = intakeUpDownMotor.getClosedLoopController();
+
+        intakeUpDownEncoder.setPosition(0.0);
 
     }
 
@@ -85,20 +94,18 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
-     * Lifts the intake up.
+     * Moves the intake down.
      */
-    public void liftIntake(){
-        intakeUpDownMotor.set(0.80);
-        intakeUpDownMotor.set(0);
-    }
+    public void moveIntakeDown() {
+    intakeUpDownPID.setSetpoint(RobotConstants.kDownPosition, ControlType.kPosition);
+}
 
     /**
-     * Lowers the intake down.
+     * Moves the intake up.
      */
-    public void lowerIntake(){
-        intakeUpDownMotor.set(-0.80);
-        intakeUpDownMotor.set(0);
-    }
+    public void moveIntakeUp() {
+    intakeUpDownPID.setSetpoint(RobotConstants.kUpPosition, ControlType.kPosition);
+}
 
     /**
      * Periodically updates the SmartDashboard with the intake motor's RPM and current.
