@@ -110,8 +110,6 @@ public class RobotContainer {
         //null;
       default:
         return null;
-    }}}
-
-    return Commands.none();
+    }
   }
 }
