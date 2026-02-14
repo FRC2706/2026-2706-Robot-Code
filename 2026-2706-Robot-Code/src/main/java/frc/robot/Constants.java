@@ -19,8 +19,8 @@ public final class Constants {
    public static class RobotConstants {
     public static final int kSelectorSwitchPort = 0;
     public static final int kRPMConversionFactor = 1 / 3;
-    public static final int kIntakeMotorID = 45;
-    public static final int kIntakeUpDownMotorID = 22;
+    public static final int kIntakeMotorID = 22;
+    public static final int kIntakeUpDownMotorID = 24;
     public static final double kIntakeSpeed = 0.5;
   }
 

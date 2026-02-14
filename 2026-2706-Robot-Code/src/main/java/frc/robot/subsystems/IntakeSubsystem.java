@@ -31,16 +31,25 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public IntakeSubsystem() {
         intakeMotor = new SparkMax(Constants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
-        intakeUpDownMotor = new SparkMax(Constants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
+        intakeUpDownMotor = new SparkMax(Constants.RobotConstants.kIntakeUpDownMotorID, MotorType.kBrushless);
 
     }
 
     /**
-     * Sets the speed of the intake motor.
+     * Starts the intake motor.
      */
     public void startIntake() {
 
         intakeMotor.set(RobotConstants.kIntakeSpeed);
+
+    }
+
+    /**
+     * Starts the intake motor, but backwards.
+     */
+    public void reverseIntake() {
+
+    intakeMotor.set(-RobotConstants.kIntakeSpeed);
 
     }
 
