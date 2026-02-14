@@ -21,10 +21,10 @@ public final class Constants {
     public static final int kRPMConversionFactor = 1 / 3;
 
     public static final int kIntakeMotorID = 22;
-    public static final int kIntakeUpDownMotorID = 24;
+    public static final int kIntakeUpDownMotorID = 23;
     public static final double kIntakeSpeed = 0.5;
     public static final double kUpPosition = 0.0;
-    public static final double kDownPosition = 12.0;
+    public static final double kDownPosition = 40.0;
     public static final double kTolerance = 0.3;
     
   }
