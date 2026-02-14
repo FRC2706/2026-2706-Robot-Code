@@ -15,13 +15,6 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkMax feederMotor; // CANNOT be faster than shooterMotor RPM
   private SparkMax indexerMotor;
   private RelativeEncoder m_encoder;
-
-  // private static ShooterSubsystem shooter;
-  //   public static ShooterSubsystem getInstance() {
-  //       if (shooter == null)
-  //           shooter = new ShooterSubsystem();
-  //       return shooter;
-  //   }
   
   public ShooterSubsystem() {
         shooterMotor1 = new SparkMax(Constants.shooterConstants.MOTOR1_ID, MotorType.kBrushless);
@@ -78,14 +71,6 @@ public class ShooterSubsystem extends SubsystemBase {
     //-----------------------------------------------
 
 
-
-
-
-
-
-
-
-
   }
 
   public void testMotor() { // purely for testing
@@ -105,32 +90,7 @@ public class ShooterSubsystem extends SubsystemBase {
   
    * @return 
    */
-  /** 
-  //Two different modes we are using
-    private ShooterModes desiredMode = ShooterModes.STOP_SHOOTER;
-    private States currentState = States.IN_IDLE;
-
-    //Defining different modes and their parameters(RPM and Voltage)
-    public static enum ShooterModes {
-        STOP_SHOOTER(0, 0),
-        SHOOT(0,0);
-
-        double v, RPM;
-
-        private ShooterModes (double voltage, double velo){
-            v = voltage;
-            RPM = velo;
-        }
-
-        public double getDesiredVoltage(){
-            return v;
-        }
-
-        public double getDesiredSpeedRPM () {
-            return RPM;
-        }
-  } */
-/** */
+  
   public Boolean isRPMinRange() {
     double currentRPM = m_encoder.getVelocity();
 
@@ -144,18 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
-  /**
-  //Defining states we are using
-  public static enum States {
-    IN_IDLE, // shooter, feeder, indexer off
-    SPINNING_UP, // shooter spinning to desired rpm, feeder, indexer off
-    READY // everything on
-  }
-  //Setting desired mode and parameters
-  public void setMode (ShooterModes desiredMode){
-    this.desiredMode = desiredMode;
 
-  } */
 
   public double getDesiredVoltage(){
     return 0.17; // for testing purposes
@@ -171,14 +120,6 @@ public class ShooterSubsystem extends SubsystemBase {
     //Reach goal: Use data provided by vision snensors (distance from hub) to calculate speed needed
   }
 
-  /** Logging the needed values
-  public ShooterModes getDesiredMode(){
-        return desiredMode;
-  }
-  //Returns current state
-  public States getCurrentState(){
-    return currentState;
-  } */
 
 
   public void stop(){
@@ -229,26 +170,10 @@ public class ShooterSubsystem extends SubsystemBase {
     } else {
       spinningUp();
     }
-    //System.out.println("periodic");
-    //testMotor();
-    /**
-        switch (currentState){
-        case IN_IDLE: // is the button pressed down
-            stop();
-            break;
-        case SPINNING_UP: // button is pressed down
-            spinningUp();
-            break;
-        case READY:
-            ready();
-            break;
-        default: 
-            break;
-    } */
+  
   }
 
   @Override
   public void simulationPeriodic() {
-    //testMotor();
   }
 }
