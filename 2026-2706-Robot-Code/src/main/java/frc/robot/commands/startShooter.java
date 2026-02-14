@@ -30,13 +30,12 @@ public class startShooter extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_ShooterSubystsem.ready();
-
-    // if (m_ShooterSubystsem.isRPMinRange()) {
-    //   m_ShooterSubystsem.spinningUp();
-    // } else {
-    //   m_ShooterSubystsem.ready();
-    // }
+        System.out.println("in start shooter command");
+    if (m_ShooterSubystsem.isRPMinRange()) {
+      m_ShooterSubystsem.ready();
+    } else {
+      m_ShooterSubystsem.spinningUp();
+    }
 
   }
 

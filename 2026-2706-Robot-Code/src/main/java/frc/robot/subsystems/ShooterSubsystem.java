@@ -5,6 +5,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.revrobotics.RelativeEncoder;
 
 
 
@@ -13,7 +14,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkMax shooterMotor2;
   private SparkMax feederMotor; // CANNOT be faster than shooterMotor RPM
   private SparkMax indexerMotor;
-  //private RelativeEncoder m_encoder = shooterMotor1.getEncoder();
+  private RelativeEncoder m_encoder;
 
   // private static ShooterSubsystem shooter;
   //   public static ShooterSubsystem getInstance() {
@@ -24,6 +25,7 @@ public class ShooterSubsystem extends SubsystemBase {
   
   public ShooterSubsystem() {
         shooterMotor1 = new SparkMax(Constants.shooterConstants.MOTOR1_ID, MotorType.kBrushless);
+        m_encoder = shooterMotor1.getEncoder();
         SparkMaxConfig shooterConfig = new SparkMaxConfig();
          // Determines which way the motor spins
         shooterConfig.inverted(false);
@@ -91,8 +93,6 @@ public class ShooterSubsystem extends SubsystemBase {
     System.out.println(shooterMotor2);
     System.out.println(feederMotor);
 
-    
-    System.out.println(0.2);
     shooterMotor1.set(getDesiredVoltage());
     System.out.println("motor 1 works");
     shooterMotor2.set(getDesiredVoltage());
@@ -132,15 +132,16 @@ public class ShooterSubsystem extends SubsystemBase {
   } */
 /** */
   public Boolean isRPMinRange() {
-    // //double currentRPM = m_encoder.getVelocity();
-    // double rangeLowEnd = getDesiredVelocityRPM() - 100;
-    // double rangeHighEnd = getDesiredVelocityRPM() + 100;
-    // if (rangeLowEnd < currentRPM && currentRPM < rangeHighEnd) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
-    return true;
+    double currentRPM = m_encoder.getVelocity();
+
+    double rangeLowEnd = getDesiredVelocityRPM() - 100;
+    double rangeHighEnd = getDesiredVelocityRPM() + 100;
+    System.out.println(currentRPM);
+    if (rangeLowEnd < currentRPM && currentRPM < rangeHighEnd) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -157,7 +158,7 @@ public class ShooterSubsystem extends SubsystemBase {
   } */
 
   public double getDesiredVoltage(){
-    return 0.5; // for testing purposes
+    return 0.17; // for testing purposes
     //return getDesiredVoltage();
      // Use calculated RPM to set voltage used by motors
   }
@@ -185,7 +186,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor1.stopMotor(); 
         shooterMotor2.stopMotor(); 
         feederMotor.stopMotor();
-        indexerMotor.stopMotor();
+        //indexerMotor.stopMotor();
   }
 
   public void spinningUp(){
@@ -195,7 +196,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor1.set(getDesiredVoltage());
         shooterMotor2.set(getDesiredVoltage());
         feederMotor.stopMotor();
-        indexerMotor.stopMotor();
+        //indexerMotor.stopMotor();
   }
 
   public void ready(){
@@ -210,7 +211,7 @@ public class ShooterSubsystem extends SubsystemBase {
         //indexerMotor.set(ShooterModes.SHOOT.getDesiredVoltage()/2);
 
         feederMotor.set(getDesiredVoltage()/2); 
-        indexerMotor.set(getDesiredVoltage()/2); 
+        //indexerMotor.set(getDesiredVoltage()/2); 
 
 
 
@@ -222,8 +223,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    System.out.println("periodic");
-    testMotor();
+    System.out.println("in start shooter if condition");
+    if (isRPMinRange()) {
+      ready();
+    } else {
+      spinningUp();
+    }
+    //System.out.println("periodic");
+    //testMotor();
     /**
         switch (currentState){
         case IN_IDLE: // is the button pressed down
@@ -242,6 +249,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    testMotor();
+    //testMotor();
   }
 }
