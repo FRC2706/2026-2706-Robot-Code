@@ -26,9 +26,15 @@ public class startShooter extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_ShooterSubystsem.spinningUp();
+    m_ShooterSubystsem.testMotor();
+
     
-    m_ShooterSubystsem.ready();
+    if (m_ShooterSubystsem.isRPMinRange()) {
+      m_ShooterSubystsem.spinningUp();
+    } else {
+      m_ShooterSubystsem.ready();
+    }
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.

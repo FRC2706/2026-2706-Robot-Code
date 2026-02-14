@@ -5,7 +5,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.config.*;
-import java.util.function.BooleanSupplier;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.wpilibj.drive.RobotDriveBase.MotorType;
@@ -19,12 +18,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkMax shooterMotor2;
   private SparkMax feederMotor; // CANNOT be faster than shooterMotor RPM
   private SparkMax indexerMotor;
-  
-  public ShooterSubsystem() {}
+  private RelativeEncoder m_encoder;
 
-   private boolean isRPMInRange = false;
-
-    private static ShooterSubsystem shooter;
+  private static ShooterSubsystem shooter;
     public static ShooterSubsystem getInstance() {
         if (shooter == null)
             shooter = new ShooterSubsystem();
@@ -32,6 +28,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   
   public ShooterSubsystem() {
+    //------------Motor configurations--------------
 
       //shooterMotor1 = new SparkMax(BaseConfig.kSpark.MOTOR_ID);
         SparkMaxConfig shooterConfig = new SparkMaxConfig();
@@ -76,6 +73,8 @@ public class ShooterSubsystem extends SubsystemBase {
         SparkBase.PersistMode.kPersistParameters
         );
         indexerMotor.setCANTimeout(500);//Units in miliseconds
+
+    //-----------------------------------------------
   }
   /**
   
@@ -104,6 +103,17 @@ public class ShooterSubsystem extends SubsystemBase {
         public double getDesiredSpeedRPM () {
             return RPM;
         }
+  }
+
+  public Boolean isRPMinRange() {
+    double currentRPM = m_encoder.getVelocity();
+    double rangeLowEnd = getDesiredVelocityRPM() - 100;
+    double rangeHighEnd = getDesiredVelocityRPM() + 100;
+    if (rangeLowEnd < currentRPM && currentRPM < rangeHighEnd) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   //Defining states we are using
@@ -138,14 +148,6 @@ public class ShooterSubsystem extends SubsystemBase {
     return currentState;
   }
 
-  //Sets the variable inRange to know weather the RPM is correct for shooting or not
-  public void checkShooterRPM(BooleanSupplier toRun){
-    if (toRun != null)
-        isRPMInRange = toRun.getAsBoolean();
-    else 
-        isRPMInRange = false;
-  }
-
 
   public void stop(){
         System.out.println("stop cmd called");
@@ -173,6 +175,11 @@ public class ShooterSubsystem extends SubsystemBase {
         indexerMotor.set(ShooterModes.SHOOT.getDesiredVoltage()/2);
   }
 
+  public void testMotor() { // purely for testing
+    shooterMotor1.set(100);
+    shooterMotor2.set(100);
+  }
+
 
 
   @Override
@@ -194,6 +201,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-    
+    testMotor();
   }
 }
