@@ -19,4 +19,29 @@ public final class Constants {
   public static class RobotConstants {
     public static final int kSelectorSwitchPort = 0;
   }
+
+  public static final class CANID {
+
+    public static final int SHOOTER1 = 24;
+    public static final int SHOOTER2 = 25;
+    public static final int FEEDER = 26;
+      public static final int INDEXER = 27;
+
+  }
+
+  public static final class shooterConstants {
+
+    public static final byte MOTOR1_ID = CANID.SHOOTER1;
+    public static final byte MOTOR2_ID = CANID.SHOOTER2;
+    public static final byte FEEDER_MOTOR_ID = CANID.FEEDER;
+    public static final byte INDEXER_MOTOR_ID = CANID.INDEXER;
+
+    // PID VALUES
+
+
+
+  }
+
+
+
 }

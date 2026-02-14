@@ -1,14 +1,10 @@
 package frc.robot.subsystems;
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.config.*;
 import com.revrobotics.RelativeEncoder;
-
-import edu.wpi.first.wpilibj.drive.RobotDriveBase.MotorType;
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -28,11 +24,9 @@ public class ShooterSubsystem extends SubsystemBase {
   //   }
   
   public ShooterSubsystem() {
-    //------------Motor configurations--------------
 
       //shooterMotor1 = new SparkMax(BaseConfig.kSpark.MOTOR_ID);
         SparkMaxConfig shooterConfig = new SparkMaxConfig();
-
          // Determines which way the motor spins
         shooterConfig.inverted(false);
         shooterMotor1.configure( 
@@ -40,23 +34,27 @@ public class ShooterSubsystem extends SubsystemBase {
         SparkBase.ResetMode.kResetSafeParameters, 
         SparkBase.PersistMode.kPersistParameters);
         shooterMotor1.setCANTimeout(500);//Units in miliseconds
-  
-    //shooterMotor2 = new SparkMax(BaseConfig.ShooterConstants.MOTOR_ID);
 
+
+
+    @SuppressWarnings("resource")
+        SparkMax shooterMotor2 = new SparkMax(Constants.shooterConstants.MOTOR2_ID, MotorType.kBrushless);
          // Determines which way the motor spins
         shooterConfig.inverted(false);
-        shooterMotor1.configure( 
+        shooterMotor2.configure( 
         shooterConfig,
         SparkBase.ResetMode.kResetSafeParameters, 
         SparkBase.PersistMode.kPersistParameters
         );
         shooterMotor2.setCANTimeout(500);//Units in miliseconds
 
-    //feederMotor = new SparkMax(BaseConfig.ShooterConstants.MOTOR_ID);
-    
+
+        
+    @SuppressWarnings("resource")
+        SparkMax feederMotor = new SparkMax(Constants.shooterConstants.FEEDER_MOTOR_ID, MotorType.kBrushless);
          // Determines which way the motor spins
         shooterConfig.inverted(false);
-        shooterMotor1.configure( 
+        feederMotor.configure( 
         shooterConfig,
         SparkBase.ResetMode.kResetSafeParameters, 
         SparkBase.PersistMode.kPersistParameters
@@ -64,7 +62,9 @@ public class ShooterSubsystem extends SubsystemBase {
         feederMotor.setCANTimeout(500);//Units in miliseconds
 
 
-    //indexerMotor = new SparkMax(BaseConfig.ShooterConstants.MOTOR_ID);
+
+    @SuppressWarnings("resource")
+        SparkMax indexerMotor = new SparkMax(Constants.shooterConstants.INDEXER_MOTOR_ID, MotorType.kBrushless);
          // Determines which way the motor spins
         shooterConfig.inverted(false);
         indexerMotor.configure( 
