@@ -23,6 +23,7 @@ import frc.robot.Constants.*;
  */
 public class IntakeSubsystem extends SubsystemBase {
     private SparkMax intakeMotor;
+    private SparkMax intakeUpDownMotor;
 
     /**
      * Constructs a new Intake subsystem.
@@ -30,18 +31,16 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public IntakeSubsystem() {
         intakeMotor = new SparkMax(Constants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
+        intakeUpDownMotor = new SparkMax(Constants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
 
     }
 
     /**
-     * Sets the power of the intake motor.
-     * 
-     * @param power The power to set for the intake motor.
+     * Sets the speed of the intake motor.
      */
-    public void setIntakePower(double power) {
+    public void startIntake() {
 
-        intakeMotor.set(-power*0.75);
-        // System.out.println(power);
+        intakeMotor.set(RobotConstants.kIntakeSpeed);
 
     }
 
@@ -74,6 +73,22 @@ public class IntakeSubsystem extends SubsystemBase {
 
         return getRawMotorRPM() * RobotConstants.kRPMConversionFactor;
 
+    }
+
+    /**
+     * Lifts the intake up.
+     */
+    public void liftIntake(){
+        intakeUpDownMotor.set(0.80);
+        intakeUpDownMotor.set(0);
+    }
+
+    /**
+     * Lowers the intake down.
+     */
+    public void lowerIntake(){
+        intakeUpDownMotor.set(-0.80);
+        intakeUpDownMotor.set(0);
     }
 
     /**
