@@ -1,21 +1,26 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+// Imports necessary to create SwerveDrive object
 import java.io.File;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import swervelib.parser.SwerveParser;
-import swervelib.telemetry.SwerveDriveTelemetry;
-import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import swervelib.SwerveDrive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.SwerveMath;
+
+// Imports for pathplanner
+import swervelib.telemetry.SwerveDriveTelemetry;
+import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class SwerveSubsystem extends SubsystemBase{
 
@@ -23,13 +28,17 @@ public class SwerveSubsystem extends SubsystemBase{
 
     // Swerve drive object
     private final SwerveDrive swerveDrive; 
-    
+
     // Provide swerve configuration file as arguement
     public SwerveSubsystem(File swerveJsonDirectory){
         
         // Set up starting position depending on alliance for odometry
         boolean blueAlliance = isRedAlliance();
         Pose2d startingPose;
+
+        // Set the verbosity of the telemetry.  HIGH is good for debugging, but may cause performance issues.  Adjust as needed.
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW; 
+
         // TODO: Set up different starting positions
         if (blueAlliance){
             // Units are in meters
@@ -52,11 +61,8 @@ public class SwerveSubsystem extends SubsystemBase{
         swerveDrive.setHeadingCorrection(false); // Turn on to correct heading
         swerveDrive.setCosineCompensator(false); // Turn on to automatically slow or speed up swerve modules that should be close to their desired state in theory
         swerveDrive.setAngularVelocityCompensation(true, true, 0.1); // Tune to compensate for angular skew in movement
-        swerveDrive.setModuleEncoderAutoSynchronize(false, 1); // Turn on to periodcally synchronize absolute encoders and motor encoders during periods without movement
-        //swerveDrive.pushOffsetsToEncoders();
-
-        // Allows for debugging with things like Elastic
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+        swerveDrive.setModuleEncoderAutoSynchronize(true, 1); // Turn on to periodcally synchronize absolute encoders and motor encoders during periods without movement
+        swerveDrive.synchronizeModuleEncoders();
     }
 
     @Override
@@ -154,8 +160,7 @@ public class SwerveSubsystem extends SubsystemBase{
         return swerveDrive.getOdometryHeading();
     }
 
-    // Updates positions of swerve modules and syncs up absolute encoders with relative encoders
-    // Should be run periodically
+    // Updates the odometry; Should be run periodically
     public void updateOdometry(){
         swerveDrive.updateOdometry();
     }
@@ -203,4 +208,7 @@ public class SwerveSubsystem extends SubsystemBase{
     {
         return swerveDrive.getRobotVelocity();
     }
+
+    
 }
+

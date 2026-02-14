@@ -47,7 +47,10 @@ public class RobotContainer {
       new SwerveDriveCommand(m_swerveSubsystem,
        () -> -m_driverController.getLeftY(), 
        () -> -m_driverController.getLeftX(), 
-       () -> -m_driverController.getRightX())
+       () -> -m_driverController.getRightX(),
+       0.1,
+       0.1
+       )
     );
 
     // Configure the trigger bindings
