@@ -6,6 +6,10 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+
+import java.util.concurrent.TimeUnit;
+
 
 /** An example command that uses an example subsystem. */
 public class startShooter extends Command {
@@ -26,11 +30,13 @@ public class startShooter extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (m_ShooterSubystsem.isRPMinRange()) {
-      m_ShooterSubystsem.spinningUp();
-    } else {
-      m_ShooterSubystsem.ready();
-    }
+    m_ShooterSubystsem.ready();
+
+    // if (m_ShooterSubystsem.isRPMinRange()) {
+    //   m_ShooterSubystsem.spinningUp();
+    // } else {
+    //   m_ShooterSubystsem.ready();
+    // }
 
   }
 

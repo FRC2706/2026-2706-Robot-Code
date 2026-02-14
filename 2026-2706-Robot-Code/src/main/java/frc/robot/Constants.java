@@ -22,10 +22,10 @@ public final class Constants {
 
   public static final class CANID {
 
-    public static final int SHOOTER1 = 24;
-    public static final int SHOOTER2 = 25;
-    public static final int FEEDER = 26;
-      public static final int INDEXER = 27;
+    public static final int SHOOTER1 = 31;
+    public static final int SHOOTER2 = 15;
+    public static final int FEEDER = 40;
+    //public static final int INDEXER = 27;
 
   }
 
@@ -34,7 +34,7 @@ public final class Constants {
     public static final byte MOTOR1_ID = CANID.SHOOTER1;
     public static final byte MOTOR2_ID = CANID.SHOOTER2;
     public static final byte FEEDER_MOTOR_ID = CANID.FEEDER;
-    public static final byte INDEXER_MOTOR_ID = CANID.INDEXER;
+    //public static final byte INDEXER_MOTOR_ID = CANID.INDEXER;
 
     // PID VALUES
 
