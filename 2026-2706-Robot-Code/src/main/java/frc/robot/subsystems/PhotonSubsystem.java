@@ -9,6 +9,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import frc.robot.subsystems.SwerveSubsystem;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -27,13 +28,15 @@ public class PhotonSubsystem extends SubsystemBase {
     private PhotonPipelineResult result;
     private PhotonTrackedTarget target;
     public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    private static final double kCameraHeight = 0; // TODO: measure camera height
-    private static final double kTargetHeight = 0; // TODO: measure target height
-    private static final double kCameraPitch = 0; // TODO: measure camera pitch
+    private static final double kCameraHeight = 16; // TODO: measure camera height
+    private static final double kTargetHeight = 42; // TODO: measure target height
+    private static final double kCameraPitch = 1.0472; // TODO: measure camera pitch
     private static final double kTargetPitch = 90; // TODO: measure target pitch
+    private final SwerveSubsystem m_SwerveSubsystem;
                             
-    private PhotonSubsystem() { //private? or public?
+    public PhotonSubsystem(SwerveSubsystem swerveSubsystem) { //private? or public?
         camera1 = new PhotonCamera(""); //make sure this name matches the camera name in photonvision interface
+        m_SwerveSubsystem = swerveSubsystem;
     }
 
     @Override
@@ -47,6 +50,17 @@ public class PhotonSubsystem extends SubsystemBase {
         else {
             target = null;
         }
+
+        Pose2d targetPose = new Pose2d(cameraToTarget().getX(), cameraToTarget().getY(), new Rotation2d(cameraToTarget().getRotation().getZ()));
+        Pose2d robotPose = PhotonUtils.estimateFieldToRobot(kCameraHeight, 
+                                                            kTargetHeight, 
+                                                            kCameraPitch, 
+                                                            kTargetPitch, 
+                                                            Rotation2d.fromDegrees(-target.getYaw()), 
+                                                            m_SwerveSubsystem.getOdometryHeading(), 
+                                                            targetPose,
+                                                            new Transform2d(cameraToTarget().getTranslation().toTranslation2d(), cameraToTarget().getRotation().toRotation2d())); // SwerveSubsystem.getOdometryHeading() is the gyro angle, gives error because it's on a different branch and should work once merged
+            //gyro.getRotation2d()
 
         // Calculate robot's field relative pose
         double distanceToTarget = PhotonUtils.getDistanceToPose(robotPose, targetPose); // Make code publish to networktable so can be put on the thing and driver can see
@@ -77,12 +91,8 @@ public class PhotonSubsystem extends SubsystemBase {
     // Returns cameraToTarget transform3d things???
     public Transform3d cameraToTarget() {
         if (!hasTarget()) return new Transform3d();
-        return target.getBestCameraToTarget();
+        return new Transform3d(target.getBestCameraToTarget().getTranslation(), target.getBestCameraToTarget().getRotation());
     }
-
-    Pose2d targetPose = new Pose2d(cameraToTarget().getX(), cameraToTarget().getY(), new Rotation2d(cameraToTarget().getRotation().getZ()));
-    Pose2d robotPose = PhotonUtils.estimateFieldToRobot(kCameraHeight, kTargetHeight, kCameraPitch, kTargetPitch, Rotation2d.fromDegrees(-target.getYaw()), SwerveSubsystem.getOdometryHeading(), targetPose, cameraToTarget()); // SwerveSubsystem.getOdometryHeading() is the gyro angle, gives error because it's on a different branch and should work once merged
-        //gyro.getRotation2d()
 
     // Returns AprilTag ID, or -1 if no target
     public int getTagID() {
