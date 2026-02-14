@@ -9,7 +9,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import frc.robot.subsystems.SwerveSubsystem;
+//import frc.robot.subsystems.SwerveSubsystem;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -19,7 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.SwerveSubsystem; // For gyro, gives error because it's on a different branch
+//import frc.robot.subsystems.SwerveSubsystem; // For gyro, gives error because it's on a different branch
 
 // Class
 public class PhotonSubsystem extends SubsystemBase {
@@ -28,11 +28,11 @@ public class PhotonSubsystem extends SubsystemBase {
     private PhotonPipelineResult result;
     private PhotonTrackedTarget target;
     public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    private final SwerveSubsystem m_SwerveSubsystem;
+    //private final SwerveSubsystem m_SwerveSubsystem;
                             
-    public PhotonSubsystem(SwerveSubsystem swerveSubsystem) { //private? or public?
+    public PhotonSubsystem() { //private? or public?
         camera1 = new PhotonCamera(""); //make sure this name matches the camera name in photonvision interface
-        m_SwerveSubsystem = swerveSubsystem;
+        //m_SwerveSubsystem = swerveSubsystem;
     }
 
     @Override
@@ -45,8 +45,12 @@ public class PhotonSubsystem extends SubsystemBase {
 
         else {
             target = null;
-        }
 
+        }
+        System.out.println(getPitch());
+        System.out.println(getYaw());
+        System.out.println(getSkew());
+        
     }
 
     // Returns true if the camera detects an AprilTag
@@ -69,6 +73,7 @@ public class PhotonSubsystem extends SubsystemBase {
     public double getPitch() {
         if (!hasTarget()) return 0;
         return target.getPitch();
+        
     }
 
     // Returns AprilTag ID, or -1 if no target
