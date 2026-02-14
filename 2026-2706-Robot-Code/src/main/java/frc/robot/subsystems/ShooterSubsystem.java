@@ -18,14 +18,14 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkMax shooterMotor2;
   private SparkMax feederMotor; // CANNOT be faster than shooterMotor RPM
   private SparkMax indexerMotor;
-  private RelativeEncoder m_encoder;
+  private RelativeEncoder m_encoder = shooterMotor1.getEncoder();
 
-  private static ShooterSubsystem shooter;
-    public static ShooterSubsystem getInstance() {
-        if (shooter == null)
-            shooter = new ShooterSubsystem();
-        return shooter;
-    }
+  // private static ShooterSubsystem shooter;
+  //   public static ShooterSubsystem getInstance() {
+  //       if (shooter == null)
+  //           shooter = new ShooterSubsystem();
+  //       return shooter;
+  //   }
   
   public ShooterSubsystem() {
     //------------Motor configurations--------------
@@ -80,6 +80,7 @@ public class ShooterSubsystem extends SubsystemBase {
   
    * @return 
    */
+  /** 
   //Two different modes we are using
     private ShooterModes desiredMode = ShooterModes.STOP_SHOOTER;
     private States currentState = States.IN_IDLE;
@@ -103,7 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
         public double getDesiredSpeedRPM () {
             return RPM;
         }
-  }
+  } */
 
   public Boolean isRPMinRange() {
     double currentRPM = m_encoder.getVelocity();
@@ -116,6 +117,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
+  /**
   //Defining states we are using
   public static enum States {
     IN_IDLE, // shooter, feeder, indexer off
@@ -126,27 +128,30 @@ public class ShooterSubsystem extends SubsystemBase {
   public void setMode (ShooterModes desiredMode){
     this.desiredMode = desiredMode;
 
-  }
+  } */
 
   public double getDesiredVoltage(){
-    return desiredMode.getDesiredVoltage();
+    return 0.5; // for testing purposes
+    //return getDesiredVoltage();
      // Use calculated RPM to set voltage used by motors
   }
 
   public double getDesiredVelocityRPM (){
-    return desiredMode.getDesiredSpeedRPM();
+    return 1000; // for test purposes
+    
+    //return getDesiredVelocityRPM (); 
     //Goal: Get average shooting distance from hardware and set an average RPM
     //Reach goal: Use data provided by vision snensors (distance from hub) to calculate speed needed
   }
 
-  // Logging the needed values
+  /** Logging the needed values
   public ShooterModes getDesiredMode(){
         return desiredMode;
   }
   //Returns current state
   public States getCurrentState(){
     return currentState;
-  }
+  } */
 
 
   public void stop(){
@@ -158,32 +163,45 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void spinningUp(){
-        System.out.println("stop cmd called");
-        shooterMotor1.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
-        shooterMotor2.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
+        System.out.println("spining up cmd called");
+        //shooterMotor1.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
+        //shooterMotor2.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
+        shooterMotor1.set(getDesiredVoltage());
+        shooterMotor2.set(getDesiredVoltage());
         feederMotor.stopMotor();
         indexerMotor.stopMotor();
   }
 
   public void ready(){
-        System.out.println("stop cmd called");
-        shooterMotor1.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
-        shooterMotor2.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
-
+        System.out.println("ready cmd called");
+        //shooterMotor1.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
+        //shooterMotor2.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
+        shooterMotor1.set(getDesiredVoltage());
+        shooterMotor2.set(getDesiredVoltage());
         // divide by 2 is placeholder but need to figure out difference in voltage for feeder+indexer vs shooter motors
-        feederMotor.set(ShooterModes.SHOOT.getDesiredVoltage()/2); 
-        indexerMotor.set(ShooterModes.SHOOT.getDesiredVoltage()/2);
+        
+        //feederMotor.set(ShooterModes.SHOOT.getDesiredVoltage()/2); 
+        //indexerMotor.set(ShooterModes.SHOOT.getDesiredVoltage()/2);
+
+        feederMotor.set(getDesiredVoltage()/2); 
+        indexerMotor.set(getDesiredVoltage()/2); 
+
+
+
   }
 
   public void testMotor() { // purely for testing
-    shooterMotor1.set(100);
-    shooterMotor2.set(100);
+    shooterMotor1.set(getDesiredVoltage());
+    shooterMotor2.set(getDesiredVoltage());
+    feederMotor.set(getDesiredVoltage());
   }
 
 
 
   @Override
   public void periodic() {
+
+    /**
         switch (currentState){
         case IN_IDLE: // is the button pressed down
             stop();
@@ -196,7 +214,7 @@ public class ShooterSubsystem extends SubsystemBase {
             break;
         default: 
             break;
-    }
+    } */
   }
 
   @Override

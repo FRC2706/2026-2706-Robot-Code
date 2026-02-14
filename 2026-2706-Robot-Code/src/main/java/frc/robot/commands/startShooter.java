@@ -26,9 +26,6 @@ public class startShooter extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_ShooterSubystsem.testMotor();
-
-    
     if (m_ShooterSubystsem.isRPMinRange()) {
       m_ShooterSubystsem.spinningUp();
     } else {
