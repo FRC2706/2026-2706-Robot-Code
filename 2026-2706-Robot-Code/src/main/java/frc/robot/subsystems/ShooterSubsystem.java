@@ -153,25 +153,18 @@ public class ShooterSubsystem extends SubsystemBase {
 
         feederMotor.set(getDesiredVoltage()/2); 
         //indexerMotor.set(getDesiredVoltage()/2); 
-
-
-
   }
 
+  //@Override
+  // public void periodic() {
+  //   System.out.println("in start shooter if condition");
+  //   if (isRPMinRange()) {
+  //     ready();
+  //   } else {
+  //     spinningUp();
+  //   }
   
-
-
-
-  @Override
-  public void periodic() {
-    System.out.println("in start shooter if condition");
-    if (isRPMinRange()) {
-      ready();
-    } else {
-      spinningUp();
-    }
-  
-  }
+  // }
 
   @Override
   public void simulationPeriodic() {

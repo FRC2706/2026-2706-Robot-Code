@@ -30,18 +30,22 @@ public class startShooter extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-        System.out.println("in start shooter command");
+        
+  }
+
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    System.out.println("in startShooter command");
     if (m_ShooterSubystsem.isRPMinRange()) {
       m_ShooterSubystsem.ready();
     } else {
       m_ShooterSubystsem.spinningUp();
     }
-
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
+  
 
   // Called once the command ends or is interrupted.
   @Override
