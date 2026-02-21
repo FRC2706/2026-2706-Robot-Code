@@ -31,7 +31,7 @@ public class PhotonSubsystem extends SubsystemBase {
     //private final SwerveSubsystem m_SwerveSubsystem;
                             
     public PhotonSubsystem() { //private? or public?
-        camera1 = new PhotonCamera(""); //make sure this name matches the camera name in photonvision interface
+        camera1 = new PhotonCamera("Arducam"); //make sure this name matches the camera name in photonvision interface
         //m_SwerveSubsystem = swerveSubsystem;
     }
 
@@ -47,6 +47,7 @@ public class PhotonSubsystem extends SubsystemBase {
             target = null;
 
         }
+        System.out.println(hasTarget());
         System.out.println(getPitch());
         System.out.println(getYaw());
         System.out.println(getSkew());
