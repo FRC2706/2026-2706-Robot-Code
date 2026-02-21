@@ -26,6 +26,10 @@ public final class Constants {
     public static final double kUpPosition = 0.0;
     public static final double kDownPosition = 40.0;
     public static final double kTolerance = 0.3;
+
+    public static final double kUpDownP = 0.1;
+    public static final double kUpDownI = 0.0;
+    public static final double kUpDownD = 0.0; 
     
   }
 

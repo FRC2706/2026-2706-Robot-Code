@@ -7,11 +7,11 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 
 import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 
-import frc.robot.commands.IntakeDownUpCommand;
+import frc.robot.commands.IntakeDownCommand;
+import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -54,11 +54,16 @@ public class RobotContainer {
         JoystickButton reverseButton =
             new JoystickButton(driverController, XboxController.Button.kB.value);
 
-          // Toggle intake to go up and down
-        JoystickButton intakeDownUpButton =
-            new JoystickButton(driverController, XboxController.Button.kX.value);
+        // Toggle intake to go down
+        JoystickButton intakeDownButton =
+            new JoystickButton(driverController, XboxController.Button.kRightStick.value);
 
-        intakeDownUpButton.toggleOnTrue(new IntakeDownUpCommand(intakeSubsystem));
+        // Toggle intake to go up
+        JoystickButton intakeUpButton =
+            new JoystickButton(driverController, XboxController.Button.kRightBumper.value);
+
+        intakeDownButton.toggleOnTrue(new IntakeDownCommand(intakeSubsystem));
+        intakeUpButton.toggleOnTrue(new IntakeUpCommand(intakeSubsystem));
         intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
         reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
     }

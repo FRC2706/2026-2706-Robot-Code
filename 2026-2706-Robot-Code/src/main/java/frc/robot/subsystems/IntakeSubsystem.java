@@ -11,6 +11,10 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.ResetMode;
+import com.revrobotics.PersistMode;
+import com.revrobotics.spark.SparkSoftLimit.SoftLimitDirection;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import frc.robot.Constants;
@@ -39,9 +43,22 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeUpDownMotor = new SparkMax(Constants.RobotConstants.kIntakeUpDownMotorID, MotorType.kBrushless);
         intakeUpDownEncoder = intakeUpDownMotor.getEncoder();
         intakeUpDownPID = intakeUpDownMotor.getClosedLoopController();
-
+        
+        // Resets the position to 0, turn the robot off while in up position to prevent things breaking.
         intakeUpDownEncoder.setPosition(0.0);
 
+        SparkMaxConfig upDownConfig = new SparkMaxConfig();
+            upDownConfig.closedLoop
+                .p(RobotConstants.kUpDownP)
+                .i(RobotConstants.kUpDownI)
+                .d(RobotConstants.kUpDownD);
+
+            upDownConfig.softLimit
+                .forwardSoftLimit(RobotConstants.kUpPosition)
+                .forwardSoftLimitEnabled(true)
+                .reverseSoftLimit(RobotConstants.kDownPosition)
+                .reverseSoftLimitEnabled(true);
+            intakeUpDownMotor.configure(upDownConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     /**
