@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 
 import frc.robot.commands.IntakeDownUpCommand;
-import frc.robot.commands.RunIntakeCommand;
+import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -59,7 +59,7 @@ public class RobotContainer {
             new JoystickButton(driverController, XboxController.Button.kX.value);
 
         intakeDownUpButton.toggleOnTrue(new IntakeDownUpCommand(intakeSubsystem));
-        intakeToggleButton.toggleOnTrue(new RunIntakeCommand(intakeSubsystem));
+        intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
         reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
     }
 
