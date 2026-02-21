@@ -41,6 +41,12 @@ public class ShooterSubsystem extends SubsystemBase {
         SparkBase.PersistMode.kPersistParameters
         );
         shooterMotor2.setCANTimeout(500);//Units in miliseconds
+                SparkMaxConfig followerConfig =  new SparkMaxConfig();
+                 followerConfig.follow(shooterMotor1);
+                 shooterMotor2.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+                 
+
+
 
 
         
@@ -125,7 +131,6 @@ public class ShooterSubsystem extends SubsystemBase {
   public void stop(){
         System.out.println("stop cmd called");
         shooterMotor1.stopMotor(); 
-        shooterMotor2.stopMotor(); 
         feederMotor.stopMotor();
         //indexerMotor.stopMotor();
   }
@@ -135,7 +140,6 @@ public class ShooterSubsystem extends SubsystemBase {
         //shooterMotor1.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
         //shooterMotor2.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
         shooterMotor1.set(getDesiredVoltage());
-        shooterMotor2.set(getDesiredVoltage());
         feederMotor.stopMotor();
         //indexerMotor.stopMotor();
   }
@@ -145,7 +149,6 @@ public class ShooterSubsystem extends SubsystemBase {
         //shooterMotor1.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
         //shooterMotor2.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
         shooterMotor1.set(getDesiredVoltage());
-        shooterMotor2.set(getDesiredVoltage());
         // divide by 2 is placeholder but need to figure out difference in voltage for feeder+indexer vs shooter motors
         
         //feederMotor.set(ShooterModes.SHOOT.getDesiredVoltage()/2); 
@@ -168,5 +171,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
+
   }
 }

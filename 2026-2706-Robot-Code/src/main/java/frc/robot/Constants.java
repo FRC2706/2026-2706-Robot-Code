@@ -39,7 +39,18 @@ public final class Constants {
 
     // PID VALUES
 
-
+    public static final double kP1 = 0,
+                               kI1 = 0,
+                               kD1 = 0,
+                               kFF1 = 0,
+                               kP2 = 0,
+                               kI2 = 0,
+                               kD2 = 0,
+                               kFF2 = 0,
+                               kP3 = 0,
+                               kI3 = 0,
+                               kD3 = 0,
+                               kFF3 = 0;
   }
 
 
