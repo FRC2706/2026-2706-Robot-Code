@@ -26,11 +26,6 @@ public class SwerveDriveCommand extends Command{
     }
 
     @Override
-    public void initialize() {
-        // Initialization logic for the command
-    }
-
-    @Override
     public void execute() {
 
         //Adjusted Vx, Vy, and Omega for controller deadband
@@ -66,9 +61,4 @@ public class SwerveDriveCommand extends Command{
         // Return true when the command should end
         return false;
     }
-
-    @Override
-    public void end(boolean interrupted) {
-        
-    }  
 }
