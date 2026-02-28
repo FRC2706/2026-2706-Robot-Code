@@ -5,10 +5,16 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+
+
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
+import frc.robot.subsystems.AutoSelectorKnobSubsystem;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -22,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final AutoSelectorKnobSubsystem m_AutoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -52,13 +59,50 @@ public class RobotContainer {
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
+  
+
+  /** This function returns the autonomous command based on the knob position. */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
-  }
-}
+    int mode = m_AutoSelectorKnobSubsystem.getAutoMode();
+    System.out.println("Auto Mode = " + mode); // debug print
+    
+    switch (mode) {
+      case 0:
+        return null; // do nothing
+      case 1:
+        return new PrintCommand("1");
+        //DriveDistance(39, 0.3, m_robotDrive);
+      case 2:
+        return new PrintCommand("2");
+        //DriveTimed(2.0, 0.3, m_robotDrive);
+      case 3:
+        return new PrintCommand("3");
+        //null;
+      case 4:
+        return new PrintCommand("4");
+        //null;
+      case 5:
+        return new PrintCommand("5");
+        //null;
+      case 6:
+        return new PrintCommand("6");
+        //null;
+      case 7:
+        return new PrintCommand("7");
+        //null;
+      case 8:
+        return new PrintCommand("8");
+        //null;
+      case 9:
+        return new PrintCommand("9");
+        //null;
+      case 10:
+        return new PrintCommand("10");
+        //null;
+      case 11:
+        return new PrintCommand("11");
+        //null;
+      default:
+        return null;
+    }}}
+
