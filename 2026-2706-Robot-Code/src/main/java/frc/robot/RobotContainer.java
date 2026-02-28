@@ -56,11 +56,11 @@ public class RobotContainer {
 
         // Toggle intake to go down
         JoystickButton intakeDownButton =
-            new JoystickButton(driverController, XboxController.Button.kRightStick.value);
+            new JoystickButton(driverController, XboxController.Button.kX.value);
 
         // Toggle intake to go up
         JoystickButton intakeUpButton =
-            new JoystickButton(driverController, XboxController.Button.kRightBumper.value);
+            new JoystickButton(driverController, XboxController.Button.kY.value);
 
         intakeDownButton.toggleOnTrue(new IntakeDownCommand(intakeSubsystem));
         intakeUpButton.toggleOnTrue(new IntakeUpCommand(intakeSubsystem));

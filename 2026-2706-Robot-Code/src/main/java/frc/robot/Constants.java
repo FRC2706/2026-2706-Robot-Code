@@ -20,14 +20,14 @@ public final class Constants {
     public static final int kSelectorSwitchPort = 0;
     public static final int kRPMConversionFactor = 1 / 3;
 
-    public static final int kIntakeMotorID = 22;
-    public static final int kIntakeUpDownMotorID = 23;
+    public static final int kIntakeMotorID = 15;
+    public static final int kIntakeUpDownMotorID = 30;
     public static final double kIntakeSpeed = 0.5;
-    public static final double kUpPosition = 0.0;
-    public static final double kDownPosition = 40.0;
+    public static final double kUpPosition = 20;
+    public static final double kDownPosition = -20; //must be a negitive
     public static final double kTolerance = 0.3;
 
-    public static final double kUpDownP = 0.1;
+    public static final double kUpDownP = 0.2;
     public static final double kUpDownI = 0.0;
     public static final double kUpDownD = 0.0; 
     

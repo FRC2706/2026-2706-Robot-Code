@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
@@ -65,7 +66,6 @@ public class IntakeSubsystem extends SubsystemBase {
      * Starts the intake motor.
      */
     public void startIntake() {
-
         intakeMotor.set(RobotConstants.kIntakeSpeed);
 
     }
@@ -74,8 +74,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * Starts the intake motor, but backwards.
      */
     public void reverseIntake() {
-
-    intakeMotor.set(-RobotConstants.kIntakeSpeed);
+        intakeMotor.set(-RobotConstants.kIntakeSpeed);
 
     }
 
@@ -104,11 +103,11 @@ public class IntakeSubsystem extends SubsystemBase {
      * 
      * @return The converted RPM of the intake motor.
      */
-    public double getRPM(){
+    /*public double getRPM(){
 
         return getRawMotorRPM() * RobotConstants.kRPMConversionFactor;
 
-    }
+    }*/
 
     /**
      * Moves the intake down.
@@ -131,7 +130,7 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (UtilityConstants.debugMode){
-            SmartDashboard.putNumber("Intake RPM", getRPM());
+            SmartDashboard.putNumber("Intake RPM", getRawMotorRPM());
             SmartDashboard.putNumber("Intake Current", intakeMotor.getOutputCurrent());
         }
     }
