@@ -66,6 +66,8 @@ public class SwerveSubsystem extends SubsystemBase{
         // Configure Swerve Drive
         swerveDrive.setHeadingCorrection(true); // Turn on to correct heading
         swerveDrive.setCosineCompensator(true); // Turn on to automatically slow or speed up swerve modules that should be close to their desired state in theory
+        swerveDrive.angularVelocityCorrection = true;
+        swerveDrive.autonomousAngularVelocityCorrection = true;
         swerveDrive.setAngularVelocityCompensation(true, true, 0.1); // Tune to compensate for angular skew in movement
         swerveDrive.setModuleEncoderAutoSynchronize(true, 1); // Turn on to periodcally synchronize absolute encoders and motor encoders during periods without movement
         swerveDrive.synchronizeModuleEncoders();
