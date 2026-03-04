@@ -34,6 +34,11 @@ public class IntakeSubsystem extends SubsystemBase {
     private final RelativeEncoder intakeUpDownEncoder;
     private final SparkClosedLoopController intakeUpDownPID;
 
+    // Cached PID values to detect changes from dashboard
+    private double lastP = RobotConstants.kUpDownP;
+    private double lastI = RobotConstants.kUpDownI;
+    private double lastD = RobotConstants.kUpDownD;
+
     /**
      * Constructs a new Intake subsystem.
      * Initializes the intake motor.
@@ -60,6 +65,12 @@ public class IntakeSubsystem extends SubsystemBase {
                 .reverseSoftLimit(RobotConstants.kDownPosition)
                 .reverseSoftLimitEnabled(true);
             intakeUpDownMotor.configure(upDownConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        // Pre-populate dashboard tuning fields with current constants
+        SmartDashboard.putNumber("UpDown/P Gain", RobotConstants.kUpDownP);
+        SmartDashboard.putNumber("UpDown/I Gain", RobotConstants.kUpDownI);
+        SmartDashboard.putNumber("UpDown/D Gain", RobotConstants.kUpDownD);
+        SmartDashboard.putNumber("Intake/Speed", RobotConstants.kIntakeSpeed);
     }
 
     /**
@@ -74,7 +85,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * Starts the intake motor, but backwards.
      */
     public void reverseIntake() {
-        intakeMotor.set(-RobotConstants.kIntakeSpeed);
+        intakeMotor.set(RobotConstants.kIntakeSpeed);
 
     }
 
@@ -132,6 +143,23 @@ public class IntakeSubsystem extends SubsystemBase {
         if (UtilityConstants.debugMode){
             SmartDashboard.putNumber("Intake RPM", getRawMotorRPM());
             SmartDashboard.putNumber("Intake Current", intakeMotor.getOutputCurrent());
+
+            // Live PID telemetry
+            SmartDashboard.putNumber("UpDown/Current Position", intakeUpDownEncoder.getPosition());
+
+            // Check if gains were changed on the dashboard and apply them live
+            double p = SmartDashboard.getNumber("UpDown/P Gain", lastP);
+            double i = SmartDashboard.getNumber("UpDown/I Gain", lastI);
+            double d = SmartDashboard.getNumber("UpDown/D Gain", lastD);
+
+            if (p != lastP || i != lastI || d != lastD) {
+                SparkMaxConfig updatedConfig = new SparkMaxConfig();
+                updatedConfig.closedLoop.p(p).i(i).d(d);
+                intakeUpDownMotor.configure(updatedConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+                lastP = p;
+                lastI = i;
+                lastD = d;
+            }
         }
     }
 
