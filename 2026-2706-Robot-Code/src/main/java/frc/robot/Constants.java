@@ -16,7 +16,5 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
-  public static class RobotConstants {
-    public static final int kSelectorSwitchPort = 0;
-  }
+  public static int kSelectorSwitchPort;
 }

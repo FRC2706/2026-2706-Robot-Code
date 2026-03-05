@@ -5,29 +5,35 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-
-import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
-
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.AutoSelectorKnobSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.AutoPlans;
-
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.AutoSelectorKnobSubsystem;
+import frc.robot.commands.SwerveDriveCommand;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
+
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
+
+
+// Pathplanner testing
+import frc.robot.subsystems.AutoPlans;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,13 +43,13 @@ import java.io.File;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final AutoSelectorKnobSubsystem m_AutoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
-  private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
-  // Pathplanner
-  //private final AutoPlans m_autoPlans;
-  //private final SendableChooser<Command> autoChooser;
+  private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
+  // Pathplanner testing
+  private final AutoPlans m_autoPlans;
+  private final SendableChooser<Command> autoChooser;
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -51,30 +57,29 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // Configure the trigger bindings
 
-    // Left joystick controls the robot's translation movements (up moves the robot up, left moves the robot left, e.t.c)
-    // Right joystick controls the rate of rotation (left rotates the robot counter clock-wise, right rotates the robot clock-wise)
+    DriverStation.silenceJoystickConnectionWarning(false);
+
     m_swerveSubsystem.setDefaultCommand(
-      new SwerveDriveCommand(m_swerveSubsystem,
-       () -> -m_driverController.getLeftY(), 
-       () -> -m_driverController.getLeftX(), 
-       () -> -m_driverController.getRightX(),
-       0.1,
-       0.1
-       )
+       new SwerveDriveCommand(
+          m_swerveSubsystem,
+          () -> -m_driverController.getLeftY(), // Forward/backward
+          () -> -m_driverController.getLeftX(), // Left/right
+          () -> -m_driverController.getRightX(),0.1,0.1)
     );
 
     // Configure PathPlanner/AutoBuilder now that the swerve subsystem exists
     // This will configure AutoBuilder using the subsystem-provided callbacks.
-    //m_swerveSubsystem.setupPathPlanner();
+    m_swerveSubsystem.setupPathPlanner();
 
     // Now that AutoBuilder is configured, create autos and the chooser
-    //m_autoPlans = new AutoPlans();
-    //autoChooser = AutoBuilder.buildAutoChooser("Drive Forward Auto");
-    //SmartDashboard.putData("Auto Mode", autoChooser);
-
-    // Configure the trigger bindings
+    m_autoPlans = new AutoPlans();
+    //autoChooser = AutoBuilder.buildAutoChooser(m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode()));
+    autoChooser = AutoBuilder.buildAutoChooser("Drive Forward");
+    SmartDashboard.putData("Auto Mode", autoChooser);
     configureBindings();
+
   }
 
   /**
@@ -88,61 +93,37 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
+    //new Trigger(m_exampleSubsystem::exampleCondition)
+       // .onTrue(new ExampleCommand(m_exampleSubsystem));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+
 
     //Zero the gyro such that forward is where the robot is currently looking
     m_driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
+  
   }
+
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    // Return the command selected on the SendableChooser (built by AutoBuilder).
+    Command selected = autoChooser.getSelected();
+
+    if (selected != null) {
+      return selected;
+    }
+    return null;
+  }
+}
+
 
   
 
-  /** This function returns the autonomous command based on the knob position. */
-  public Command getAutonomousCommand() {
-    int mode = m_AutoSelectorKnobSubsystem.getAutoMode();
-    System.out.println("Auto Mode = " + mode); // debug print
-    
-    switch (mode) {
-      case 0:
-        return null; // do nothing
-      case 1:
-        //return m_autoPlans.getAutonomousCommand(0);
-        return null;
-      case 2:
-        return new PrintCommand("2");
-        //DriveTimed(2.0, 0.3, m_robotDrive);
-      case 3:
-        return new PrintCommand("3");
-        //null;
-      case 4:
-        return new PrintCommand("4");
-        //null;
-      case 5:
-        return new PrintCommand("5");
-        //null;
-      case 6:
-        return new PrintCommand("6");
-        //null;
-      case 7:
-        return new PrintCommand("7");
-        //null;
-      case 8:
-        return new PrintCommand("8");
-        //null;
-      case 9:
-        return new PrintCommand("9");
-        //null;
-      case 10:
-        return new PrintCommand("10");
-        //null;
-      case 11:
-        return new PrintCommand("11");
-        //null;
-      default:
-        return null;
-    }}}
+
 
