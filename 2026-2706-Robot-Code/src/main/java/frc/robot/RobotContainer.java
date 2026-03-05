@@ -42,8 +42,8 @@ public class RobotContainer {
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
   // Pathplanner
-  private final AutoPlans m_autoPlans;
-  private final SendableChooser<Command> autoChooser;
+  //private final AutoPlans m_autoPlans;
+  //private final SendableChooser<Command> autoChooser;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -66,12 +66,12 @@ public class RobotContainer {
 
     // Configure PathPlanner/AutoBuilder now that the swerve subsystem exists
     // This will configure AutoBuilder using the subsystem-provided callbacks.
-    m_swerveSubsystem.setupPathPlanner();
+    //m_swerveSubsystem.setupPathPlanner();
 
     // Now that AutoBuilder is configured, create autos and the chooser
-    m_autoPlans = new AutoPlans();
-    autoChooser = AutoBuilder.buildAutoChooser("Drive Forward Auto");
-    SmartDashboard.putData("Auto Mode", autoChooser);
+    //m_autoPlans = new AutoPlans();
+    //autoChooser = AutoBuilder.buildAutoChooser("Drive Forward Auto");
+    //SmartDashboard.putData("Auto Mode", autoChooser);
 
     // Configure the trigger bindings
     configureBindings();
@@ -110,7 +110,8 @@ public class RobotContainer {
       case 0:
         return null; // do nothing
       case 1:
-        return m_autoPlans.getAutonomousCommand(0);
+        //return m_autoPlans.getAutonomousCommand(0);
+        return null;
       case 2:
         return new PrintCommand("2");
         //DriveTimed(2.0, 0.3, m_robotDrive);
