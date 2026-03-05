@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // Imports necessary to create SwerveDrive object
 import java.io.File;
-import java.util.function.DoubleSupplier;
 
 //Useful imports for swerve
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,7 +14,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import swervelib.math.SwerveMath;
 
 // Imports for pathplanner
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -107,7 +105,7 @@ public class SwerveSubsystem extends SubsystemBase{
         }
     }
 
-    //Odometry should be updated periodically
+    //Periodically updates odometry
     @Override
     public void periodic(){
         updateOdometry();
@@ -137,24 +135,6 @@ public class SwerveSubsystem extends SubsystemBase{
     public void drive(ChassisSpeeds speeds)
     {
         swerveDrive.drive(speeds);
-    }
-
-    public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX)
-    {
-        return run(() -> {
-            swerveDrive.drive(
-                SwerveMath.scaleTranslation(
-                    new Translation2d(
-                        translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(),
-                        translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()
-                    ),
-                    0.8
-                ),
-                Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity(),
-                true,
-                false
-            );
-        });
     }
 
     /**
