@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Scoring Position 1"
+            "pathName": "Hub to outpost"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Outpost to Hub"
           }
         },
         {
@@ -20,18 +26,6 @@
           "type": "path",
           "data": {
             "pathName": "Depot to Hub"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Hub to outpost"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Outpost to Hub"
           }
         },
         {
