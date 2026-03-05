@@ -24,12 +24,8 @@ public class AutoSelectorKnobSubsystem extends SubsystemBase {
     public AutoSelectorKnobSubsystem() {
         // Publish the Field2d to SmartDashboard so it appears in the simulator/dashboard
         SmartDashboard.putData("Field", m_field);
-
-        // Example poses for each auto mode (0-11).
-        // TODO: Replace these with the real positions/rotations for each autonomous routine.
-        // Coordinates are in meters; rotation in radians.
         for (int i = 0; i <= 11; i++) {
-            // lay out example positions along the X axis with small offset on Y
+    
             double x = 1.0 + i * 0.5; // meters
             double y = 0.5; // meters
             double rotation = 0.0; // facing +X
