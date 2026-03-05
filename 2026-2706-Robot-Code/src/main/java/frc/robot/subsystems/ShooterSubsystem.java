@@ -50,7 +50,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
 
         
-    //@SuppressWarnings("resource")
         feederMotor = new SparkMax(Constants.shooterConstants.FEEDER_MOTOR_ID, MotorType.kBrushless);
          // Determines which way the motor spins
         shooterConfig.inverted(false);
@@ -63,7 +62,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
 
 
-    // @SuppressWarnings("resource")
     //     SparkMax indexerMotor = new SparkMax(Constants.shooterConstants.INDEXER_MOTOR_ID, MotorType.kBrushless);
     //      // Determines which way the motor spins
     //     shooterConfig.inverted(false);
