@@ -38,14 +38,10 @@ public class SwerveSubsystem extends SubsystemBase{
     // Provide swerve configuration file as arguement
     public SwerveSubsystem(File swerveJsonDirectory){
         
-        // Set up starting position depending on alliance for odometry
+        // Set up starting position depending on alliance for odometry. Assumes blue alliance by default
         boolean redAlliance = isRedAlliance();
         Pose2d startingPose;
 
-        // Set the verbosity of the telemetry.  HIGH is good for debugging, but may cause performance issues.  Adjust as needed.
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW; 
-
-        // TODO: Set up different starting positions
         if (redAlliance){
             // Units are in meters
             startingPose =  new Pose2d(new Translation2d(16, 4), Rotation2d.fromDegrees(180));
@@ -55,6 +51,13 @@ public class SwerveSubsystem extends SubsystemBase{
             startingPose = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(0));
         }
         
+        /*  Set the verbosity of the telemetry.  
+            LOW -- Minimal information
+            HIGH -- Frequent updates on encoders and imu; Should not be used during driving as the robot will timeout
+            INFO -- Enough information to use advantage scope
+        */
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW; 
+
         // Parse swerve configurations and create swerve drive object
         try{
             swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, startingPose);
@@ -66,8 +69,8 @@ public class SwerveSubsystem extends SubsystemBase{
         // Configure Swerve Drive
         swerveDrive.setHeadingCorrection(true); // Turn on to correct heading
         swerveDrive.setCosineCompensator(true); // Turn on to automatically slow or speed up swerve modules that should be close to their desired state in theory
-        swerveDrive.angularVelocityCorrection = true;
-        swerveDrive.autonomousAngularVelocityCorrection = true;
+        swerveDrive.angularVelocityCorrection = true; // Reduces drift
+        swerveDrive.autonomousAngularVelocityCorrection = true; // Reduces drift
         swerveDrive.setAngularVelocityCompensation(true, true, 0.1); // Tune to compensate for angular skew in movement
         swerveDrive.setModuleEncoderAutoSynchronize(true, 1); // Turn on to periodcally synchronize absolute encoders and motor encoders during periods without movement
         swerveDrive.synchronizeModuleEncoders();
@@ -104,6 +107,7 @@ public class SwerveSubsystem extends SubsystemBase{
         }
     }
 
+    //Odometry should be updated periodically
     @Override
     public void periodic(){
         updateOdometry();
