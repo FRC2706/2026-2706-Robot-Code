@@ -35,6 +35,41 @@ public class AutoPlans extends SubsystemBase {
                     return null;
                 }
                 return "Drive Forward";
+            case 1:
+    
+                if (DriveForward == null) {
+                    System.out.println("Failed to load Drive_Forward auto");
+                    return null;
+                }
+                return "Do Nothing";
+            case 2:
+    
+                if (DriveForward == null) {
+                    System.out.println("Failed to load Drive_Forward auto");
+                    return null;
+                }
+                return "Hub Auto";
+            case 3:
+    
+                if (DriveForward == null) {
+                    System.out.println("Failed to load Drive_Forward auto");
+                    return null;
+                }
+                return "Position 1 auto";
+            case 4:
+    
+                if (DriveForward == null) {
+                    System.out.println("Failed to load Drive_Forward auto");
+                    return null;
+                }
+                return "Position 2 auto";
+            case 5:
+    
+                if (DriveForward == null) {
+                    System.out.println("Failed to load Drive_Forward auto");
+                    return null;
+                }
+                return "Position 3 auto";
         }
     }
     
