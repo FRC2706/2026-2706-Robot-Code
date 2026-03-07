@@ -11,41 +11,33 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import java.util.concurrent.TimeUnit;
 
 
-/** An example command that uses an example subsystem. */
-public class startShooter extends Command {
+public class StartShooter extends Command {
   @SuppressWarnings("PMD.UnusedPrivateField")
   private final ShooterSubsystem m_ShooterSubystsem;
 
   /**
-   * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public startShooter(ShooterSubsystem subsystem) {
+  public StartShooter(ShooterSubsystem subsystem) {
     m_ShooterSubystsem = subsystem;
-    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_ShooterSubystsem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-        
+  public void initialize() {  
   }
-
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("in startShooter command");
     if (m_ShooterSubystsem.isRPMinRange()) {
       m_ShooterSubystsem.ready();
     } else {
       m_ShooterSubystsem.spinningUp();
     }
   }
-
-  
 
   // Called once the command ends or is interrupted.
   @Override

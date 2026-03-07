@@ -7,19 +7,16 @@ package frc.robot.commands;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
-/** An example command that uses an example subsystem. */
-public class stopShooter extends Command {
+public class StopShooter extends Command {
   @SuppressWarnings("PMD.UnusedPrivateField")
   private final ShooterSubsystem m_ShooterSubsystem;
 
   /**
-   * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public stopShooter(ShooterSubsystem subsystem) {
+  public StopShooter(ShooterSubsystem subsystem) {
     m_ShooterSubsystem = subsystem;
-    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_ShooterSubsystem);
   }
 
