@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // Imports necessary to create SwerveDrive object
 import java.io.File;
-import java.util.function.DoubleSupplier;
 
 //Useful imports for swerve
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,7 +14,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import swervelib.math.SwerveMath;
 
 // Imports for pathplanner
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -30,7 +28,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class SwerveSubsystem extends SubsystemBase{
 
-    double maximumSpeed = 3;
+    double maximumSpeed = 4.5;
 
     // Swerve drive object
     private final SwerveDrive swerveDrive; 
@@ -38,14 +36,10 @@ public class SwerveSubsystem extends SubsystemBase{
     // Provide swerve configuration file as arguement
     public SwerveSubsystem(File swerveJsonDirectory){
         
-        // Set up starting position depending on alliance for odometry
+        // Set up starting position depending on alliance for odometry. Assumes blue alliance by default
         boolean redAlliance = isRedAlliance();
         Pose2d startingPose;
 
-        // Set the verbosity of the telemetry.  HIGH is good for debugging, but may cause performance issues.  Adjust as needed.
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW; 
-
-        // TODO: Set up different starting positions
         if (redAlliance){
             // Units are in meters
             startingPose =  new Pose2d(new Translation2d(16, 4), Rotation2d.fromDegrees(180));
@@ -55,6 +49,13 @@ public class SwerveSubsystem extends SubsystemBase{
             startingPose = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(0));
         }
         
+        /*  Set the verbosity of the telemetry.  
+            LOW -- Minimal information
+            HIGH -- Frequent updates on encoders and imu; Should not be used during driving as the robot will timeout
+            INFO -- Enough information to use advantage scope
+        */
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.INFO; 
+
         // Parse swerve configurations and create swerve drive object
         try{
             swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, startingPose);
@@ -66,8 +67,8 @@ public class SwerveSubsystem extends SubsystemBase{
         // Configure Swerve Drive
         swerveDrive.setHeadingCorrection(true); // Turn on to correct heading
         swerveDrive.setCosineCompensator(true); // Turn on to automatically slow or speed up swerve modules that should be close to their desired state in theory
-        swerveDrive.angularVelocityCorrection = true;
-        swerveDrive.autonomousAngularVelocityCorrection = true;
+        swerveDrive.angularVelocityCorrection = true; // Reduces drift
+        swerveDrive.autonomousAngularVelocityCorrection = true; // Reduces drift
         swerveDrive.setAngularVelocityCompensation(true, true, 0.1); // Tune to compensate for angular skew in movement
         swerveDrive.setModuleEncoderAutoSynchronize(true, 1); // Turn on to periodcally synchronize absolute encoders and motor encoders during periods without movement
         swerveDrive.synchronizeModuleEncoders();
@@ -104,6 +105,7 @@ public class SwerveSubsystem extends SubsystemBase{
         }
     }
 
+    //Periodically updates odometry
     @Override
     public void periodic(){
         updateOdometry();
@@ -133,24 +135,6 @@ public class SwerveSubsystem extends SubsystemBase{
     public void drive(ChassisSpeeds speeds)
     {
         swerveDrive.drive(speeds);
-    }
-
-    public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX)
-    {
-        return run(() -> {
-            swerveDrive.drive(
-                SwerveMath.scaleTranslation(
-                    new Translation2d(
-                        translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(),
-                        translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()
-                    ),
-                    0.8
-                ),
-                Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity(),
-                true,
-                false
-            );
-        });
     }
 
     /**
