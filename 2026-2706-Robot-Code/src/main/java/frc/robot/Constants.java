@@ -36,7 +36,6 @@ public final class Constants {
     public static final byte MOTOR2_ID = CANID.SHOOTER2;
     public static final byte FEEDER_MOTOR_ID = CANID.FEEDER;
     public static final byte INDEXER_MOTOR_ID = CANID.INDEXER;
-    public static final byte INDEXER_MOTOR_ID = CANID.INDEXER;
 
     // PID VALUES
 
