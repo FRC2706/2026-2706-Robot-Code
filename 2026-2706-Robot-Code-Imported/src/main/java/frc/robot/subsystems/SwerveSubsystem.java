@@ -93,8 +93,9 @@ public class SwerveSubsystem extends SubsystemBase{
             }
         }
     
-        //Initialize set-up for pathplanner
-        setupPathPlanner();
+    // NOTE: Do not call setupPathPlanner() here; it is invoked from RobotContainer to avoid
+    // double-configuration of AutoBuilder. PathPlanner's AutoBuilder.configure(...) must be
+    // called exactly once during program startup.
     }
 
     //Sets up pathplanner
@@ -144,16 +145,36 @@ public class SwerveSubsystem extends SubsystemBase{
    */
     public void drive(Translation2d translation, double rotation, boolean fieldRelative)
     {
-        swerveDrive.drive(translation,
-                        rotation,
-                        fieldRelative,
-                        false); // Open loop is disabled since it shouldn't be used most of the time.
+        try {
+            swerveDrive.drive(translation,
+                              rotation,
+                              fieldRelative,
+                              false); // Open loop is disabled since it shouldn't be used most of the time.
+        } catch (Throwable t) {
+            // Defensive: if the underlying swervelib throws (for example, because IMU is null),
+            // log once and try to disable IMU-dependent behavior to prevent further crashes.
+            System.err.println("SwerveSubsystem: drive() failed, disabling IMU-dependent features. Exception: " + t);
+            try {
+                swerveDrive.angularVelocityCorrection = false;
+                swerveDrive.autonomousAngularVelocityCorrection = false;
+                try { swerveDrive.setAngularVelocityCompensation(false, false, 0.0); } catch (Throwable ignore) {}
+            } catch (Throwable ignore) {}
+        }
     }
 
     //Controls the drivebase using ChassisSpeeds -- primarily for PathPlanner
     public void drive(ChassisSpeeds speeds)
     {
-        swerveDrive.drive(speeds);
+        try {
+            swerveDrive.drive(speeds);
+        } catch (Throwable t) {
+            System.err.println("SwerveSubsystem: drive(ChassisSpeeds) failed, disabling IMU-dependent features. Exception: " + t);
+            try {
+                swerveDrive.angularVelocityCorrection = false;
+                swerveDrive.autonomousAngularVelocityCorrection = false;
+                try { swerveDrive.setAngularVelocityCompensation(false, false, 0.0); } catch (Throwable ignore) {}
+            } catch (Throwable ignore) {}
+        }
     }
 
     public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX)
