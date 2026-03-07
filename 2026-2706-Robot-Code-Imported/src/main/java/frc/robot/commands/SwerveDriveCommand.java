@@ -50,7 +50,7 @@ public class SwerveDriveCommand extends Command{
             
             m_AdjustedVy*m_SwerveDrive.getMaximumChassisVelocity()), 
             
-            m_AdjustedOmega*m_SwerveDrive.getMaximumChassisAngularVelocity(), 
+            m_AdjustedOmega*m_SwerveDrive.getMaximumChassisAngularVelocity()*0.5, 
             
             true // Assuming field-relative control
         );
