@@ -22,7 +22,7 @@ public final class Constants {
 
     public static final int kIntakeMotorID = 26;
     public static final int kIntakeUpDownMotorID = 25;
-    public static final double kIntakeSpeed = 0.5;
+    public static final double kIntakeSpeed = 0.7;
     public static final double kUpPosition = 20;
     public static final double kDownPosition = -20; //must be a negitive
     public static final double kTolerance = 0.3;
