@@ -28,7 +28,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class SwerveSubsystem extends SubsystemBase{
 
-    double maximumSpeed = 3;
+    double maximumSpeed = 4.5;
 
     // Swerve drive object
     private final SwerveDrive swerveDrive; 
@@ -54,7 +54,7 @@ public class SwerveSubsystem extends SubsystemBase{
             HIGH -- Frequent updates on encoders and imu; Should not be used during driving as the robot will timeout
             INFO -- Enough information to use advantage scope
         */
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW; 
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.INFO; 
 
         // Parse swerve configurations and create swerve drive object
         try{
