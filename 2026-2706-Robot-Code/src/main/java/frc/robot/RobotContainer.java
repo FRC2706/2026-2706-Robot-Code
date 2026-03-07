@@ -5,12 +5,32 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.commands.SwerveDriveCommand;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.io.File;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
+import frc.robot.subsystems.PhotonSubsystem;
+import frc.robot.commands.PhotonAlignToTargetCommand;
+//import frc.robot.commands.AlignToTargetCommand;
+
+// Pathplanner testing
+import frc.robot.subsystems.AutoPlans;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -20,7 +40,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private final PhotonSubsystem m_photonSubsystem = new PhotonSubsystem(); // name from PhotonVision/config
+  // Pathplanner testing
+  private final AutoPlans m_autoPlans = new AutoPlans();
+  private final SendableChooser<Command> autoChooser;
+  
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -29,7 +56,29 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
+
+    DriverStation.silenceJoystickConnectionWarning(false);
+
+    m_swerveSubsystem.setDefaultCommand(
+       new SwerveDriveCommand(
+          m_swerveSubsystem,
+          () -> -m_driverController.getLeftY(), // Forward/backward
+          () -> -m_driverController.getLeftX(), // Left/right
+          () -> -m_driverController.getRightX(),0.1,0.1)
+    );
+
+    // NamedCommands.registerCommand("test", new AlignToTargetCommand(m_swerveSubsystem, m_photonVision));
+
+    // Configure PathPlanner/AutoBuilder now that the swerve subsystem exists
+    // This will configure AutoBuilder using the subsystem-provided callbacks.
+    m_swerveSubsystem.setupPathPlanner();
+
+    // Now that AutoBuilder is configured, create autos and the chooser
+    autoChooser = AutoBuilder.buildAutoChooser("Drive Forward Auto");
+    SmartDashboard.putData("Auto Mode", autoChooser);
+
     configureBindings();
+
   }
 
   /**
@@ -42,13 +91,16 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    PhotonAlignToTargetCommand alignCommand = new PhotonAlignToTargetCommand(m_photonSubsystem, m_swerveSubsystem);
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
+    //new Trigger(m_exampleSubsystem::exampleCondition)
+       // .onTrue(new ExampleCommand(m_exampleSubsystem));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+
+    m_driverController.rightTrigger().whileTrue(alignCommand);
   }
 
   /**
@@ -57,7 +109,15 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    // Return the command selected on the SendableChooser (built by AutoBuilder).
+    Command selected = autoChooser.getSelected();
+    
+
+    //If the chooser has no selection, fall back to the AutoPlans default.
+    if (selected != null) {
+      return selected;
+    }
+    return m_autoPlans.getAutonomousCommand(0);
+
   }
 }
