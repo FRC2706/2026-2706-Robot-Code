@@ -64,13 +64,34 @@ public class SwerveSubsystem extends SubsystemBase{
         }
 
         // Configure Swerve Drive
-        swerveDrive.setHeadingCorrection(true); // Turn on to correct heading
-        swerveDrive.setCosineCompensator(true); // Turn on to automatically slow or speed up swerve modules that should be close to their desired state in theory
-        swerveDrive.angularVelocityCorrection = true;
-        swerveDrive.autonomousAngularVelocityCorrection = true;
-        swerveDrive.setAngularVelocityCompensation(true, true, 0.1); // Tune to compensate for angular skew in movement
-        swerveDrive.setModuleEncoderAutoSynchronize(true, 1); // Turn on to periodcally synchronize absolute encoders and motor encoders during periods without movement
-        swerveDrive.synchronizeModuleEncoders();
+        // Some configurations rely on an IMU being present in the underlying swervelib SwerveDrive.
+        // In simulation or if the IMU isn't available, these calls can throw a NullPointerException
+        // (see logs). Wrap configuration in a try/catch and disable angular-velocity-based
+        // compensations if they fail so the robot code keeps running.
+        try {
+            swerveDrive.setHeadingCorrection(true); // Turn on to correct heading
+            swerveDrive.setCosineCompensator(true); // Turn on to automatically slow or speed up swerve modules that should be close to their desired state in theory
+            swerveDrive.angularVelocityCorrection = true;
+            swerveDrive.autonomousAngularVelocityCorrection = true;
+            swerveDrive.setAngularVelocityCompensation(true, true, 0.1); // Tune to compensate for angular skew in movement
+            swerveDrive.setModuleEncoderAutoSynchronize(true, 1); // Turn on to periodcally synchronize absolute encoders and motor encoders during periods without movement
+            swerveDrive.synchronizeModuleEncoders();
+        } catch (Throwable t) {
+            // Defensive: disable IMU/ang. vel. dependent features and continue running
+            System.err.println("Warning: failed to configure angular-velocity/IMU features in SwerveDrive. Disabling those features.\n" + t);
+            try {
+                swerveDrive.angularVelocityCorrection = false;
+                swerveDrive.autonomousAngularVelocityCorrection = false;
+                // Attempt to disable compensation; library method may still throw, so ignore exceptions
+                try {
+                    swerveDrive.setAngularVelocityCompensation(false, false, 0.0);
+                } catch (Throwable ignore) {
+                    // ignore
+                }
+            } catch (Throwable ignore) {
+                // ignore
+            }
+        }
     
         //Initialize set-up for pathplanner
         setupPathPlanner();

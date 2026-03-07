@@ -59,7 +59,10 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
 
-    DriverStation.silenceJoystickConnectionWarning(false);
+  // Silence repeated joystick connection warnings in the simulator; set to false to re-enable
+  // warnings on a real driver station if you want to be notified when controllers unplug.
+  DriverStation.silenceJoystickConnectionWarning(true);
+  SmartDashboard.putString("ControllerStatus", "If you see joystick warnings, verify controller is plugged in and port index (Constants.OperatorConstants.kDriverControllerPort)");
 
     m_swerveSubsystem.setDefaultCommand(
        new SwerveDriveCommand(
