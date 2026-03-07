@@ -46,11 +46,11 @@ public class SwerveDriveCommand extends Command{
         
         //Drive using adjusted values
         m_SwerveDrive.drive( new Translation2d(
-            m_AdjustedVx, 
+            m_AdjustedVx*m_SwerveDrive.getMaximumChassisVelocity(), 
             
-            m_AdjustedVy), 
+            m_AdjustedVy*m_SwerveDrive.getMaximumChassisVelocity()), 
             
-            m_AdjustedOmega, 
+            m_AdjustedOmega*m_SwerveDrive.getMaximumChassisAngularVelocity(), 
             
             true // Assuming field-relative control
         );
