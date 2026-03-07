@@ -41,7 +41,8 @@ public class ShooterSubsystem extends SubsystemBase {
         SparkBase.PersistMode.kPersistParameters
         );
         shooterMotor2.setCANTimeout(500);//Units in miliseconds
-                SparkMaxConfig followerConfig =  new SparkMaxConfig();
+              
+        SparkMaxConfig followerConfig =  new SparkMaxConfig();
                  followerConfig.follow(shooterMotor1);
                  shooterMotor2.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
                  
@@ -53,7 +54,7 @@ public class ShooterSubsystem extends SubsystemBase {
     //@SuppressWarnings("resource")
         feederMotor = new SparkMax(Constants.shooterConstants.FEEDER_MOTOR_ID, MotorType.kBrushless);
          // Determines which way the motor spins
-        shooterConfig.inverted(false);
+        shooterConfig.inverted(true);
         feederMotor.configure( 
         shooterConfig,
         SparkBase.ResetMode.kResetSafeParameters, 
@@ -64,15 +65,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
 
     // @SuppressWarnings("resource")
-    //     SparkMax indexerMotor = new SparkMax(Constants.shooterConstants.INDEXER_MOTOR_ID, MotorType.kBrushless);
-    //      // Determines which way the motor spins
-    //     shooterConfig.inverted(false);
-    //     indexerMotor.configure( 
-    //     shooterConfig,
-    //     SparkBase.ResetMode.kResetSafeParameters, 
-    //     SparkBase.PersistMode.kPersistParameters
-    //     );
-    //     indexerMotor.setCANTimeout(500);//Units in miliseconds
+        indexerMotor = new SparkMax(Constants.shooterConstants.INDEXER_MOTOR_ID, MotorType.kBrushless);
+    //      Determines which way the motor spins
+        shooterConfig.inverted(true);
+        indexerMotor.configure( 
+        shooterConfig,
+        SparkBase.ResetMode.kResetSafeParameters, 
+        SparkBase.PersistMode.kPersistParameters
+        );
+        indexerMotor.setCANTimeout(500);//Units in miliseconds
 
     //-----------------------------------------------
 
@@ -100,8 +101,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public Boolean isRPMinRange() {
     double currentRPM = m_encoder.getVelocity();
 
-    double rangeLowEnd = getDesiredVelocityRPM() - 100;
-    double rangeHighEnd = getDesiredVelocityRPM() + 100;
+    double rangeLowEnd = getDesiredVelocityRPM() - 500;
+    double rangeHighEnd = getDesiredVelocityRPM() + 500;
     System.out.println(currentRPM);
     if (rangeLowEnd < currentRPM && currentRPM < rangeHighEnd) {
       return true;
@@ -113,14 +114,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
 
   public double getDesiredVoltage(){
-    return 0.17; // for testing purposes
+    return 0.6; // for testing purposes
     //return getDesiredVoltage();
      // Use calculated RPM to set voltage used by motors
   }
 
   public double getDesiredVelocityRPM (){
-    return 1000; // for test purposes
-    
+    return 3000; // for test purposes
+  
     //return getDesiredVelocityRPM (); 
     //Goal: Get average shooting distance from hardware and set an average RPM
     //Reach goal: Use data provided by vision snensors (distance from hub) to calculate speed needed
@@ -132,7 +133,7 @@ public class ShooterSubsystem extends SubsystemBase {
         System.out.println("stop cmd called");
         shooterMotor1.stopMotor(); 
         feederMotor.stopMotor();
-        //indexerMotor.stopMotor();
+        indexerMotor.stopMotor();
   }
 
   public void spinningUp(){
@@ -141,7 +142,7 @@ public class ShooterSubsystem extends SubsystemBase {
         //shooterMotor2.set(ShooterModes.SHOOT.getDesiredVoltage()); //set desired voltage
         shooterMotor1.set(getDesiredVoltage());
         feederMotor.stopMotor();
-        //indexerMotor.stopMotor();
+        indexerMotor.stopMotor();
   }
 
   public void ready(){
@@ -154,8 +155,9 @@ public class ShooterSubsystem extends SubsystemBase {
         //feederMotor.set(ShooterModes.SHOOT.getDesiredVoltage()/2); 
         //indexerMotor.set(ShooterModes.SHOOT.getDesiredVoltage()/2);
 
-        feederMotor.set(getDesiredVoltage()/2); 
-        //indexerMotor.set(getDesiredVoltage()/2); 
+        feederMotor.set(getDesiredVoltage() +0.1); 
+        
+        indexerMotor.set(getDesiredVoltage() +0.1); 
   }
 
   //@Override
