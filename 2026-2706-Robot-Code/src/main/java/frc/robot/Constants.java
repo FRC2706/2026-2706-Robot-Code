@@ -13,9 +13,34 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
 
-public static int kSelectorSwitchPort;
+  public static class RobotConstants {
+    public static final int kSelectorSwitchPort = 0;
+    public static final int kRPMConversionFactor = 1 / 3;
+
+    public static final int kIntakeMotorID = 26;
+    public static final int kIntakeUpDownMotorID = 25;
+    public static final double kIntakeSpeed = 0.75;
+    public static final double kUpPosition = 20;
+    public static final double kDownPosition = -20; //must be a negitive
+    public static final double kTolerance = 0.3;
+
+    public static final double kUpDownP = 0.2;
+    public static final double kUpDownI = 0.0;
+    public static final double kUpDownD = 0.0; 
+    
+  }
+
+  public class VisionConstants {
+
+    public static double kGoalDistance;
+  }
+
+  public static class UtilityConstants {
+    public static final boolean debugMode = true;
+  } 
 }

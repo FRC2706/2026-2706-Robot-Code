@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 
+//Drives swerve-chassis using an X and Y translation and rotation
 public class SwerveDriveCommand extends Command{
     private final SwerveSubsystem m_SwerveDrive;
     private final DoubleSupplier m_Vx;
@@ -23,11 +24,6 @@ public class SwerveDriveCommand extends Command{
         m_AngleDeadband = angleDeadband;
 
         addRequirements(m_SwerveDrive);
-    }
-
-    @Override
-    public void initialize() {
-        // Initialization logic for the command
     }
 
     @Override
@@ -51,24 +47,19 @@ public class SwerveDriveCommand extends Command{
         
         //Drive using adjusted values
         m_SwerveDrive.drive( new Translation2d(
-            m_AdjustedVx, 
+            m_AdjustedVx * m_SwerveDrive.getMaximumChassisVelocity(), 
             
-            m_AdjustedVy), 
+            m_AdjustedVy * m_SwerveDrive.getMaximumChassisVelocity()), 
             
-            m_AdjustedOmega, 
+            m_AdjustedOmega * m_SwerveDrive.getMaximumChassisAngularVelocity(), 
             
             true // Assuming field-relative control
         );
     }
 
+    //Driving should never end
     @Override
     public boolean isFinished() {
-        // Return true when the command should end
         return false;
     }
-
-    @Override
-    public void end(boolean interrupted) {
-        
-    }  
 }

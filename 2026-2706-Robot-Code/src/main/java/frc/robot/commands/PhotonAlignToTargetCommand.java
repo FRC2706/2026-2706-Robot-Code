@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 // Imports
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 

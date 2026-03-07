@@ -6,7 +6,7 @@ import frc.robot.Constants;
 
 public class AutoSelectorKnobSubsystem extends SubsystemBase {
 
-    private final AnalogInput m_knob = new AnalogInput(Constants.kSelectorSwitchPort);
+    private final AnalogInput m_knob = new AnalogInput(Constants.RobotConstants.kSelectorSwitchPort);
 
     public AutoSelectorKnobSubsystem() {
 
