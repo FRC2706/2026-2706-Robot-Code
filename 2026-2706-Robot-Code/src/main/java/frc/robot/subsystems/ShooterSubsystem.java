@@ -31,10 +31,10 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterConfig.inverted(false);
     
     // Add PIDF Gains here
-    shooterConfig.closedLoop.p(0);         
+    shooterConfig.closedLoop.p(0.00005);         
     shooterConfig.closedLoop.i(0);
     shooterConfig.closedLoop.d(0);
-    shooterConfig.closedLoop.velocityFF(0.0);
+    shooterConfig.closedLoop.velocityFF(0.0021);
     shooterConfig.closedLoop.outputRange(-1, 1);
 
     shooterMotor1.configure(shooterConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
@@ -47,10 +47,10 @@ public class ShooterSubsystem extends SubsystemBase {
     feederConfig.inverted(true);
     feederMotor.configure(feederConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-    feederConfig.closedLoop.p(0);         
+    feederConfig.closedLoop.p(0.0);         
     feederConfig.closedLoop.i(0);
     feederConfig.closedLoop.d(0);
-    feederConfig.closedLoop.velocityFF(0);
+    feederConfig.closedLoop.velocityFF(0.00015);
     feederConfig.closedLoop.outputRange(-1, 1);
     
     SparkMaxConfig indexerConfig = new SparkMaxConfig();
@@ -60,18 +60,20 @@ public class ShooterSubsystem extends SubsystemBase {
     indexerConfig.closedLoop.p(0);         
     indexerConfig.closedLoop.i(0);
     indexerConfig.closedLoop.d(0);
-    indexerConfig.closedLoop.velocityFF(0.15);
+    indexerConfig.closedLoop.velocityFF(0.00015);
     indexerConfig.closedLoop.outputRange(-1, 1);
   }
 
   public boolean isRPMinRange() {
     double currentRPM = m_encoder.getVelocity();
     double tolerance = 200;
-    return Math.abs(currentRPM - getDesiredVelocityRPM()) < tolerance;
+    System.out.println(currentRPM);
+
+    return (Math.abs(currentRPM - getDesiredVelocityRPM()) < tolerance);
   }
 
   public double getDesiredVelocityRPM() {
-    return 2000; 
+    return 2300; 
   }
 
   public void stop() {
@@ -84,11 +86,15 @@ public class ShooterSubsystem extends SubsystemBase {
     m_pidController.setReference(getDesiredVelocityRPM(), SparkBase.ControlType.kVelocity);
     feederMotor.stopMotor();
     indexerMotor.stopMotor();
+        System.out.println("spinning up");
+
   }
 
   public void ready() {
     m_pidController.setReference(getDesiredVelocityRPM(), SparkBase.ControlType.kVelocity);
-    feederMotor.set(0.5); 
-    indexerMotor.set(0.5); 
+    feederMotor.kVelocity(0.5); 
+    indexerMotor.kVelocity(); 
+    System.out.println("");
+
   }
 }
