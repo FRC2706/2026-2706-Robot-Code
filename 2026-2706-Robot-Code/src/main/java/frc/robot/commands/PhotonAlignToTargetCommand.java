@@ -59,17 +59,17 @@ public class PhotonAlignToTargetCommand extends Command {
     double yawError = m_photonSubsystem.getYaw();
     
     // Get current distance to the AprilTag (3D slant distance)
-    double currentDistance = m_photonSubsystem.getSlantDistance();
+   // double currentDistance = m_photonSubsystem.getSlantDistance();
     
     // Calculate distance error (positive means we're too far, negative means we're too close)
-    double distanceError = currentDistance - goalDistance;
+   // double distanceError = currentDistance - goalDistance;
     
     // Calculate forward velocity: positive = forward (away from target), negative = backward (toward target)
     // We want to reduce the distance error, so if error is positive (too far), we move backward (negative)
-    double forwardVelocity = -distanceError * kDistanceGain;
+   // double forwardVelocity = -distanceError * kDistanceGain;
     
     // Clamp the forward velocity to prevent excessive speed
-    forwardVelocity = Math.max(-0.5, Math.min(0.5, forwardVelocity));
+   // forwardVelocity = Math.max(-0.5, Math.min(0.5, forwardVelocity));
     
     // Calculate rotation velocity: proportional to yaw error
     // Negative yaw = target to the left, positive yaw = target to the right
@@ -82,14 +82,14 @@ public class PhotonAlignToTargetCommand extends Command {
     // Drive the robot
     // Using robot-relative movement: forward/backward along robot's current heading
     // This allows the robot to move toward/away from the tag while rotating to face it
-    m_swerveSubsystem.drive(
-      new Translation2d(forwardVelocity, 0.0), // Forward/backward movement (robot-relative)
-      rotationVelocity, // Rotation to keep the robot pointed at the target
-      false // Robot-relative (not field-relative)
-    );
+   // m_swerveSubsystem.drive(
+   //   new Translation2d(forwardVelocity, 0.0), // Forward/backward movement (robot-relative)
+   //   rotationVelocity, // Rotation to keep the robot pointed at the target
+   //   false // Robot-relative (not field-relative)
+   // );
     
     // Debug output
-    System.out.println("Yaw: " + yawError + " deg | Current Distance: " + currentDistance + " m | Goal: " + goalDistance + " m | Error: " + distanceError + " m");
+   //  System.out.println("Yaw: " + yawError + " deg | Current Distance: " + currentDistance + " m | Goal: " + goalDistance + " m | Error: " + distanceError + " m");
   }
 
   @Override
