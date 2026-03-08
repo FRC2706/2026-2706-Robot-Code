@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 public class AutoPlans extends SubsystemBase {
 
 
-    PathPlannerAuto DriveForward;
+     PathPlannerAuto DriveForward;
 
     public AutoPlans(){
         registerCommands();

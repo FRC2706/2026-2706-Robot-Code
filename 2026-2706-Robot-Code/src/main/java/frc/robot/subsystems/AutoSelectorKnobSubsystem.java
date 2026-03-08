@@ -16,9 +16,9 @@ public class AutoSelectorKnobSubsystem extends SubsystemBase {
         return m_knob.getVoltage();
     }
 
-    /**
-     * Read the knob voltage and convert it into an autonomous mode number (0-11).
-     */
+    
+     // Read the knob voltage and convert it into an autonomous mode number (0-11).
+     
     public int getAutoMode() {
         double voltage = getVoltage(); // 0-5V
         System.out.println(voltage);

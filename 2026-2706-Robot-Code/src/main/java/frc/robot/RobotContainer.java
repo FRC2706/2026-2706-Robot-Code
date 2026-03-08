@@ -34,7 +34,7 @@ import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
-//import frc.robot.commands.AlignToTargetCommand;
+
 
 // Pathplanner testing
 import frc.robot.subsystems.AutoPlans;
@@ -79,7 +79,7 @@ public class RobotContainer {
 
     // Configure PathPlanner/AutoBuilder now that the swerve subsystem exists
     // This will configure AutoBuilder using the subsystem-provided callbacks.
-    m_swerveSubsystem.setupPathPlanner();
+     m_swerveSubsystem.setupPathPlanner();
 
     // Now that AutoBuilder is configured, create autos and the chooser
     autoChooser = AutoBuilder.buildAutoChooser("Drive Forward Auto");
@@ -87,7 +87,7 @@ public class RobotContainer {
 
     configureBindings();
 
-  }
+  } 
 
 
   /**
@@ -132,11 +132,11 @@ public class RobotContainer {
     m_driverController.rightTrigger().whileTrue(alignCommand);
   }
 
-  /**
+  /* 
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
-   */
+  */
   public Command getAutonomousCommand() {
     // Return the command selected on the SendableChooser (built by AutoBuilder).
     Command selected = autoChooser.getSelected();
@@ -147,6 +147,7 @@ public class RobotContainer {
       return selected;
     }
     return m_autoPlans.getAutonomousCommand(0);
-
+    
+  
   }
 }
