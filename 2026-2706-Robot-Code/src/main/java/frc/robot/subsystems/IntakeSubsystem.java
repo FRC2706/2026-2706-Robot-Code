@@ -60,9 +60,9 @@ public class IntakeSubsystem extends SubsystemBase {
                 .d(RobotConstants.kUpDownD);
 
             upDownConfig.softLimit
-                .forwardSoftLimit(RobotConstants.kUpPosition)
+                .forwardSoftLimit(RobotConstants.kStowPosition)
                 .forwardSoftLimitEnabled(true)
-                .reverseSoftLimit(RobotConstants.kDownPosition)
+                .reverseSoftLimit(RobotConstants.kFloorPosition)
                 .reverseSoftLimitEnabled(true);
             intakeUpDownMotor.configure(upDownConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -125,14 +125,14 @@ public class IntakeSubsystem extends SubsystemBase {
      * Moves the intake down.
      */
     public void moveIntakeDown() {
-    intakeUpDownPID.setSetpoint(RobotConstants.kDownPosition, ControlType.kPosition);
+    intakeUpDownPID.setSetpoint(RobotConstants.kFloorPosition, ControlType.kPosition);
 }
 
     /**
      * Moves the intake up.
      */
     public void moveIntakeUp() {
-    intakeUpDownPID.setSetpoint(RobotConstants.kUpPosition, ControlType.kPosition);
+    intakeUpDownPID.setSetpoint(RobotConstants.kStowPosition, ControlType.kPosition);
 }
 
     /**
