@@ -66,6 +66,18 @@ public class IntakeSubsystem extends SubsystemBase {
                 .reverseSoftLimitEnabled(true);
             intakeUpDownMotor.configure(upDownConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+
+
+            SparkMaxConfig speedConfig = new SparkMaxConfig();
+            speedConfig.closedLoop
+                .p(RobotConstants.kSpeedP)
+                .i(RobotConstants.kSpeedI)
+                .d(RobotConstants.kSpeedD);
+
+            speedConfig.closedLoop.feedForward.kV(RobotConstants.kSpeedV);
+
+            intakeMotor.configure(speedConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
         // Pre-populate dashboard tuning fields with current constants
         SmartDashboard.putNumber("UpDown/P Gain", RobotConstants.kUpDownP);
         SmartDashboard.putNumber("UpDown/I Gain", RobotConstants.kUpDownI);

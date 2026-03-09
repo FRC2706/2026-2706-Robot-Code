@@ -23,13 +23,18 @@ public final class Constants {
     public static final int kIntakeMotorID = 26;
     public static final int kIntakeUpDownMotorID = 25;
     public static final double kIntakeSpeed = 0.75;
-    public static final double kUpPosition = 20;
-    public static final double kDownPosition = -20; //must be a negitive
+    public static final double kUpPosition = 0;
+    public static final double kDownPosition = 50;
     public static final double kTolerance = 0.3;
 
-    public static final double kUpDownP = 0.2;
+    public static final double kUpDownP = 0.012;
     public static final double kUpDownI = 0.0;
     public static final double kUpDownD = 0.0; 
+
+    public static final double kSpeedP = 0.0;
+    public static final double kSpeedI = 0.0;
+    public static final double kSpeedD = 0.0; 
+    public static final double kSpeedV = 0.0022; 
     
   }
 
