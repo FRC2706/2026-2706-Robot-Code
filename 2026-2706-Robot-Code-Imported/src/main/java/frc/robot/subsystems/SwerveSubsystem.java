@@ -119,7 +119,7 @@ public class SwerveSubsystem extends SubsystemBase{
                 (speedsRobotRelative, moduleFeedForwards) -> {this.drive(speedsRobotRelative);}, // Pass method that will drive the robot -- only robot relative chassis speeds
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                         new PIDConstants(5.0, 0.00001, 0.00005), // Translation PID constants
-                        new PIDConstants(0.005, 0.0000025, 0.01) // Rotation PID constants
+                        new PIDConstants(0.003, 0.0000025, 0.01) // Rotation PID constants
                 ),  
                 config, // Pass on the config
                 () -> isRedAlliance(), // Check which alliance the robot is on
