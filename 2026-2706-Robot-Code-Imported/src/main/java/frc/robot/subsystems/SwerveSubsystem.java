@@ -27,6 +27,8 @@ import com.pathplanner.lib.path.PathConstraints;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveSubsystem extends SubsystemBase{
 
@@ -34,6 +36,8 @@ public class SwerveSubsystem extends SubsystemBase{
 
     // Swerve drive object
     private final SwerveDrive swerveDrive; 
+    // Field2d visualization (show robot pose on dashboard)
+    private final Field2d m_field = new Field2d();
 
     // Provide swerve configuration file as arguement
     public SwerveSubsystem(File swerveJsonDirectory){
@@ -96,6 +100,8 @@ public class SwerveSubsystem extends SubsystemBase{
     // NOTE: Do not call setupPathPlanner() here; it is invoked from RobotContainer to avoid
     // double-configuration of AutoBuilder. PathPlanner's AutoBuilder.configure(...) must be
     // called exactly once during program startup.
+        // Publish the Field2d so a field appears on the dashboard; update it in updateOdometry().
+        SmartDashboard.putData("Field", m_field);
     }
 
     //Sets up pathplanner
@@ -231,6 +237,12 @@ public class SwerveSubsystem extends SubsystemBase{
     // Updates the odometry; Should be run periodically
     public void updateOdometry(){
         swerveDrive.updateOdometry();
+        // Update field visualization with the latest pose
+        try {
+            m_field.setRobotPose(swerveDrive.getPose());
+        } catch (Throwable ignore) {
+            // If the field can't be updated for any reason, ignore to avoid spamming logs
+        }
     }
 
     // Forces the drive train to not move by pointing all the swerve modueles to the center of the robot

@@ -25,18 +25,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Hub to outpost"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Outpost to Hub"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Hub to Field"
           }
         }

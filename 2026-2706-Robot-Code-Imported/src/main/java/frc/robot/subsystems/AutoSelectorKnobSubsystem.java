@@ -22,8 +22,9 @@ public class AutoSelectorKnobSubsystem extends SubsystemBase {
     private final Map<Integer, Pose2d> m_autoModePoses = new HashMap<>();
 
     public AutoSelectorKnobSubsystem() {
-        // Publish the Field2d to SmartDashboard so it appears in the simulator/dashboard
-        SmartDashboard.putData("Field", m_field);
+    // Publish the Field2d to SmartDashboard so it appears in the simulator/dashboard
+    // Use a distinct key to avoid colliding with the primary drive `Field` published by SwerveSubsystem
+    SmartDashboard.putData("AutoSelectorField", m_field);
         for (int i = 0; i <= 11; i++) {
     
             double x = 1.0 + i * 0.5; // meters

@@ -19,18 +19,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Hub to Depot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Depot to Hub"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Hub to Field"
           }
         }
