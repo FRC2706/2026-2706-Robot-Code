@@ -110,17 +110,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets the RPM of the intake motor, converted using a conversion factor.
-     * 
-     * @return The converted RPM of the intake motor.
-     */
-    /*public double getRPM(){
-
-        return getRawMotorRPM() * RobotConstants.kRPMConversionFactor;
-
-    }*/
-
-    /**
      * Moves the intake down.
      */
     public void moveIntakeDown() {
