@@ -14,6 +14,9 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.ResetMode;
+
+import java.util.ResourceBundle.Control;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.spark.SparkSoftLimit.SoftLimitDirection;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -33,6 +36,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private SparkMax intakeUpDownMotor;
     private final RelativeEncoder intakeUpDownEncoder;
     private final SparkClosedLoopController intakeUpDownPID;
+    private final SparkClosedLoopController m_intakeController; 
 
     // Cached PID values to detect changes from dashboard
     private double lastP = RobotConstants.kUpDownP;
@@ -45,6 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public IntakeSubsystem() {
         intakeMotor = new SparkMax(Constants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
+        m_intakeController = intakeMotor.getClosedLoopController();
 
         intakeUpDownMotor = new SparkMax(Constants.RobotConstants.kIntakeUpDownMotorID, MotorType.kBrushless);
         intakeUpDownEncoder = intakeUpDownMotor.getEncoder();
@@ -89,7 +94,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * Starts the intake motor.
      */
     public void startIntake() {
-        intakeMotor.set(RobotConstants.kIntakeSpeed);
+        m_intakeController.setSetpoint(RobotConstants.kIntakeSpeed, ControlType.kVelocity);
 
     }
 
@@ -97,7 +102,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * Starts the intake motor, but backwards.
      */
     public void reverseIntake() {
-        intakeMotor.set(RobotConstants.kIntakeSpeed);
+        m_intakeController.setSetpoint(-RobotConstants.kReverseIntakeSpeed, ControlType.kVelocity);
 
     }
 

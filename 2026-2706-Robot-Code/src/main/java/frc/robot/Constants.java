@@ -22,7 +22,8 @@ public final class Constants {
 
     public static final int kIntakeMotorID = 26;
     public static final int kIntakeUpDownMotorID = 25;
-    public static final double kIntakeSpeed = 0.75;
+    public static final double kIntakeSpeed = 4000;
+    public static final double kReverseIntakeSpeed = 1000;
     public static final double kStowPosition = 50;
     public static final double kFloorPosition = 0;
     public static final double kTolerance = 0.3;
