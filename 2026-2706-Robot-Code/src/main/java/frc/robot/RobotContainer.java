@@ -12,11 +12,18 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
 
+import frc.robot.commands.IntakeDownCommand;
+import frc.robot.commands.IntakeUpCommand;
+import frc.robot.commands.RunIntakeCommandForward;
+import frc.robot.commands.RunIntakeCommandReversed;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.AutoSelectorKnobSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
+import frc.robot.subsystems.IntakeSubsystem;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -28,6 +35,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -36,17 +44,15 @@ import java.io.File;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+
+  // Subsystem
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final AutoSelectorKnobSubsystem m_AutoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
-
-  
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  // Controller
+  private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -55,9 +61,9 @@ public class RobotContainer {
     // Right joystick controls the rate of rotation (left rotates the robot counter clock-wise, right rotates the robot clock-wise)
     m_swerveSubsystem.setDefaultCommand(
       new SwerveDriveCommand(m_swerveSubsystem,
-       () -> -m_driverController.getLeftY(), 
-       () -> -m_driverController.getLeftX(), 
-       () -> -m_driverController.getRightX(),
+       () -> -driverController.getLeftY(), 
+       () -> -driverController.getLeftX(), 
+       () -> -driverController.getRightX(),
        0.1,
        0.1
        )
@@ -83,15 +89,38 @@ public class RobotContainer {
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
     //Zero the gyro such that forward is where the robot is currently looking
-    m_driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
+    driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
+
+    // Toggle intake ON/OFF
+    JoystickButton intakeToggleButton =
+        new JoystickButton(driverController.getHID(), XboxController.Button.kA.value);
+
+    // Run intake in reverse while held
+    JoystickButton reverseButton =
+        new JoystickButton(driverController.getHID(), XboxController.Button.kB.value);
+
+    // Toggle intake to go down
+    JoystickButton intakeDownButton =
+        new JoystickButton(driverController.getHID(), XboxController.Button.kX.value);
+
+    // Toggle intake to go up
+    JoystickButton intakeUpButton =
+        new JoystickButton(driverController.getHID(), XboxController.Button.kY.value);
+
+    intakeDownButton.toggleOnTrue(new IntakeDownCommand(intakeSubsystem));
+    intakeUpButton.toggleOnTrue(new IntakeUpCommand(intakeSubsystem));
+    intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
+    reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
   }
 
-  
-
-  /** This function returns the autonomous command based on the knob position. */
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
   public Command getAutonomousCommand() {
     int mode = m_AutoSelectorKnobSubsystem.getAutoMode();
     System.out.println("Auto Mode = " + mode); // debug print
@@ -133,5 +162,6 @@ public class RobotContainer {
         //null;
       default:
         return null;
-    }}}
-
+    }
+  }
+}
