@@ -22,7 +22,7 @@ import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.AutoSelectorKnobSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-
+import edu.wpi.first.cameraserver.CameraServer;
 import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -80,6 +80,8 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     configureBindings();
+
+    CameraServer.startAutomaticCapture();
   }
 
   private void configureBindings() {

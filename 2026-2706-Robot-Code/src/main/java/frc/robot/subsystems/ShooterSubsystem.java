@@ -34,7 +34,7 @@ public class ShooterSubsystem extends SubsystemBase {
     m_pidControllerFeeder = feederMotor.getClosedLoopController();
     m_pidControllerIndexer = indexerMotor.getClosedLoopController();
 
-    int currentLimit = 40;
+    int currentLimit = 35;
 
     //-------Shooter Motors configuration & PID-----------//
 
@@ -106,7 +106,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void spinningUp() {
-    m_pidControllerShooter.setReference(getDesiredVelocityRPM(), SparkBase.ControlType.kVelocity);
+    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(), SparkBase.ControlType.kVelocity);
     feederMotor.stopMotor();
     indexerMotor.stopMotor();
     System.out.println("spinning up");
@@ -114,11 +114,11 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void ready() {
-    m_pidControllerShooter.setReference(getDesiredVelocityRPM(), SparkBase.ControlType.kVelocity);
+    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(), SparkBase.ControlType.kVelocity);
     
     // figure out how much faster this shoudl go
-    m_pidControllerFeeder.setReference(getDesiredVelocityRPM()*1.2, SparkBase.ControlType.kVelocity);
-    m_pidControllerIndexer.setReference(getDesiredVelocityRPM()*1.2, SparkBase.ControlType.kVelocity);
+    m_pidControllerFeeder.setSetpoint(getDesiredVelocityRPM()*1.2, SparkBase.ControlType.kVelocity);
+    m_pidControllerIndexer.setSetpoint(getDesiredVelocityRPM()*1.2, SparkBase.ControlType.kVelocity);
     //feederMotor.setReference(0.5); 
     //indexerMotor.set(0.5); 
     System.out.println("ready");
