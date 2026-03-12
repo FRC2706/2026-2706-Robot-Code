@@ -16,5 +16,30 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
-  public static int kSelectorSwitchPort;
+   public static class RobotConstants {
+    public static final int kSelectorSwitchPort = 0;
+    public static final int kRPMConversionFactor = 1 / 3;
+
+    public static final int kIntakeMotorID = 26;
+    public static final int kIntakeUpDownMotorID = 25;
+    public static final double kIntakeSpeed = 4000;
+    public static final double kReverseIntakeSpeed = 1000;
+    public static final double kStowPosition = 50;
+    public static final double kFloorPosition = 0;
+    public static final double kTolerance = 0.3;
+
+    public static final double kUpDownP = 0.012;
+    public static final double kUpDownI = 0.0;
+    public static final double kUpDownD = 0.0; 
+
+    public static final double kSpeedP = 0.00008;
+    public static final double kSpeedI = 0.0;
+    public static final double kSpeedD = 0.005; 
+    public static final double kSpeedV = 0.0022;
+    
+  }
+
+  public static class UtilityConstants {
+    public static final boolean debugMode = true;
+}
 }
