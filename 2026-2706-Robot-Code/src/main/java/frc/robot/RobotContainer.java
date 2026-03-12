@@ -6,11 +6,16 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.IntakeDownCommand;
+import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.ResetGyroCommand;
+import frc.robot.commands.RunIntakeCommandForward;
+import frc.robot.commands.RunIntakeCommandReversed;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -53,6 +58,8 @@ public class RobotContainer {
   private final AutoPlans m_autoPlans;
   private final SendableChooser<Command> autoChooser;
 
+    // Controller
+  private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -113,17 +120,30 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    //new Trigger(m_exampleSubsystem::exampleCondition)
-       // .onTrue(new ExampleCommand(m_exampleSubsystem));
-
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-
 
     //Zero the gyro such that forward is where the robot is currently looking
-    m_driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
+    driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
+
+    // Toggle intake ON/OFF
+    JoystickButton intakeToggleButton =
+        new JoystickButton(driverController.getHID(), XboxController.Button.kA.value);
+
+    // Run intake in reverse while held
+    JoystickButton reverseButton =
+        new JoystickButton(driverController.getHID(), XboxController.Button.kB.value);
+
+    // Toggle intake to go down
+    JoystickButton intakeDownButton =
+        new JoystickButton(driverController.getHID(), XboxController.Button.kX.value);
+
+    // Toggle intake to go up
+    JoystickButton intakeUpButton =
+        new JoystickButton(driverController.getHID(), XboxController.Button.kY.value);
+
+    intakeDownButton.toggleOnTrue(new IntakeDownCommand(m_intakeSubsystem));
+    intakeUpButton.toggleOnTrue(new IntakeUpCommand(m_intakeSubsystem));
+    intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(m_intakeSubsystem));
+    reverseButton.whileTrue(new RunIntakeCommandReversed(m_intakeSubsystem));
   
   }
 
