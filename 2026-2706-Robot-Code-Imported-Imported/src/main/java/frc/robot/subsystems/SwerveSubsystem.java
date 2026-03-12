@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // Imports necessary to create SwerveDrive object
 import java.io.File;
+import java.util.function.DoubleSupplier;
 
 //Useful imports for swerve
 import edu.wpi.first.wpilibj.DriverStation;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import swervelib.math.SwerveMath;
 
 // Imports for pathplanner
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -25,21 +27,29 @@ import com.pathplanner.lib.path.PathConstraints;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-<<<<<<< HEAD:2026-2706-Robot-Code-Imported-Imported/src/main/java/frc/robot/subsystems/SwerveSubsystem.java
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+public class SwerveSubsystem extends SubsystemBase{
+
+    double maximumSpeed = 3;
 
     // Swerve drive object
     private final SwerveDrive swerveDrive; 
->>>>>>> 2952a1b5c6fa8d5cd87c2c491b16487442fe7635:2026-2706-Robot-Code/src/main/java/frc/robot/subsystems/SwerveSubsystem.java
+    // Field2d visualization (show robot pose on dashboard)
+    private final Field2d m_field = new Field2d();
 
     // Provide swerve configuration file as arguement
     public SwerveSubsystem(File swerveJsonDirectory){
-        // Set up starting position depending on alliance for odometry. Assumes blue alliance by default
+        
+        // Set up starting position depending on alliance for odometry
         boolean redAlliance = isRedAlliance();
         Pose2d startingPose;
 
+        // Set the verbosity of the telemetry.  HIGH is good for debugging, but may cause performance issues.  Adjust as needed.
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW; 
+
+        // TODO: Set up different starting positions
         if (redAlliance){
             // Units are in meters
             startingPose =  new Pose2d(new Translation2d(16, 4), Rotation2d.fromDegrees(180));
@@ -49,13 +59,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
             startingPose = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(0));
         }
         
-        /*  Set the verbosity of the telemetry.  
-            LOW -- Minimal information
-            HIGH -- Frequent updates on encoders and imu; Should not be used during driving as the robot will timeout
-            INFO -- Enough information to use advantage scope
-        */
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.INFO; 
-
         // Parse swerve configurations and create swerve drive object
         try{
             swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, startingPose);
@@ -65,16 +68,40 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
         }
 
         // Configure Swerve Drive
-        swerveDrive.setHeadingCorrection(true); // Turn on to correct heading
-        swerveDrive.setCosineCompensator(true); // Turn on to automatically slow or speed up swerve modules that should be close to their desired state in theory
-        swerveDrive.angularVelocityCorrection = true; // Reduces drift
-        swerveDrive.autonomousAngularVelocityCorrection = true; // Reduces drift
-        swerveDrive.setAngularVelocityCompensation(true, true, 0.1); // Tune to compensate for angular skew in movement
-        swerveDrive.setModuleEncoderAutoSynchronize(true, 1); // Turn on to periodcally synchronize absolute encoders and motor encoders during periods without movement
-        swerveDrive.synchronizeModuleEncoders();
+        // Some configurations rely on an IMU being present in the underlying swervelib SwerveDrive.
+        // In simulation or if the IMU isn't available, these calls can throw a NullPointerException
+        // (see logs). Wrap configuration in a try/catch and disable angular-velocity-based
+        // compensations if they fail so the robot code keeps running.
+        try {
+            swerveDrive.setHeadingCorrection(true); // Turn on to correct heading
+            swerveDrive.setCosineCompensator(true); // Turn on to automatically slow or speed up swerve modules that should be close to their desired state in theory
+            swerveDrive.angularVelocityCorrection = true;
+            swerveDrive.autonomousAngularVelocityCorrection = true;
+            swerveDrive.setAngularVelocityCompensation(true, true, 0.1); // Tune to compensate for angular skew in movement
+            swerveDrive.setModuleEncoderAutoSynchronize(true, 1); // Turn on to periodcally synchronize absolute encoders and motor encoders during periods without movement
+            swerveDrive.synchronizeModuleEncoders();
+        } catch (Throwable t) {
+            // Defensive: disable IMU/ang. vel. dependent features and continue running
+            System.err.println("Warning: failed to configure angular-velocity/IMU features in SwerveDrive. Disabling those features.\n" + t);
+            try {
+                swerveDrive.angularVelocityCorrection = false;
+                swerveDrive.autonomousAngularVelocityCorrection = false;
+                // Attempt to disable compensation; library method may still throw, so ignore exceptions
+                try {
+                    swerveDrive.setAngularVelocityCompensation(false, false, 0.0);
+                } catch (Throwable ignore) {
+                    // ignore
+                }
+            } catch (Throwable ignore) {
+                // ignore
+            }
+        }
     
-        //Initialize set-up for pathplanner
-        setupPathPlanner();
+    // NOTE: Do not call setupPathPlanner() here; it is invoked from RobotContainer to avoid
+    // double-configuration of AutoBuilder. PathPlanner's AutoBuilder.configure(...) must be
+    // called exactly once during program startup.
+        // Publish the Field2d so a field appears on the dashboard; update it in updateOdometry().
+        SmartDashboard.putData("Field", m_field);
     }
 
     //Sets up pathplanner
@@ -124,16 +151,54 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
    */
     public void drive(Translation2d translation, double rotation, boolean fieldRelative)
     {
-        swerveDrive.drive(translation,
-                        rotation,
-                        fieldRelative,
-                        false); // Open loop is disabled since it shouldn't be used most of the time.
+        try {
+            swerveDrive.drive(translation,
+                              rotation,
+                              fieldRelative,
+                              false); // Open loop is disabled since it shouldn't be used most of the time.
+        } catch (Throwable t) {
+            // Defensive: if the underlying swervelib throws (for example, because IMU is null),
+            // log once and try to disable IMU-dependent behavior to prevent further crashes.
+            System.err.println("SwerveSubsystem: drive() failed, disabling IMU-dependent features. Exception: " + t);
+            try {
+                swerveDrive.angularVelocityCorrection = false;
+                swerveDrive.autonomousAngularVelocityCorrection = false;
+                try { swerveDrive.setAngularVelocityCompensation(false, false, 0.0); } catch (Throwable ignore) {}
+            } catch (Throwable ignore) {}
+        }
     }
 
     //Controls the drivebase using ChassisSpeeds -- primarily for PathPlanner
     public void drive(ChassisSpeeds speeds)
     {
-        swerveDrive.drive(speeds);
+        try {
+            swerveDrive.drive(speeds);
+        } catch (Throwable t) {
+            System.err.println("SwerveSubsystem: drive(ChassisSpeeds) failed, disabling IMU-dependent features. Exception: " + t);
+            try {
+                swerveDrive.angularVelocityCorrection = false;
+                swerveDrive.autonomousAngularVelocityCorrection = false;
+                try { swerveDrive.setAngularVelocityCompensation(false, false, 0.0); } catch (Throwable ignore) {}
+            } catch (Throwable ignore) {}
+        }
+    }
+
+    public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX)
+    {
+        return run(() -> {
+            swerveDrive.drive(
+                SwerveMath.scaleTranslation(
+                    new Translation2d(
+                        translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(),
+                        translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()
+                    ),
+                    0.8
+                ),
+                Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity(),
+                true,
+                false
+            );
+        });
     }
 
     /**
@@ -172,6 +237,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
     // Updates the odometry; Should be run periodically
     public void updateOdometry(){
         swerveDrive.updateOdometry();
+        // Update field visualization with the latest pose
+        try {
+            m_field.setRobotPose(swerveDrive.getPose());
+        } catch (Throwable ignore) {
+            // If the field can't be updated for any reason, ignore to avoid spamming logs
+        }
     }
 
     // Forces the drive train to not move by pointing all the swerve modueles to the center of the robot
@@ -237,4 +308,3 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
                                         );
     }
 }
-

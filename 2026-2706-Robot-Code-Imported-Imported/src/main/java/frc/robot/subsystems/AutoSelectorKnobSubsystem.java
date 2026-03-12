@@ -7,13 +7,11 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.Constants;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AutoSelectorKnobSubsystem extends SubsystemBase {
-
-    private final AnalogInput m_knob = new AnalogInput(Constants.kSelectorSwitchPort);
+    private final AnalogInput m_knob = new AnalogInput(0);
 
     // Field2d visualization for 2D field capability
     private final Field2d m_field = new Field2d();
