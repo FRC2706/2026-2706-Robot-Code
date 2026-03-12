@@ -38,8 +38,14 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Deploy Ground Intake",
-      "waypointRelativePos": 0.5032374100719481,
+      "name": "IntakeDown",
+      "waypointRelativePos": 0.6642857142857138,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "IntakeOn",
+      "waypointRelativePos": 0.8357142857142836,
       "endWaypointRelativePos": null,
       "command": null
     }
