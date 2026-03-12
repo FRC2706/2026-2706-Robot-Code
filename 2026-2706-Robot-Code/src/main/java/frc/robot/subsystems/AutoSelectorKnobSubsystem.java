@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,41 +11,29 @@ import java.util.Map;
 public class AutoSelectorKnobSubsystem extends SubsystemBase {
     private final AnalogInput m_knob = new AnalogInput(0);
 
-    // Field2d visualization for 2D field capability
-    private final Field2d m_field = new Field2d();
+    // Field2d visualization is now centralized in AutoPlans; AutoSelector will
+    // update the shared AutoSelectorField via AutoPlans helper methods.
 
-    // Map of autonomous mode -> Pose2d for visualization on the field
-    private final Map<Integer, Pose2d> m_autoModePoses = new HashMap<>();
+    // AutoPlans now owns the map of autonomous mode -> Pose2d for visualization.
 
     public AutoSelectorKnobSubsystem() {
-    // Publish the Field2d to SmartDashboard so it appears in the simulator/dashboard
-    // Use a distinct key to avoid colliding with the primary drive `Field` published by SwerveSubsystem
-    SmartDashboard.putData("AutoSelectorField", m_field);
-        for (int i = 0; i <= 11; i++) {
-    
-            double x = 1.0 + i * 0.5; // meters
-            double y = 0.5; // meters
-            double rotation = 0.0; // facing +X
-            m_autoModePoses.put(i, new Pose2d(new Translation2d(x, y), new Rotation2d(rotation)));
-        }
-        // Set initial robot pose
-        m_field.setRobotPose(m_autoModePoses.getOrDefault(getAutoMode(), new Pose2d()));
+    // AutoPlans publishes and initializes the shared Field2d instances and
+    // auto-mode poses. This subsystem only provides knob readings (getAutoMode()).
     }
 
     /**
      * Set the field robot pose explicitly.
      */
     public void setFieldPose(Pose2d pose) {
-        m_field.setRobotPose(pose);
+        frc.robot.subsystems.AutoPlans.setAutoSelectorFieldRobotPose(pose);
     }
 
     /**
      * Get the current robot pose being shown on the field.
      */
     public Pose2d getFieldPose() {
-        // Field2d does not expose a getter for robot pose; return the stored mapping for the
-        // current auto mode as the best-effort value.
-        return m_autoModePoses.getOrDefault(getAutoMode(), new Pose2d());
+        // Delegates to AutoPlans which owns the auto-mode pose mapping.
+        return frc.robot.subsystems.AutoPlans.getAutoModePose(getAutoMode());
     }
 
     /**
@@ -55,8 +41,7 @@ public class AutoSelectorKnobSubsystem extends SubsystemBase {
      */
     public void updateFieldForSelectedAuto() {
         int mode = getAutoMode();
-        Pose2d pose = m_autoModePoses.getOrDefault(mode, new Pose2d());
-        m_field.setRobotPose(pose);
+        frc.robot.subsystems.AutoPlans.updateAutoSelectorFieldForMode(mode);
     }
 
     public double getVoltage() {

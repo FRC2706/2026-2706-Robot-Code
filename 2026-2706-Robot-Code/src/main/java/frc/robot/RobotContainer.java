@@ -89,7 +89,7 @@ public class RobotContainer {
   // PathPlanner named commands for intake are registered by AutoPlans
 
   // Now that AutoBuilder is configured, create autos and the chooser
-  m_autoPlans = new AutoPlans(m_intakeSubsystem);
+  m_autoPlans = new AutoPlans(m_intakeSubsystem, m_autoSelectorKnobSubsystem);
   //autoChooser = AutoBuilder.buildAutoChooser(m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode()));
   autoChooser = AutoBuilder.buildAutoChooser("Drive Forward");
     SmartDashboard.putData("Auto Mode", autoChooser);
