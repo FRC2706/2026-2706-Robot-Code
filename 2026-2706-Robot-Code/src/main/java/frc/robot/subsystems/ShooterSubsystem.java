@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.shooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor1;
@@ -40,10 +41,10 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkMaxConfig shooterConfig = new SparkMaxConfig();
     shooterConfig.inverted(false);
     
-    shooterConfig.closedLoop.p(0.00005);         
-    shooterConfig.closedLoop.i(0);
-    shooterConfig.closedLoop.d(0);
-    shooterConfig.closedLoop.velocityFF(0.0021);
+    shooterConfig.closedLoop.p(shooterConstants.shooterkP);         
+    shooterConfig.closedLoop.i(shooterConstants.shooterkI);
+    shooterConfig.closedLoop.d(shooterConstants.shooterkD);
+    shooterConfig.closedLoop.velocityFF(shooterConstants.shooterkFF);
     shooterConfig.closedLoop.outputRange(-1, 1);
    
     shooterConfig.smartCurrentLimit(currentLimit);
@@ -60,10 +61,10 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkMaxConfig feederConfig = new SparkMaxConfig();
     feederConfig.inverted(true);
 
-    feederConfig.closedLoop.p(0.000001); // will change later    
-    feederConfig.closedLoop.i(0);
-    feederConfig.closedLoop.d(0);
-    feederConfig.closedLoop.velocityFF(0.00015);
+    feederConfig.closedLoop.p(shooterConstants.feederkP); // will change later    
+    feederConfig.closedLoop.i(shooterConstants.feederkI);
+    feederConfig.closedLoop.d(shooterConstants.feederkD);
+    feederConfig.closedLoop.velocityFF(shooterConstants.feederkFF);
     feederConfig.closedLoop.outputRange(-1, 1);
     feederConfig.smartCurrentLimit(currentLimit);
 
@@ -74,10 +75,10 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkMaxConfig indexerConfig = new SparkMaxConfig();
     indexerConfig.inverted(false);
 
-    indexerConfig.closedLoop.p(0.000001);  // will change later   
-    indexerConfig.closedLoop.i(0);
-    indexerConfig.closedLoop.d(0);
-    indexerConfig.closedLoop.velocityFF(0.00015);
+    indexerConfig.closedLoop.p(shooterConstants.indexerkP);  // will change later   
+    indexerConfig.closedLoop.i(shooterConstants.indexerkI);
+    indexerConfig.closedLoop.d(shooterConstants.indexerkD);
+    indexerConfig.closedLoop.velocityFF(shooterConstants.indexerkFF);
     indexerConfig.closedLoop.outputRange(-1, 1);
     indexerConfig.smartCurrentLimit(currentLimit);
 

@@ -39,18 +39,20 @@ public final class Constants {
 
     // PID VALUES
 
-    public static final double kP1 = 0,
-                               kI1 = 0,
-                               kD1 = 0,
-                               kFF1 = 0,
-                               kP2 = 0,
-                               kI2 = 0,
-                               kD2 = 0,
-                               kFF2 = 0,
-                               kP3 = 0,
-                               kI3 = 0,
-                               kD3 = 0,
-                               kFF3 = 0;
+    public static final double shooterkP = 0.00005,
+                               shooterkI = 0,
+                               shooterkD = 0,
+                               shooterkFF = 0.0021,
+
+                               feederkP = 0.000001,
+                               feederkI = 0,
+                               feederkD = 0,
+                               feederkFF = 0.00015,
+
+                               indexerkP = 0.000001,
+                               indexerkI = 0,
+                               indexerkD = 0,
+                               indexerkFF = 0.00015;
   }
 
 
