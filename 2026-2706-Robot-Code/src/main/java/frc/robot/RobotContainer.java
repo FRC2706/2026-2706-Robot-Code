@@ -86,23 +86,10 @@ public class RobotContainer {
     // This will configure AutoBuilder using the subsystem-provided callbacks.
     m_swerveSubsystem.setupPathPlanner();
 
-  // Register named PathPlanner commands for intake actions so autos can call them
-  // Use PathPlanner's NamedCommands registry (via its instance map) to register commands
-  try {
-    Map<String, Command> eventMap = new HashMap<>();
-    eventMap.put("IntakeUp", new frc.robot.commands.IntakeUpCommand(m_intakeSubsystem));
-    eventMap.put("IntakeDown", new frc.robot.commands.IntakeDownCommand(m_intakeSubsystem));
-    eventMap.put("IntakeOn", new frc.robot.commands.RunIntakeCommandForward(m_intakeSubsystem));
-    eventMap.put("IntakeReverse", new frc.robot.commands.RunIntakeCommandReversed(m_intakeSubsystem));
-    eventMap.put("IntakeOff", new frc.robot.commands.RunIntakeCommandForward(m_intakeSubsystem).withTimeout(0));
-
-    com.pathplanner.lib.auto.NamedCommands.registerCommands(eventMap);
-  } catch (Throwable t) {
-    System.out.println("Failed to register PathPlanner named commands: " + t.toString());
-  }
+  // PathPlanner named commands for intake are registered by AutoPlans
 
   // Now that AutoBuilder is configured, create autos and the chooser
-  m_autoPlans = new AutoPlans();
+  m_autoPlans = new AutoPlans(m_intakeSubsystem);
   //autoChooser = AutoBuilder.buildAutoChooser(m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode()));
   autoChooser = AutoBuilder.buildAutoChooser("Drive Forward");
     SmartDashboard.putData("Auto Mode", autoChooser);
