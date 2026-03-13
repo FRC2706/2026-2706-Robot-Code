@@ -95,26 +95,26 @@ public class RobotContainer {
 
     // Toggle intake ON/OFF
     JoystickButton intakeToggleButton =
-        new JoystickButton(driverController.getHID(), XboxController.Button.kA.value);
+        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kA.value);
 
     // Run intake in reverse while held
     JoystickButton reverseButton =
-        new JoystickButton(driverController.getHID(), XboxController.Button.kB.value);
+        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kB.value);
 
     // Toggle intake to go down
     JoystickButton intakeDownButton =
-        new JoystickButton(driverController.getHID(), XboxController.Button.kX.value);
+        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kY.value);
 
     // Toggle intake to go up
     JoystickButton intakeUpButton =
-        new JoystickButton(driverController.getHID(), XboxController.Button.kY.value);
+        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kX.value);
 
     intakeDownButton.toggleOnTrue(new IntakeDownCommand(intakeSubsystem));
     intakeUpButton.toggleOnTrue(new IntakeUpCommand(intakeSubsystem));
     intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
 
-    m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem)).onFalse(new StopShooter(m_ShooterSubsystem));
+    m_operatorController.rightBumper().whileTrue(new StartShooter(m_ShooterSubsystem)).onFalse(new StopShooter(m_ShooterSubsystem));
   }
 
   /**

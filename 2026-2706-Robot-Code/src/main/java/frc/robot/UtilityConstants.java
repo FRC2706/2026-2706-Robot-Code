@@ -28,7 +28,7 @@ public final class UtilityConstants {
     public static final int kIntakeUpDownMotorID = 25;
     public static final double kIntakeSpeed = 4000;
     public static final double kReverseIntakeSpeed = 1000;
-    public static final double kStowPosition = 50;
+    public static final double kStowPosition = 57;
     public static final double kFloorPosition = 0;
     public static final double kTolerance = 0.3;
 

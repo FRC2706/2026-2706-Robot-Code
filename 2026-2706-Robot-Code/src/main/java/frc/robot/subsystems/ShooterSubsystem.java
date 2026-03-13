@@ -73,7 +73,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     
     SparkMaxConfig indexerConfig = new SparkMaxConfig();
-    indexerConfig.inverted(false);
+    indexerConfig.inverted(true);
 
     indexerConfig.closedLoop.p(shooterConstants.indexerkP);  // will change later   
     indexerConfig.closedLoop.i(shooterConstants.indexerkI);
@@ -117,8 +117,8 @@ public class ShooterSubsystem extends SubsystemBase {
     m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(), SparkBase.ControlType.kVelocity);
     
     // figure out how much faster this shoudl go
-    m_pidControllerFeeder.setSetpoint(getDesiredVelocityRPM()*1.2, SparkBase.ControlType.kVelocity);
-    m_pidControllerIndexer.setSetpoint(getDesiredVelocityRPM()*1.2, SparkBase.ControlType.kVelocity);
+    m_pidControllerFeeder.setSetpoint(getDesiredVelocityRPM()*10, SparkBase.ControlType.kVelocity);
+    m_pidControllerIndexer.setSetpoint(getDesiredVelocityRPM()*11, SparkBase.ControlType.kVelocity);
     //feederMotor.setReference(0.5); 
     //indexerMotor.set(0.5); 
     System.out.println("ready");
