@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.UtilityConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 
 
@@ -11,7 +12,7 @@ public class AutoSelectorKnobSubsystem extends SubsystemBase {
     // Field2d visualization is now centralized in AutoPlans; AutoSelector will
     // update the shared AutoSelectorField via AutoPlans helper methods.
 
-    // AutoPlans now owns the map of autonomous mode -> Pose2d for visualization.
+    private final AnalogInput m_knob = new AnalogInput(UtilityConstants.RobotConstants.kSelectorSwitchPort);
 
     public AutoSelectorKnobSubsystem() {
     // AutoPlans publishes and initializes the shared Field2d instances and
