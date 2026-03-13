@@ -16,11 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.AutoSelectorKnobSubsystem;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
+import frc.robot.commands.StartShooter;
+import frc.robot.commands.StopShooter;
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class AutoPlans extends SubsystemBase {
@@ -41,7 +44,7 @@ public class AutoPlans extends SubsystemBase {
      * Accepts the IntakeSubsystem so intake commands can be created with the proper subsystem
      * instance.
      */
-    public AutoPlans(IntakeSubsystem intake, AutoSelectorKnobSubsystem selector){
+    public AutoPlans(IntakeSubsystem intake, AutoSelectorKnobSubsystem selector, ShooterSubsystem shooter) {
         // Publish the shared Field2d visualizations to SmartDashboard so they appear
         // in the simulator/dashboard. Doing this here keeps field-related configuration
         // in one place.
@@ -58,11 +61,11 @@ public class AutoPlans extends SubsystemBase {
             // ignore if selector isn't ready
         }
 
-        registerCommands(intake);
+        registerCommands(intake, shooter);
     }
 
     /** Register PathPlanner named commands for intake actions. */
-    public void registerCommands(IntakeSubsystem intake){
+    public void registerCommands(IntakeSubsystem intake, ShooterSubsystem shooter){
         try {
             Map<String, Command> eventMap = new HashMap<>();
             eventMap.put("IntakeUp", new IntakeUpCommand(intake));
@@ -70,6 +73,8 @@ public class AutoPlans extends SubsystemBase {
             eventMap.put("IntakeOn", new RunIntakeCommandForward(intake));
             eventMap.put("IntakeReverse", new RunIntakeCommandReversed(intake));
             eventMap.put("IntakeOff", new RunIntakeCommandForward(intake).withTimeout(0));
+            eventMap.put("StartShooter", new StartShooter(shooter));
+            eventMap.put("StopShooter", new StopShooter(shooter));
 
             NamedCommands.registerCommands(eventMap);
         } catch (Throwable t) {

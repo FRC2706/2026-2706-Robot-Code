@@ -7,16 +7,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 
 
 public class AutoSelectorKnobSubsystem extends SubsystemBase {
-    private final AnalogInput m_knob = new AnalogInput(0);
-
-    // Field2d visualization is now centralized in AutoPlans; AutoSelector will
-    // update the shared AutoSelectorField via AutoPlans helper methods.
 
     private final AnalogInput m_knob = new AnalogInput(UtilityConstants.RobotConstants.kSelectorSwitchPort);
 
     public AutoSelectorKnobSubsystem() {
-    // AutoPlans publishes and initializes the shared Field2d instances and
-    // auto-mode poses. This subsystem only provides knob readings (getAutoMode()).
     }
 
     /**

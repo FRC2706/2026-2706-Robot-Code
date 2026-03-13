@@ -48,8 +48,6 @@ import choreo.auto.AutoFactory;
 
 // Pathplanner testing
 import frc.robot.subsystems.AutoPlans;
-import frc.robot.commands.StartShooter;
-import frc.robot.commands.StopShooter;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -107,7 +105,7 @@ public class RobotContainer {
   // PathPlanner named commands for intake are registered by AutoPlans
 
   // Now that AutoBuilder is configured, create autos and the chooser
-  m_autoPlans = new AutoPlans(m_intakeSubsystem, m_autoSelectorKnobSubsystem);
+  m_autoPlans = new AutoPlans(m_intakeSubsystem, m_autoSelectorKnobSubsystem, m_ShooterSubsystem);
   //autoChooser = AutoBuilder.buildAutoChooser(m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode()));
   autoChooser = AutoBuilder.buildAutoChooser("Drive Forward");
     SmartDashboard.putData("Auto Mode", autoChooser);
