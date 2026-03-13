@@ -2,11 +2,11 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.UtilityConstants;
 
 public class AutoSelectorKnobSubsystem extends SubsystemBase {
 
-    private final AnalogInput m_knob = new AnalogInput(Constants.RobotConstants.kSelectorSwitchPort);
+    private final AnalogInput m_knob = new AnalogInput(UtilityConstants.RobotConstants.kSelectorSwitchPort);
 
     public AutoSelectorKnobSubsystem() {
 
