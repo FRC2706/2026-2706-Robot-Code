@@ -11,6 +11,8 @@ import frc.robot.commands.ExampleCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
+import frc.robot.commands.ConstantSpeedDriveCommand;
+import frc.robot.commands.StopConstantSpeedDriveCommand;
 
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
@@ -92,6 +94,21 @@ public class RobotContainer {
 
     //Zero the gyro such that forward is where the robot is currently looking
     driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
+
+    //Drive at a constant speed while holding down A
+    driverController.a()
+    .whileTrue(
+      new ConstantSpeedDriveCommand(m_swerveSubsystem,
+        () -> -driverController.getLeftY(), 
+       () -> -driverController.getLeftX(), 
+       () -> -driverController.getRightX(),
+       0.1,
+       0.1,
+       1.0
+       )
+    );
+    
+  
 
     // Toggle intake ON/OFF
     JoystickButton intakeToggleButton =
