@@ -63,6 +63,9 @@ public class RobotContainer {
   // private final CommandXboxController m_driverController =
   //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+  //Photon Vision
+  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
@@ -114,7 +117,7 @@ public class RobotContainer {
     intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
 
-    m_operatorController.rightBumper().whileTrue(new StartShooter(m_ShooterSubsystem)).onFalse(new StopShooter(m_ShooterSubsystem));
+    m_operatorController.rightBumper().whileTrue(new StartShooter(m_ShooterSubsystem, () -> m_PhotonSubsystem.m_planarDistance)).onFalse(new StopShooter(m_ShooterSubsystem));
   }
 
   /**

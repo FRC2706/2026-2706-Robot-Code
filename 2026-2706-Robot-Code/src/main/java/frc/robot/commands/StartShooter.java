@@ -1,3 +1,4 @@
+
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -7,6 +8,7 @@ package frc.robot.commands;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import java.util.function.DoubleSupplier;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,13 +16,16 @@ import java.util.concurrent.TimeUnit;
 public class StartShooter extends Command {
   @SuppressWarnings("PMD.UnusedPrivateField")
   private final ShooterSubsystem m_ShooterSubystsem;
+  private final DoubleSupplier m_DistanceSupplier;
+  
 
   /**
    *
    * @param subsystem The subsystem used by this command.
    */
-  public StartShooter(ShooterSubsystem subsystem) {
+  public StartShooter(ShooterSubsystem subsystem, DoubleSupplier distanceSupplier) {
     m_ShooterSubystsem = subsystem;
+    m_DistanceSupplier = distanceSupplier;
     addRequirements(m_ShooterSubystsem);
   }
 
@@ -32,10 +37,10 @@ public class StartShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (m_ShooterSubystsem.isRPMinRange()) {
-      m_ShooterSubystsem.ready();
+    if (m_ShooterSubystsem.isRPMinRange(m_DistanceSupplier.getAsDouble())) {
+      m_ShooterSubystsem.ready(m_DistanceSupplier.getAsDouble());
     } else {
-      m_ShooterSubystsem.spinningUp();
+      m_ShooterSubystsem.spinningUp(m_DistanceSupplier.getAsDouble());
     }
   }
 
@@ -49,4 +54,3 @@ public class StartShooter extends Command {
     return false;
   }
 }
-

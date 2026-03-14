@@ -21,8 +21,6 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkClosedLoopController m_pidControllerFeeder; // New
   private final SparkClosedLoopController m_pidControllerIndexer; // New
 
-
-
   public ShooterSubsystem() {
     shooterMotor1 = new SparkMax(UtilityConstants.shooterConstants.MOTOR1_ID, MotorType.kBrushless);
     shooterMotor2 = new SparkMax(UtilityConstants.shooterConstants.MOTOR2_ID, MotorType.kBrushless);
@@ -87,16 +85,18 @@ public class ShooterSubsystem extends SubsystemBase {
     //-------------------------//
   }
 
-  public boolean isRPMinRange() {
+  public boolean isRPMinRange(double distance) {
     double currentRPM = m_encoder.getVelocity();
-    double tolerance = 200;
+    double tolerance = 150;
     System.out.println(currentRPM);
 
-    return (Math.abs(currentRPM - getDesiredVelocityRPM()) < tolerance);
+    return (Math.abs(currentRPM - getDesiredVelocityRPM(distance)) < tolerance);
   }
 
-  public double getDesiredVelocityRPM() {
-    return 2300; 
+  public double getDesiredVelocityRPM(double distance) {
+    distance = 0;
+
+    return 548*distance+1820; 
   }
 
   public void stop() {
@@ -105,20 +105,20 @@ public class ShooterSubsystem extends SubsystemBase {
     indexerMotor.stopMotor();
   }
 
-  public void spinningUp() {
-    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(), SparkBase.ControlType.kVelocity);
+  public void spinningUp(double distance) {
+    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(distance), SparkBase.ControlType.kVelocity);
     feederMotor.stopMotor();
     indexerMotor.stopMotor();
     System.out.println("spinning up");
 
   }
 
-  public void ready() {
-    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(), SparkBase.ControlType.kVelocity);
+  public void ready(double distance) {
+    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(distance), SparkBase.ControlType.kVelocity);
     
     // figure out how much faster this shoudl go
-    m_pidControllerFeeder.setSetpoint(getDesiredVelocityRPM()*10, SparkBase.ControlType.kVelocity);
-    m_pidControllerIndexer.setSetpoint(getDesiredVelocityRPM()*11, SparkBase.ControlType.kVelocity);
+    m_pidControllerFeeder.setSetpoint(getDesiredVelocityRPM(distance)*11, SparkBase.ControlType.kVelocity);
+    m_pidControllerIndexer.setSetpoint(getDesiredVelocityRPM(distance)*12, SparkBase.ControlType.kVelocity);
     //feederMotor.setReference(0.5); 
     //indexerMotor.set(0.5); 
     System.out.println("ready");

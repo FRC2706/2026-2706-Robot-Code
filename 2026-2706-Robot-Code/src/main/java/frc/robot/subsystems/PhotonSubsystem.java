@@ -25,7 +25,7 @@ public class PhotonSubsystem extends SubsystemBase {
     private static final double kCameraHeight = 0.44; // assigns camera height in meters
     private static final double kTargetHeight = 1.22; // assigns target height in meters // TODO: change this so it changes based on APrilTag ID
     private static double kCameraPitch = 30; // assigns camera angle in radians
-    private double m_planarDistance;       
+    public double m_planarDistance = 0;       
 
     public PhotonSubsystem() { //private? or public?
         camera1 = new PhotonCamera("Arducam"); //make sure this name matches the camera name in photonvision interface
