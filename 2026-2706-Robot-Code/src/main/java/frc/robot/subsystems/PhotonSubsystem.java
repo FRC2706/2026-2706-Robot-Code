@@ -28,7 +28,7 @@ public class PhotonSubsystem extends SubsystemBase {
     public double m_planarDistance = 0;       
 
     public PhotonSubsystem() { //private? or public?
-        camera1 = new PhotonCamera("Arducam"); //make sure this name matches the camera name in photonvision interface
+        camera1 = new PhotonCamera("Arducam_OV9281_USB_CameraLeft"); //make sure this name matches the camera name in photonvision interface
     }
 
     @Override

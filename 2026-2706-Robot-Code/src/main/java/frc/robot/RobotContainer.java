@@ -11,6 +11,7 @@ import frc.robot.commands.ExampleCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
+import frc.robot.commands.PhotonAlignToTargetCommand;
 
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
@@ -54,6 +55,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final AutoSelectorKnobSubsystem m_AutoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -62,9 +64,6 @@ public class RobotContainer {
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
   // private final CommandXboxController m_driverController =
   //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
-
-  //Photon Vision
-  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -117,11 +116,13 @@ public class RobotContainer {
     intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
 
-    m_operatorController.rightBumper().whileTrue(new StartShooter(m_ShooterSubsystem, () -> m_PhotonSubsystem.m_planarDistance)).onFalse(new StopShooter(m_ShooterSubsystem));
+    m_operatorController.rightBumper().whileTrue(new StartShooter(m_ShooterSubsystem,() -> m_PhotonSubsystem.m_planarDistance)).onFalse(new StopShooter(m_ShooterSubsystem));
+  
+    driverController.rightTrigger().whileTrue(new PhotonAlignToTargetCommand(m_PhotonSubsystem, m_swerveSubsystem));
   }
 
   /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
+   * Use this to pass the autonomous command to the main {@link Robot} class.S
    *
    * @return the command to run in autonomous
    */
