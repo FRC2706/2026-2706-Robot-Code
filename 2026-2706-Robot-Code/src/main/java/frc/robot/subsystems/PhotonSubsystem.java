@@ -29,45 +29,44 @@ public class PhotonSubsystem extends SubsystemBase {
 
     public PhotonSubsystem() { //private? or public?
         camera1 = new PhotonCamera("Arducam"); //make sure this name matches the camera name in photonvision interface
-        //m_SwerveSubsystem = swerveSubsystem;
     }
 
     @Override
     public void periodic() {
-        result = camera1.getLatestResult();
+        if (camera1 != null) {
+            result = camera1.getLatestResult();
 
-        if (result.hasTargets()) {
+            if (result.hasTargets()) {
+                target = result.getBestTarget();
+            }
+
+            else {
+                target = null;
+            }
+
+            // If no targets, skip calculations
+            if (!result.hasTargets()) {
+                target = null;
+                return;
+            }
+
+            // We have a target
             target = result.getBestTarget();
-            System.out.println(target);
-        }
 
+            // Get the AprilTag's known field pose
+            Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
+            if (tagPoseOpt.isEmpty()) {
+                System.out.println("Tag pose not found in layout for ID " + getTagID());
+                return;
+            }
+            Pose3d tagPose3d = tagPoseOpt.get();
+            
+            m_planarDistance = (kTargetHeight-kCameraHeight)/(Math.tan((Math.PI/180*getPitch())+(Math.PI/180*kCameraPitch)));
+        }
         else {
-            System.out.println("No target found");
             target = null;
-
+            result = null;
         }
-
-        // If no targets, skip calculations
-        if (!result.hasTargets()) {
-            System.out.println("No target found");
-            target = null;
-            return;
-        }
-
-        // We have a target
-        target = result.getBestTarget();
-        System.out.println(target);
-
-        // Get the AprilTag's known field pose
-        Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
-        if (tagPoseOpt.isEmpty()) {
-            System.out.println("Tag pose not found in layout for ID " + getTagID());
-            return;
-        }
-        Pose3d tagPose3d = tagPoseOpt.get();
-        
-        m_planarDistance = (kTargetHeight-kCameraHeight)/(Math.tan((Math.PI/180*getPitch())+(Math.PI/180*kCameraPitch)));
-        
     }
 
     // Returns true if the camera detects an AprilTag
