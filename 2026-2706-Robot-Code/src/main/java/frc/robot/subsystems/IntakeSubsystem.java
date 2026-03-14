@@ -21,8 +21,8 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.spark.SparkSoftLimit.SoftLimitDirection;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import frc.robot.Constants;
-import frc.robot.Constants.*;
+import frc.robot.UtilityConstants;
+import frc.robot.UtilityConstants.*;
 
 
 
@@ -48,10 +48,10 @@ public class IntakeSubsystem extends SubsystemBase {
      * Initializes the intake motor.
      */
     public IntakeSubsystem() {
-        intakeMotor = new SparkMax(Constants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
+        intakeMotor = new SparkMax(UtilityConstants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
         m_intakeController = intakeMotor.getClosedLoopController();
 
-        intakeUpDownMotor = new SparkMax(Constants.RobotConstants.kIntakeUpDownMotorID, MotorType.kBrushless);
+        intakeUpDownMotor = new SparkMax(UtilityConstants.RobotConstants.kIntakeUpDownMotorID, MotorType.kBrushless);
         intakeUpDownEncoder = intakeUpDownMotor.getEncoder();
         intakeUpDownPID = intakeUpDownMotor.getClosedLoopController();
         
