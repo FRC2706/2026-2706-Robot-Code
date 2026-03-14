@@ -29,7 +29,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 public class AutoPlans extends SubsystemBase {
     // Position 1 Start State: Vel = 0, Rot = -90, x = 3.505, y = 6.344, heading = -90.148, NCL = 0.825
     // Scoring Position 1 Start State: Vel = 0, Rot = -32.471, x = 2.034, y = 5.416, heading = -158.429, NCL = 0.953
-    // Depot Position Start State: Vel = 0, Rot = 180, x = 0.540, y = 5.952, heading = -34.181, NCL 0.840
+    // Depot Position Start State: Vel = 0, Rot = 180, x = 0.644, y = 6.006, heading = -34.181, NCL 0.840
 
     // Centralized Field2d instances used by the robot for dashboard visualization.
     // These are static so other subsystems can update the field visualization without
