@@ -114,7 +114,7 @@ public class RobotContainer {
     intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
 
-    m_operatorController.rightBumper().whileTrue(new StartShooter(m_ShooterSubsystem)).onFalse(new StopShooter(m_ShooterSubsystem));
+    m_operatorController.rightBumper().whileTrue(new StartShooter(m_ShooterSubsystem, () -> 0)).onFalse(new StopShooter(m_ShooterSubsystem));
   }
 
   /**
