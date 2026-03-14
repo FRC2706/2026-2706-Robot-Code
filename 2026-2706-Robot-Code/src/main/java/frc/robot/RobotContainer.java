@@ -11,6 +11,8 @@ import frc.robot.commands.ExampleCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
+import frc.robot.commands.ConstantSpeedDriveCommand;
+import frc.robot.commands.StopConstantSpeedDriveCommand;
 
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
@@ -26,7 +28,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -37,6 +38,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
+
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.StartShooter;
 import frc.robot.commands.StopShooter;
@@ -56,7 +58,7 @@ public class RobotContainer {
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
   // Controller
-  private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController driverController = new CommandXboxController(0);
 
   private final CommandXboxController m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
@@ -92,6 +94,19 @@ public class RobotContainer {
 
     //Zero the gyro such that forward is where the robot is currently looking
     driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
+
+    //Drive at a constant speed while holding down left bumper
+    driverController.leftBumper()
+    .whileTrue(
+      new ConstantSpeedDriveCommand(m_swerveSubsystem,
+        () -> -driverController.getLeftY(), 
+       () -> -driverController.getLeftX(), 
+       () -> -driverController.getRightX(),
+       0.1,
+       0.1,
+       UtilityConstants.RobotConstants.kIntakeSwerveSpeed
+       )
+    );
 
     // Toggle intake ON/OFF
     JoystickButton intakeToggleButton =

@@ -31,6 +31,7 @@ public final class UtilityConstants {
     public static final double kStowPosition = 57;
     public static final double kFloorPosition = 0;
     public static final double kTolerance = 0.3;
+    public static final double kIntakeSwerveSpeed = 1.0;
 
     public static final double kUpDownP = 0.012;
     public static final double kUpDownI = 0.0;
