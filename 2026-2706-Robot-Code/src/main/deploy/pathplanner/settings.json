@@ -28,5 +28,8 @@
   "brModuleY": -0.308,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
-  "robotFeatures": []
+  "robotFeatures": [
+    "{\"name\":\"Shooter\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":-0.235,\"y\":-0.213},\"size\":{\"width\":0.305,\"length\":0.165},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}",
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.495,\"y\":0.0},\"size\":{\"width\":0.73,\"length\":0.203},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
+  ]
 }
