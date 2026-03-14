@@ -50,22 +50,34 @@ public class ConstantSpeedDriveCommand extends Command{
             m_AdjustedOmega = 0;
         }
 
-        //Calculate the scale factor
+        //Get the scaling necessary to make sure the robot maintains a constant speed even while moving diagonally
         m_VScaleFactor = Math.sqrt(Math.pow(m_AdjustedVx,2) + Math.pow(m_AdjustedVy,2));       
         
-        //Make sure speed is not 0 before applying scaling
-        if (m_AdjustedVx != 0){
+        //Make sure the x speed is not 0 before applying scaling
+        if (m_AdjustedVx != 0 && m_VScaleFactor != 0){
+            //Apply scaling
             m_AdjustedVx = m_AdjustedVx / m_VScaleFactor * m_ConstantSpeed;
         }
-        if (m_AdjustedVy != 0){
+        else{
+            //In the event the scale factor is 0; Prevent division by 0 error
+            m_AdjustedVx = 0;
+        }
+
+        //Make sure the y speed is not 0 before applying scaling
+        if (m_AdjustedVy != 0 && m_VScaleFactor != 0){
+            //Apply scalling
             m_AdjustedVy = m_AdjustedVy / m_VScaleFactor * m_ConstantSpeed;
+        }
+        else{
+            //In the event the scale factor is 0; Prevent division by 0 error
+            m_AdjustedVy = 0;
         }
 
         //Drive using adjusted values
         m_SwerveDrive.drive( new Translation2d(
             m_AdjustedVx , 
-            
-            m_AdjustedVy ), 
+
+            m_AdjustedVy), 
             
             m_AdjustedOmega * m_SwerveDrive.getMaximumChassisAngularVelocity(), 
             

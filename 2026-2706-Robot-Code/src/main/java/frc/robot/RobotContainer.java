@@ -95,7 +95,7 @@ public class RobotContainer {
     //Zero the gyro such that forward is where the robot is currently looking
     driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
 
-    //Drive at a constant speed while holding down A
+    //Drive at a constant speed while holding down left bumper
     driverController.leftBumper()
     .whileTrue(
       new ConstantSpeedDriveCommand(m_swerveSubsystem,
@@ -104,11 +104,9 @@ public class RobotContainer {
        () -> -driverController.getRightX(),
        0.1,
        0.1,
-       1.0
+       UtilityConstants.RobotConstants.kIntakeSwerveSpeed
        )
     );
-    
-  
 
     // Toggle intake ON/OFF
     JoystickButton intakeToggleButton =
