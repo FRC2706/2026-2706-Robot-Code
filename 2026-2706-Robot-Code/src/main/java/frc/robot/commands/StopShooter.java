@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class StopShooter extends Command {
   @SuppressWarnings("PMD.UnusedPrivateField")
   private final ShooterSubsystem m_ShooterSubsystem;
-
   /**
    *
    * @param subsystem The subsystem used by this command.

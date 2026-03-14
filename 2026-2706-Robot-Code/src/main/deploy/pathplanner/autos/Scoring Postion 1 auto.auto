@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Position 1"
+            "pathName": "Scoring Position 1"
           }
         },
         {
@@ -38,13 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Hub to Depot"
+            "pathName": "Scoring Position 1 to Depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depot to Hub"
+            "pathName": "Depot to Scoring Position 1"
           }
         },
         {
@@ -70,12 +70,6 @@
           "type": "named",
           "data": {
             "name": "StopShooter"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Hub to Field"
           }
         }
       ]

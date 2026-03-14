@@ -3,15 +3,15 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.5398863636363636,
-        "y": 5.952068181818181
+        "x": 3.505,
+        "y": 6.344433333333334
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.234523651234302,
-        "y": 5.480326239756379
+        "x": 3.502871875745151,
+        "y": 5.519704353269067
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     },
     {
@@ -20,36 +20,18 @@
         "y": 3.977
       },
       "prevControl": {
-        "x": 2.525364716730441,
-        "y": 4.654809529231208
+        "x": 3.5016448460644427,
+        "y": 5.013521616987608
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": -89.48060402281261
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "IntakeOff",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "IntakeUp",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -66,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

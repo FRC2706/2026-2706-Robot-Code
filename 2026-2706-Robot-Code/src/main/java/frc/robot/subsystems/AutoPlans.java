@@ -27,8 +27,9 @@ import frc.robot.commands.StopShooter;
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class AutoPlans extends SubsystemBase {
-
-    PathPlannerAuto DriveForward;
+    // Position 1 Start State: Vel = 0, Rot = -90, x = 3.505, y = 6.344, heading = -90.148, NCL = 0.825
+    // Scoring Position 1 Start State: Vel = 0, Rot = -32.471, x = 2.034, y = 5.416, heading = -158.429, NCL = 0.953
+    // Depot Position Start State: Vel = 0, Rot = 180, x = 0.540, y = 5.952, heading = -34.181, NCL 0.840
 
     // Centralized Field2d instances used by the robot for dashboard visualization.
     // These are static so other subsystems can update the field visualization without
@@ -129,45 +130,24 @@ public class AutoPlans extends SubsystemBase {
                 return null;
             case 0:
 
-                if (DriveForward == null) {
-                    System.out.println("Failed to load Drive_Forward auto");
-                    return null;
-                }
                 return "Drive Forward";
             case 1:
 
-                if (DriveForward == null) {
-                    System.out.println("Failed to load Drive_Forward auto");
-                    return null;
-                }
+
                 return "Do Nothing";
             case 2:
 
-                if (DriveForward == null) {
-                    System.out.println("Failed to load Drive_Forward auto");
-                    return null;
-                }
+
                 return "Hub Auto";
             case 3:
 
-                if (DriveForward == null) {
-                    System.out.println("Failed to load Drive_Forward auto");
-                    return null;
-                }
+
                 return "Position 1 auto";
             case 4:
 
-                if (DriveForward == null) {
-                    System.out.println("Failed to load Drive_Forward auto");
-                    return null;
-                }
                 return "Position 2 auto";
             case 5:
 
-                if (DriveForward == null) {
-                    System.out.println("Failed to load Drive_Forward auto");
-                    return null;
-                }
                 return "Position 3 auto";
         }
     }
