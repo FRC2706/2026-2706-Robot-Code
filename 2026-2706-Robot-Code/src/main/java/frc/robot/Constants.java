@@ -19,4 +19,8 @@ public final class Constants {
   public static class RobotConstants {
     public static final int kSelectorSwitchPort = 0;
   }
+  public static class VisionConstants {
+    // Goal distance from the AprilTag (shooter distance to the net) in meters
+    public static final double kGoalDistance = 1.5; // Adjust this value for optimal shooting distance
+  }
 }
