@@ -96,7 +96,7 @@ public class RobotContainer {
     driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
 
     //Drive at a constant speed while holding down A
-    driverController.a()
+    driverController.leftBumper()
     .whileTrue(
       new ConstantSpeedDriveCommand(m_swerveSubsystem,
         () -> -driverController.getLeftY(), 

@@ -89,14 +89,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public boolean isRPMinRange() {
     double currentRPM = m_encoder.getVelocity();
-    double tolerance = 200;
+    double tolerance = 150;
     System.out.println(currentRPM);
 
     return (Math.abs(currentRPM - getDesiredVelocityRPM()) < tolerance);
   }
 
   public double getDesiredVelocityRPM() {
-    return 2300; 
+    return 3250; 
   }
 
   public void stop() {
