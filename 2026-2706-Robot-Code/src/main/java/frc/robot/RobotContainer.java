@@ -56,7 +56,7 @@ public class RobotContainer {
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
   // Controller
-  private final XboxController driverController = new XboxController(0);
+  private final CommandXboxController driverController = new CommandXboxController(0);
 
   private final CommandXboxController m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
