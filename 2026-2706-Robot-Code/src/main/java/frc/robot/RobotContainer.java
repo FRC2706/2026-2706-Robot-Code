@@ -116,9 +116,15 @@ public class RobotContainer {
     intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
 
-    m_operatorController.rightBumper().whileTrue(new StartShooter(m_ShooterSubsystem,() -> m_PhotonSubsystem.m_planarDistance)).onFalse(new StopShooter(m_ShooterSubsystem));
+    m_operatorController.rightBumper().whileTrue(new StartShooter(m_ShooterSubsystem,() -> m_PhotonSubsystem.getDistance())).onFalse(new StopShooter(m_ShooterSubsystem));
   
-    driverController.rightTrigger().whileTrue(new PhotonAlignToTargetCommand(m_PhotonSubsystem, m_swerveSubsystem));
+    driverController.rightTrigger().whileTrue(new PhotonAlignToTargetCommand(m_PhotonSubsystem, 
+                                                                            m_swerveSubsystem,
+                                                                            () -> -driverController.getLeftY(), 
+                                                                            () -> -driverController.getLeftX(), 
+                                                                            () -> -driverController.getRightX(),
+                                                                            0.1,
+                                                                            0.1));
   }
 
   /**

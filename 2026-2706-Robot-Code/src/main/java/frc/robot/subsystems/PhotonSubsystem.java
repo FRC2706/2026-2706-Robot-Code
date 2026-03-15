@@ -64,6 +64,7 @@ public class PhotonSubsystem extends SubsystemBase {
             m_planarDistance = (kTargetHeight-kCameraHeight)/(Math.tan((Math.PI/180*getPitch())+(Math.PI/180*kCameraPitch)));
         }
         else {
+            System.out.println("camera1 is null");
             target = null;
             result = null;
         }
