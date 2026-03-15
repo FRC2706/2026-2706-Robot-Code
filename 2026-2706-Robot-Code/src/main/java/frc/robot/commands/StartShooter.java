@@ -14,13 +14,15 @@ import java.util.concurrent.TimeUnit;
 public class StartShooter extends Command {
   @SuppressWarnings("PMD.UnusedPrivateField")
   private final ShooterSubsystem m_ShooterSubystsem;
+  private int distance;
 
   /**
    *
    * @param subsystem The subsystem used by this command.
    */
-  public StartShooter(ShooterSubsystem subsystem) {
+  public StartShooter(ShooterSubsystem subsystem, int position) {
     m_ShooterSubystsem = subsystem;
+    distance = position;
     addRequirements(m_ShooterSubystsem);
   }
 
@@ -32,10 +34,10 @@ public class StartShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (m_ShooterSubystsem.isRPMinRange()) {
-      m_ShooterSubystsem.ready();
+    if (m_ShooterSubystsem.isRPMinRange(distance)) {
+      m_ShooterSubystsem.ready(distance);
     } else {
-      m_ShooterSubystsem.spinningUp();
+      m_ShooterSubystsem.spinningUp(distance);
     }
   }
 

@@ -12,6 +12,8 @@ import frc.robot.commands.ResetGyroCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.commands.StartShooter;
+import frc.robot.commands.StopShooter;
 
 import frc.robot.subsystems.AutoSelectorKnobSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -120,22 +122,26 @@ public class RobotContainer {
 
     //Zero the gyro such that forward is where the robot is currently looking
     driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
+    
+    m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, 1)).onFalse(new StopShooter(m_ShooterSubsystem)); 
+    m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, 2)).onFalse(new StopShooter(m_ShooterSubsystem)); 
+    m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, 0)).onFalse(new StopShooter(m_ShooterSubsystem)); 
 
     // Toggle intake ON/OFF
     JoystickButton intakeToggleButton =
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kA.value);
+        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kRightBumper.value);
 
     // Run intake in reverse while held
     JoystickButton reverseButton =
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kB.value);
+        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kLeftBumper.value);
 
     // Toggle intake to go down
-    JoystickButton intakeDownButton =
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kY.value);
+    Trigger intakeDownButton =
+        new Trigger(() -> m_operatorController.getRightTriggerAxis() > 0.1);
 
     // Toggle intake to go up
-    JoystickButton intakeUpButton =
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kX.value);
+    Trigger intakeUpButton =
+        new Trigger(() -> m_operatorController.getLeftTriggerAxis() > 0.1);
 
     intakeDownButton.toggleOnTrue(new IntakeDownCommand(m_intakeSubsystem));
     intakeUpButton.toggleOnTrue(new IntakeUpCommand(m_intakeSubsystem));
