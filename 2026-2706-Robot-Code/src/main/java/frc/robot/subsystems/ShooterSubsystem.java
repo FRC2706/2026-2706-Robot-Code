@@ -96,7 +96,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public double getDesiredVelocityRPM() {
-    return 2300; 
+    return 1950; 
   }
 
   public void stop() {

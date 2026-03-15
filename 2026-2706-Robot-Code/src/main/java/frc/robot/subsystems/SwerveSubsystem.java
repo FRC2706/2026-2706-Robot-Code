@@ -45,7 +45,7 @@ public class SwerveSubsystem extends SubsystemBase{
         Pose2d startingPose;
 
         // Set the verbosity of the telemetry.  HIGH is good for debugging, but may cause performance issues.  Adjust as needed.
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW; 
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.INFO; 
 
         // TODO: Set up different starting positions
         if (redAlliance){
@@ -112,11 +112,11 @@ public class SwerveSubsystem extends SubsystemBase{
             AutoBuilder.configure(
                 this::getPose, // Pass method supplying robot pose
                 this::resetOdometry, // Pass method reseting odometry
-                this::getRobotVelocity, // Pass method supplying robot relative chassis
+                this::getFieldVelocity, // Pass method supplying robot relative chassis
                 (speedsRobotRelative, moduleFeedForwards) -> {this.drive(speedsRobotRelative);}, // Pass method that will drive the robot -- only robot relative chassis speeds
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                        new PIDConstants(5.0, 0.00001, 0.00005), // Translation PID constants
-                        new PIDConstants(0.003, 0.0000025, 0.01) // Rotation PID constants
+                        new PIDConstants(5.0, 0, 0.01), // Translation PID constants
+                        new PIDConstants(0.003, 0, 0.0001) // Rotation PID constants
                 ),  
                 config, // Pass on the config
                 () -> isRedAlliance(), // Check which alliance the robot is on
@@ -204,7 +204,7 @@ public class SwerveSubsystem extends SubsystemBase{
      *
      * @param initialHolonomicPose The pose to set the odometry to
      */
-    public void resetOdometry(Pose2d initialHolonomicPose)
+    public void resetOdometry( Pose2d initialHolonomicPose)
     {
         swerveDrive.resetOdometry(initialHolonomicPose);
     }
@@ -247,7 +247,7 @@ public class SwerveSubsystem extends SubsystemBase{
         swerveDrive.lockPose();
     }
 
-    // Check if the current alliance is the red alliance. Defaults to being on blue alliance
+    // Check if the current alliance is the red alliance. Defaults to being on red alliance
     public boolean isRedAlliance(){
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()){
@@ -259,7 +259,7 @@ public class SwerveSubsystem extends SubsystemBase{
             }
         }
         else{
-            return false;
+            return true;
         }
     }
 
@@ -282,6 +282,11 @@ public class SwerveSubsystem extends SubsystemBase{
     public ChassisSpeeds getRobotVelocity()
     {
         return swerveDrive.getRobotVelocity();
+    }
+
+    //Return field relative velocity
+    public ChassisSpeeds getFieldVelocity(){
+        return swerveDrive.getFieldVelocity();
     }
 
     //Autonmous Path Following Commands

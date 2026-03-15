@@ -5,9 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Position 1"
+            "pathName": "Position 2"
           }
         },
         {
@@ -36,18 +42,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Hub to Depot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Depot to Hub"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -70,12 +64,6 @@
           "type": "named",
           "data": {
             "name": "StopShooter"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Hub to Field"
           }
         }
       ]

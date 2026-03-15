@@ -24,7 +24,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import frc.robot.UtilityConstants;
 import frc.robot.UtilityConstants.*;
 
-
+import com.revrobotics.spark.config.SparkBaseConfig;
 
 /**
  * The Intake class represents the intake subsystem of the robot.
@@ -69,9 +69,10 @@ public class IntakeSubsystem extends SubsystemBase {
                 .forwardSoftLimitEnabled(true)
                 .reverseSoftLimit(RobotConstants.kFloorPosition)
                 .reverseSoftLimitEnabled(true);
+
+            upDownConfig.idleMode(SparkBaseConfig.IdleMode.kBrake);
             intakeUpDownMotor.configure(upDownConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-
+            
 
             SparkMaxConfig speedConfig = new SparkMaxConfig();
             speedConfig.closedLoop
