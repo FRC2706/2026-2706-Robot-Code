@@ -74,7 +74,10 @@ public class AutoPlans extends SubsystemBase {
             eventMap.put("IntakeOn", new RunIntakeCommandForward(intake));
             eventMap.put("IntakeReverse", new RunIntakeCommandReversed(intake));
             eventMap.put("IntakeOff", new RunIntakeCommandForward(intake).withTimeout(0));
-            eventMap.put("StartShooter", new StartShooter(shooter));
+            eventMap.put("StartShooterHub", new StartShooter(shooter,0));
+            eventMap.put("StartShooterTrench", new StartShooter(shooter,3));
+            eventMap.put("StartShooterBackwall", new StartShooter(shooter,2));
+
             eventMap.put("StopShooter", new StopShooter(shooter));
 
             NamedCommands.registerCommands(eventMap);
@@ -130,19 +133,18 @@ public class AutoPlans extends SubsystemBase {
                 return null;
             case 0:
 
-                return "Drive Forward";
+                return null;
             case 1:
 
-
-                return "Do Nothing";
+                return "Hub Auto";
             case 2:
 
 
-                return "Hub Auto";
+                return "Trench to Depot Auto";
             case 3:
 
 
-                return "Position 1 auto";
+                return "Hub Shoot Only Auto";
             case 4:
 
                 return "Position 2 auto";

@@ -11,13 +11,13 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 3.75
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "StartShooter"
+                  "name": "StartShooterHub"
                 }
               }
             ]
@@ -54,13 +54,13 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 9.0
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "StartShooter"
+                  "name": "StartShooterHub"
                 }
               }
             ]

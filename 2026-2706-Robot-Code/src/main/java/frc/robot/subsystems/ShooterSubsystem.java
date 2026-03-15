@@ -87,8 +87,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public boolean isRPMinRange(int position) {
     double currentRPM = m_encoder.getVelocity();
-    double tolerance = 150;
-    System.out.println(currentRPM);
+    double tolerance = 100;
+    //System.out.println(currentRPM);
 
     return (Math.abs(currentRPM - getDesiredVelocityRPM(position)) < tolerance);
   }
@@ -97,11 +97,13 @@ public class ShooterSubsystem extends SubsystemBase {
   public int getDesiredVelocityRPM(int position) {
     switch (position) {
       case 0: // hub
-        return 1950;
+        return 2050;
       case 1: // trench
         return 3250;
       case 2: // back wall
         return 3700;
+      case 3: // Hub side of trench
+        return 3150;
       default:
         return 2650; // this is a fallback RPM, avg of other RPMs
     }

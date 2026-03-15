@@ -109,8 +109,7 @@ public class RobotContainer {
 
   // Now that AutoBuilder is configured, create autos and the chooser
   m_autoPlans = new AutoPlans(m_intakeSubsystem, m_autoSelectorKnobSubsystem, m_ShooterSubsystem);
-  //autoChooser = AutoBuilder.buildAutoChooser(m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode()));
-  autoChooser = AutoBuilder.buildAutoChooser("Drive Forward");
+  autoChooser = AutoBuilder.buildAutoChooser(m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode()));
     SmartDashboard.putData("Auto Mode", autoChooser);
     configureBindings();
 
@@ -165,6 +164,8 @@ public class RobotContainer {
       return selected;
     }
     return null;
+
+    
   }
 }
 
