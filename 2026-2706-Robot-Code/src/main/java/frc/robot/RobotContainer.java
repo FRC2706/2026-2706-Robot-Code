@@ -60,8 +60,6 @@ public class RobotContainer {
 
   // Subsystem
   //private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final AutoSelectorKnobSubsystem m_AutoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
