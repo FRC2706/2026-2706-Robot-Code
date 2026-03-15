@@ -21,8 +21,6 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkClosedLoopController m_pidControllerFeeder; // New
   private final SparkClosedLoopController m_pidControllerIndexer; // New
 
-
-
   public ShooterSubsystem() {
     shooterMotor1 = new SparkMax(UtilityConstants.shooterConstants.MOTOR1_ID, MotorType.kBrushless);
     shooterMotor2 = new SparkMax(UtilityConstants.shooterConstants.MOTOR2_ID, MotorType.kBrushless);
@@ -87,16 +85,26 @@ public class ShooterSubsystem extends SubsystemBase {
     //-------------------------//
   }
 
-  public boolean isRPMinRange() {
+  public boolean isRPMinRange(int position) {
     double currentRPM = m_encoder.getVelocity();
-    double tolerance = 200;
+    double tolerance = 150;
     System.out.println(currentRPM);
 
-    return (Math.abs(currentRPM - getDesiredVelocityRPM()) < tolerance);
+    return (Math.abs(currentRPM - getDesiredVelocityRPM(position)) < tolerance);
   }
 
-  public double getDesiredVelocityRPM() {
-    return 2300; 
+ 
+  public int getDesiredVelocityRPM(int position) {
+    switch (position) {
+      case 0: // hub
+        return 1950;
+      case 1: // trench
+        return 3250;
+      case 2: // back wall
+        return 3700;
+      default:
+        return 2650; // this is a fallback RPM, avg of other RPMs
+    }
   }
 
   public void stop() {
@@ -105,26 +113,21 @@ public class ShooterSubsystem extends SubsystemBase {
     indexerMotor.stopMotor();
   }
 
-  public void spinningUp() {
-    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(), SparkBase.ControlType.kVelocity);
+  public void spinningUp(int position) {
+    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity);
     feederMotor.stopMotor();
     indexerMotor.stopMotor();
-    System.out.println("spinning up");
 
   }
 
-  public void ready() {
-    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(), SparkBase.ControlType.kVelocity);
+  public void ready(int position) {
+    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity);
     
     // figure out how much faster this shoudl go
-    m_pidControllerFeeder.setSetpoint(getDesiredVelocityRPM()*10, SparkBase.ControlType.kVelocity);
-    m_pidControllerIndexer.setSetpoint(getDesiredVelocityRPM()*11, SparkBase.ControlType.kVelocity);
+    m_pidControllerFeeder.setSetpoint(getDesiredVelocityRPM(position)*11, SparkBase.ControlType.kVelocity);
+    m_pidControllerIndexer.setSetpoint(getDesiredVelocityRPM(position)*12, SparkBase.ControlType.kVelocity);
     //feederMotor.setReference(0.5); 
     //indexerMotor.set(0.5); 
-    System.out.println("ready");
 
   }
 }
-
-// 35-40 amps for indexer
-// 
