@@ -13,22 +13,24 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
- 
+import edu.wpi.first.wpilibj.DriverStation;
+
 // Class
 public class PhotonSubsystem extends SubsystemBase {
 
-    private final PhotonCamera camera1; //declares new camera object, not sure if it should be private or private final
+    private final PhotonCamera camera1 = new PhotonCamera("Arducam_OV9281_USB_Camera"); //make sure this name matches the camera name in photonvision interface
+     //declares new camera object, not sure if it should be private or private final
     private PhotonPipelineResult result;
     private PhotonTrackedTarget target;
     public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     private static final double kCameraHeight = 0.44; // assigns camera height in meters
-    private static final double kTargetHeight = 1.22; // assigns target height in meters // TODO: change this so it changes based on APrilTag ID
-    private static double kCameraPitch = 30; // assigns camera angle in radians
+    private static final double kTargetHeight = 1.22; // assigns target height in meters
+    private static double kCameraPitch = 30; // assigns camera angle in degrees
     public double m_planarDistance = 0;       
-
-    public PhotonSubsystem() { //private? or public?
-        camera1 = new PhotonCamera("Arducam_OV9281_USB_CameraLeft"); //make sure this name matches the camera name in photonvision interface
+    public Alliance currentAlliance = Alliance.Red;
+    public PhotonSubsystem() {
     }
 
     @Override
@@ -38,6 +40,13 @@ public class PhotonSubsystem extends SubsystemBase {
 
             if (result.hasTargets()) {
                 target = result.getBestTarget();
+            // Get ID, Yaw, Pitch, Area, Pose Ambiguity (this is a backup/alternative method to the one we did below)
+            int targetId = target.getFiducialId();
+            double yaw = target.getYaw();
+            double pitch = target.getPitch();
+            double area = target.getArea();
+
+
             }
 
             else {
@@ -50,18 +59,23 @@ public class PhotonSubsystem extends SubsystemBase {
                 return;
             }
 
-            // We have a target
-            target = result.getBestTarget();
-
             // Get the AprilTag's known field pose
             Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
             if (tagPoseOpt.isEmpty()) {
-                System.out.println("Tag pose not found in layout for ID " + getTagID());
                 return;
             }
             Pose3d tagPose3d = tagPoseOpt.get();
-            
-            m_planarDistance = (kTargetHeight-kCameraHeight)/(Math.tan((Math.PI/180*getPitch())+(Math.PI/180*kCameraPitch)));
+
+            // Unsure if these calculations raidans or degrees. if radians, remove the (Math.PI/180*) conversion factor
+            //m_planarDistance = (kTargetHeight-kCameraHeight)/(Math.tan((target.getPitch())+(kCameraPitch))); // Unsure if pitch is measured in raidans or degrees, if radians, remove the (Math.PI/180*) conversion factor
+            m_planarDistance = (kTargetHeight-kCameraHeight)/(Math.tan((Math.PI/180*target.getPitch())+(Math.PI/180*kCameraPitch)));
+            double denom = Math.tan(Math.toRadians(target.getPitch()) + Math.toRadians(kCameraPitch));
+                if (Math.abs(denom) < 1e-6) {
+                    m_planarDistance = Double.POSITIVE_INFINITY;
+                } 
+                else {
+                    m_planarDistance = (kTargetHeight - kCameraHeight) / denom;
+                }
         }
         else {
             System.out.println("camera1 is null");
@@ -105,11 +119,36 @@ public class PhotonSubsystem extends SubsystemBase {
         return new Transform3d(target.getBestCameraToTarget().getTranslation(), target.getBestCameraToTarget().getRotation());
     }
 
-    // Returns AprilTag ID, or -1 if no target
-    public int getTagID() {
-        if (!hasTarget()) return -1;
-        return target.getFiducialId();
+
+// Returns AprilTag ID of the detected target, or -1 if no target (or if targets are not one of the 3 listed for each alliance)
+public int getTagID() {
+    Optional<Alliance> allianceOpt = DriverStation.getAlliance();
+    allianceOpt.ifPresent(a -> currentAlliance = a);
+    currentAlliance = allianceOpt.get(); // Update current alliance before checking targets
+    if (!hasTarget()) return -1;
+    
+    int targetId = target.getFiducialId();
+    if (targetId < 0) return -1;
+ 
+    if (currentAlliance == Alliance.Red) {
+        // RED ALLIANCE CODE: only accept 8, 2, 10
+        if (targetId == 8 || targetId == 2 || targetId == 10) {
+            return targetId;
+        } else {
+            return -1;
+        }
+    } else if (currentAlliance == Alliance.Blue) {
+        // BLUE ALLIANCE CODE: only accept 24, 25, 27
+        if (targetId == 24 || targetId == 25 || targetId == 27) {
+            return targetId;
+        } else {
+            return -1;
+        }
     }
+
+    return -1;
+}
+
     // Returns planarDistance calculated in periodic
   public double getDistance() {
         return m_planarDistance;

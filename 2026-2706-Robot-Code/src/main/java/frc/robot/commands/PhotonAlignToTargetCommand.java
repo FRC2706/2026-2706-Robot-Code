@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-// Imports
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.UtilityConstants.VisionConstants;
@@ -12,36 +11,40 @@ import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import java.util.function.DoubleSupplier;
 
-// Class
-/** An example command that uses an example subsystem. */
+/**
+ * Command that rotates the robot to face an AprilTag while allowing the driver
+ * to control translation. Rotation is handled automatically when a tag is
+ * visible, using a simple proportional controller on the tag yaw.
+ */
 public class PhotonAlignToTargetCommand extends Command {
   private final PhotonSubsystem m_photonSubsystem;
   private final SwerveSubsystem m_swerveSubsystem;
-  
-  // Goal distance from the AprilTag (in meters)
+
+  // Goal distance from the AprilTag (in meters) (currently unused)
   private final double goalDistance;
-  
-  // PID/Proportional gains for distance control
-  private static final double kDistanceGain = 0.5; // Proportional gain for forward/backward movement
-  private static final double kYawGain = 0.05; // Proportional gain for rotation
 
-  //Deadband for if the robot should continue rotating -- in degrees
-  private static final double kDeadband = 1;
+  // Gains
+  private static final double kYawGain = 0.05; // units: (rad/s) per radian of yaw error
+  private static final double kDeadbandDeg = 1.0; // degrees
 
-  //Swerve drive variables
+  // Max automatic angular velocity (rad/s)
+  private static final double kMaxAutoOmegaRadPerSec = 0.3;
+
+  // Swerve drive / joystick inputs
   private final DoubleSupplier m_Vx;
   private final DoubleSupplier m_Vy;
   private final DoubleSupplier m_Omega;
-  private final Double m_DriveDeadband;
-  private final Double m_AngleDeadband;
+  private final double m_DriveDeadband;
+  private final double m_AngleDeadband;
 
-  /**
-   * Creates a new PhotonAlignToTargetCommand.
-   *
-   * @param photonSubsystem The PhotonVision subsystem
-   * @param swerveSubsystem The swerve drive subsystem
-   */
-  public PhotonAlignToTargetCommand(PhotonSubsystem photonSubsystem, SwerveSubsystem swerveSubsystem,DoubleSupplier Vx, DoubleSupplier Vy, DoubleSupplier omega, Double driveDeadband, Double angleDeadband) {
+  public PhotonAlignToTargetCommand(
+      PhotonSubsystem photonSubsystem,
+      SwerveSubsystem swerveSubsystem,
+      DoubleSupplier Vx,
+      DoubleSupplier Vy,
+      DoubleSupplier omega,
+      double driveDeadband,
+      double angleDeadband) {
     m_photonSubsystem = photonSubsystem;
     m_swerveSubsystem = swerveSubsystem;
     m_Vx = Vx;
@@ -50,81 +53,78 @@ public class PhotonAlignToTargetCommand extends Command {
     m_DriveDeadband = driveDeadband;
     m_AngleDeadband = angleDeadband;
     this.goalDistance = VisionConstants.kGoalDistance;
-    
+
     addRequirements(photonSubsystem, swerveSubsystem);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("PhotonAlignToTargetCommand started with goal distance: " + goalDistance + " m");
+    System.out.println("PhotonAlignToTargetCommand started (goalDistance = " + goalDistance + " m)");
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // Read joystick inputs
+    double adjustedVx = m_Vx.getAsDouble();
+    double adjustedVy = m_Vy.getAsDouble();
+    double adjustedOmegaJoystick = m_Omega.getAsDouble();
 
-    //Adjusted Vx, Vy, and Omega for controller deadband
-    double m_AdjustedVx = m_Vx.getAsDouble();
-    double m_AdjustedVy = m_Vy.getAsDouble();
-    double m_AdjustedOmega = m_Omega.getAsDouble();
-
-    //Applying deadbands
-    if (Math.abs(m_AdjustedVx) < m_DriveDeadband){
-        m_AdjustedVx = 0;
+    // Apply deadbands
+    if (Math.abs(adjustedVx) < m_DriveDeadband) {
+      adjustedVx = 0.0;
     }
-    if (Math.abs(m_AdjustedVy) < m_DriveDeadband){
-        m_AdjustedVy = 0;
+    if (Math.abs(adjustedVy) < m_DriveDeadband) {
+      adjustedVy = 0.0;
     }
-    if (Math.abs(m_AdjustedOmega) < m_AngleDeadband){
-        m_AdjustedOmega = 0;
+    if (Math.abs(adjustedOmegaJoystick) < m_AngleDeadband) {
+      adjustedOmegaJoystick = 0.0;
     }
 
-    // Check if we can see the target
+    // Scale translation by max linear velocity
+    Translation2d translation =
+        new Translation2d(
+            adjustedVx * m_swerveSubsystem.getMaximumChassisVelocity(),
+            adjustedVy * m_swerveSubsystem.getMaximumChassisVelocity());
+
+    double commandedOmegaRadPerSec;
+
+    // If we don't see a target, use driver's rotation input (scaled to rad/s)
     if (!m_photonSubsystem.hasTarget()) {
-      System.out.println("No target detected");
-      // Drive the robot as if not aligning target
-      m_swerveSubsystem.drive(new Translation2d(m_AdjustedVx * m_swerveSubsystem.getMaximumChassisVelocity(), 
-                              m_AdjustedVy * m_swerveSubsystem.getMaximumChassisVelocity()), 
-                              m_AdjustedOmega * m_swerveSubsystem.getMaximumChassisAngularVelocity(), 
-                              true);
+      // joystick is in [-1..1] (assumption); multiply by maximum chassis angular velocity to produce rad/s
+      commandedOmegaRadPerSec = adjustedOmegaJoystick * m_swerveSubsystem.getMaximumChassisAngularVelocity();
+      m_swerveSubsystem.drive(translation, commandedOmegaRadPerSec, true);
       return;
     }
-    
-    // Get yaw error (left/right)
-    double yawError = m_photonSubsystem.getYaw();
-    
-    //Check if the yawError is in the deadband
-    if (Math.abs(yawError) > kDeadband){
-      // Calculate rotation velocity: proportional to yaw error
-      // Negative yaw = target to the left, positive yaw = target to the right
-      // Convert yaw from degrees to radians for rotation velocity (rad/s)
-      m_AdjustedOmega = -Math.toRadians(yawError) * kYawGain;
-      
-      // Clamp rotation velocity (in rad/s)
-      m_AdjustedOmega = Math.max(-0.3, Math.min(0.3, m_AdjustedOmega));
-    }
-    else{
-      //Prevent rotation if the robot is within the deadband
-      m_AdjustedOmega = 0;
+
+    // We have a target: compute yaw error from vision (degrees)
+    double yawErrorDeg = m_photonSubsystem.getYaw();
+
+    // If inside the deadband, don't auto-rotate
+    if (Math.abs(yawErrorDeg) <= kDeadbandDeg) {
+      // Hold rotation (or allow small joystick override - here we hold)
+      commandedOmegaRadPerSec = 0.0;
+    } else {
+      // Convert yaw error (deg -> rad), apply proportional gain (gain units: rad/s per rad)
+      double yawErrorRad = Math.toRadians(yawErrorDeg);
+      double omegaFromVision = -yawErrorRad * kYawGain; // negative sign to reduce yaw error direction
+
+      // Clamp to maximum automatic angular velocity
+      commandedOmegaRadPerSec = Math.max(-kMaxAutoOmegaRadPerSec, Math.min(kMaxAutoOmegaRadPerSec, omegaFromVision));
     }
 
-    m_swerveSubsystem.drive(new Translation2d(m_AdjustedVx * m_swerveSubsystem.getMaximumChassisVelocity(), 
-                              m_AdjustedVy * m_swerveSubsystem.getMaximumChassisVelocity()), 
-                              m_AdjustedOmega, 
-                              true);
+    // Drive with driver translations and auto-rotation (rad/s)
+    m_swerveSubsystem.drive(translation, commandedOmegaRadPerSec, true);
   }
 
   @Override
   public void end(boolean interrupted) {
-    // Stop the robot when the command ends
-    //m_swerveSubsystem.drive(new Translation2d(0, 0), 0, true);
-    System.out.println("PhotonAlignToTargetCommand ended");
+    // Stop the drivetrain when the command ends
+    m_swerveSubsystem.drive(new Translation2d(0.0, 0.0), 0.0, true);
+    System.out.println("PhotonAlignToTargetCommand ended (interrupted=" + interrupted + ")");
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return false; // run until canceled
   }
 }
