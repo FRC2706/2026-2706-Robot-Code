@@ -24,6 +24,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "StopShooter"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Hub Only"

@@ -1,0 +1,160 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartShooterTrench"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 4.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Trench To Outpost"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareShooterTrench"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Outpost to Trench"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeDown"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartShooterTrench"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 8.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R Trench to Neutral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeOn"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R Neutral Pick Up"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeUp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrepareShooterTrench"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R Neutral to Trench"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartShooterTrench"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 8.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopShooter"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
