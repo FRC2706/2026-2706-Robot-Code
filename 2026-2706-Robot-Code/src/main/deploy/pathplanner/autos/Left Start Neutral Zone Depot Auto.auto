@@ -36,15 +36,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "IntakeDown"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "L Trench to Neutral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeDown"
           }
         },
         {
@@ -63,6 +63,12 @@
           "type": "named",
           "data": {
             "name": "IntakeOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeUp"
           }
         },
         {
@@ -106,6 +112,18 @@
           "type": "path",
           "data": {
             "pathName": "Trench to Depot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeDown"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
           }
         },
         {

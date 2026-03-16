@@ -145,22 +145,19 @@ public class AutoPlans extends SubsystemBase {
             case 0:
                 return null; //Do nothing
             case 1:
-
-                return "Hub Auto"; // Start at the hub, Shoot, go to depot, go back to hub, shoot
+                return "Middle Start Auto"; 
             case 2:
-
-
-                return "Trench to Depot Auto"; // Start at trench, shoot, go to depot, go back to trench, shoot
+                return "Right Start Outpost Auto"; 
             case 3:
-
-
-                return "Hub Shoot Only Auto"; // Start at hub, shoot; Should be done manually instead of PathPlanner
+                return "Middle Start Depot Auto"; 
             case 4:
-
-                return "Trench Shoot Only Auto";
+                return "Right Start Outpost Neutral Zone Auto";
             case 5:
-
-                return "Position 3 auto";
+                return "Left Start Neutral Zone Depot Auto";
+            case 6:
+                return "Middle Start Outpost Auto";
+            case 7:
+                return "Right Start Neutral Zone Auto";
         }
     }
     

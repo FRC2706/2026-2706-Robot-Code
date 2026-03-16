@@ -32,55 +32,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Trench To Outpost"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PrepareShooterTrench"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Outpost to Trench"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "StartShooterTrench"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 8.0
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StopShooter"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "R Trench to Neutral"
           }
         },
@@ -133,13 +84,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "StartShooterTrench"
+                  "name": "StartShooter"
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 8.0
+                  "waitTime": 12.0
                 }
               }
             ]
