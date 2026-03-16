@@ -26,6 +26,8 @@ import frc.robot.commands.RunIntakeCommandReversed;
 import frc.robot.commands.StartShooter;
 import frc.robot.commands.StopShooter;
 import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
+import frc.robot.commands.PrepareShooter;
 
 public class AutoPlans extends SubsystemBase {
     // Position 1 Start State: Vel = 0, Rot = -90, x = 3.505, y = 6.344, heading = -90.148, NCL = 0.825
@@ -70,14 +72,22 @@ public class AutoPlans extends SubsystemBase {
     public void registerCommands(IntakeSubsystem intake, ShooterSubsystem shooter){
         try {
             Map<String, Command> eventMap = new HashMap<>();
+
             eventMap.put("IntakeUp", new IntakeUpCommand(intake));
             eventMap.put("IntakeDown", new IntakeDownCommand(intake));
             eventMap.put("IntakeOn", new RunIntakeCommandForward(intake));
             eventMap.put("IntakeReverse", new RunIntakeCommandReversed(intake));
             eventMap.put("IntakeOff", new RunIntakeCommandForward(intake).withTimeout(0));
-            eventMap.put("StartShooterHub", new StartShooter(shooter,0));
-            eventMap.put("StartShooterTrench", new StartShooter(shooter,3));
-            eventMap.put("StartShooterBackwall", new StartShooter(shooter,2));
+
+            eventMap.put("StartShooterHub", new StartShooter(shooter,shooterPositions.HUB));
+            eventMap.put("StartShooterTrench", new StartShooter(shooter,shooterPositions.TRENCH_CLOSE));
+            eventMap.put("StartShooterDepot", new StartShooter(shooter,shooterPositions.DEPOT));
+            eventMap.put("StartShooterOutpost", new StartShooter(shooter, shooterPositions.OUTPOST));
+
+            eventMap.put("PrepareShooterHub", new PrepareShooter(shooter,shooterPositions.HUB));
+            eventMap.put("PrepareShooterTrench", new PrepareShooter(shooter,shooterPositions.TRENCH_CLOSE));
+            eventMap.put("PrepareShooterDepot", new PrepareShooter(shooter,shooterPositions.DEPOT));
+            eventMap.put("PrepaerShooterOutpost", new PrepareShooter(shooter,shooterPositions.OUTPOST));
 
             eventMap.put("StopShooter", new StopShooter(shooter));
 

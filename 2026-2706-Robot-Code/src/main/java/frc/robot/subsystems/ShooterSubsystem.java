@@ -9,6 +9,7 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.UtilityConstants;
 import frc.robot.UtilityConstants.shooterConstants;
+import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor1;
@@ -96,14 +97,16 @@ public class ShooterSubsystem extends SubsystemBase {
  
   public int getDesiredVelocityRPM(int position) {
     switch (position) {
-      case 0: // hub
+      case shooterPositions.HUB: 
         return 2050;
-      case 1: // trench
+      case shooterPositions.TRENCH_FAR: 
         return 3250;
-      case 2: // back wall
+      case shooterPositions.DEPOT:
         return 3700;
-      case 3: // Hub side of trench
+      case shooterPositions.TRENCH_CLOSE: 
         return 3150;
+      case shooterPositions.OUTPOST:
+        return 4030;
       default:
         return 2650; // this is a fallback RPM, avg of other RPMs
     }

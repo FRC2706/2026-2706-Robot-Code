@@ -42,6 +42,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "PrepareShooterHub"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Outpost to Hub"
