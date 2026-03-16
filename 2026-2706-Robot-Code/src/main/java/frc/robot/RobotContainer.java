@@ -6,8 +6,6 @@ package frc.robot;
 
 import frc.robot.UtilityConstants.OperatorConstants;
 
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
@@ -16,9 +14,6 @@ import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.AutoSelectorKnobSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -26,14 +21,8 @@ import edu.wpi.first.cameraserver.CameraServer;
 import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
@@ -50,7 +39,6 @@ import frc.robot.commands.StopShooter;
 public class RobotContainer {
 
   // Subsystem
-  //private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final AutoSelectorKnobSubsystem m_AutoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
@@ -60,8 +48,6 @@ public class RobotContainer {
 
   private final CommandXboxController m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
-  // private final CommandXboxController m_driverController =
-  //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -77,19 +63,12 @@ public class RobotContainer {
        0.1
        )
     );
-
     // Configure the trigger bindings
     configureBindings();
-
     CameraServer.startAutomaticCapture();
   }
 
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    //new Trigger(m_exampleSubsystem::exampleCondition)
-        //.onTrue(new ExampleCommand(m_exampleSubsystem));
-
-
     //Zero the gyro such that forward is where the robot is currently looking
     driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
     
@@ -125,13 +104,9 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-    //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-
   /** This function returns the autonomous command based on the knob position. */
   public Command getAutonomousCommand() {
-    int mode = m_AutoSelectorKnobSubsystem.getAutoMode();
-    System.out.println("Auto Mode = " + mode); // debug print
-    
+    int mode = m_AutoSelectorKnobSubsystem.getAutoMode();    
     switch (mode) {
       case 0:
         return null; // do nothing
@@ -139,34 +114,24 @@ public class RobotContainer {
         return null;
       case 2:
         return new PrintCommand("2");
-        //DriveTimed(2.0, 0.3, m_robotDrive);
       case 3:
         return new PrintCommand("3");
-        //null;
       case 4:
         return new PrintCommand("4");
-        //null;
       case 5:
         return new PrintCommand("5");
-        //null;
       case 6:
         return new PrintCommand("6");
-        //null;
       case 7:
         return new PrintCommand("7");
-        //null;
       case 8:
         return new PrintCommand("8");
-        //null;
       case 9:
         return new PrintCommand("9");
-        //null;
       case 10:
         return new PrintCommand("10");
-        //null;
       case 11:
         return new PrintCommand("11");
-        //null;
       default:
         return null;
     }

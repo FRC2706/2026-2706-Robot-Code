@@ -6,10 +6,6 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-
-import java.util.concurrent.TimeUnit;
-
 
 public class StartShooter extends Command {
   @SuppressWarnings("PMD.UnusedPrivateField")

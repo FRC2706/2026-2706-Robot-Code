@@ -75,10 +75,5 @@ public final class UtilityConstants {
                                indexerkD = 0,
                                indexerkFF = 0.00015;
   }
-
-
-
-    
-    
-  }
+}
 
