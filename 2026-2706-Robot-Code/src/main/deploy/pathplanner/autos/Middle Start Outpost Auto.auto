@@ -30,12 +30,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Hub to Outpost"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
