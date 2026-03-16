@@ -154,10 +154,10 @@ public class AutoPlans extends SubsystemBase {
             case 3:
 
 
-                return "Hub Shoot Only Auto"; // Start at hub, shoot
+                return "Hub Shoot Only Auto"; // Start at hub, shoot; Should be done manually instead of PathPlanner
             case 4:
 
-                return "Position 2 auto";
+                return "Trench Shoot Only Auto";
             case 5:
 
                 return "Position 3 auto";

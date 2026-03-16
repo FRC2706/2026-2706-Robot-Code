@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.UtilityConstants.OperatorConstants;
+import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -169,8 +171,16 @@ public class RobotContainer {
       //Get the autoname based on autonomous selector switch
       String autoName = m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode());
 
+      //Shooting only at hub is manually pased
+      if (autoName == "Hub Shoot Only Auto"){
+        return Commands.deadline(new StartShooter(m_ShooterSubsystem, shooterPositions.HUB), new WaitCommand(20));
+      }
+      //Shooting only at the right trench is manually passed
+      else if (autoName == "Trench Shoot Only Auto"){
+        return Commands.deadline(new StartShooter(m_ShooterSubsystem, shooterPositions.TRENCH_CLOSE), new WaitCommand(20));
+      }
       //Check that the auto exists
-      if (autoName != null){
+      else if (autoName != null){
         try{
           return new PathPlannerAuto(autoName);
         }
