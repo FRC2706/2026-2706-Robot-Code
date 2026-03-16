@@ -9,30 +9,24 @@
           "data": {
             "commands": [
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 4.0
+                  "name": "StartShooterTrench"
                 }
               },
               {
-                "type": "named",
+                "type": "wait",
                 "data": {
-                  "name": "StartShooterHub"
+                  "waitTime": 4.0
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "StopShooter"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Hub to Outpost"
+            "pathName": "Trench To Outpost"
           }
         },
         {
@@ -44,13 +38,13 @@
         {
           "type": "named",
           "data": {
-            "name": "PrepareShooterHub"
+            "name": "PrepareShooterOutpost"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost to Hub"
+            "pathName": "Outpost Rotate to Hub"
           }
         },
         {
@@ -58,24 +52,18 @@
           "data": {
             "commands": [
               {
-                "type": "wait",
+                "type": "named",
                 "data": {
-                  "waitTime": 9.0
+                  "name": "StartShooterTrench"
                 }
               },
               {
-                "type": "named",
+                "type": "wait",
                 "data": {
-                  "name": "StartShooterHub"
+                  "waitTime": 12.0
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StopShooter"
           }
         }
       ]
