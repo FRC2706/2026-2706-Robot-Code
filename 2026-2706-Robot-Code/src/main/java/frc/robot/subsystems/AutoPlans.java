@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -132,19 +133,18 @@ public class AutoPlans extends SubsystemBase {
             default:
                 return null;
             case 0:
-
-                return null;
+                return null; //Do nothing
             case 1:
 
-                return "Hub Auto";
+                return "Hub Auto"; // Start at the hub, Shoot, go to depot, go back to hub, shoot
             case 2:
 
 
-                return "Trench to Depot Auto";
+                return "Trench to Depot Auto"; // Start at trench, shoot, go to depot, go back to trench, shoot
             case 3:
 
 
-                return "Hub Shoot Only Auto";
+                return "Hub Shoot Only Auto"; // Start at hub, shoot
             case 4:
 
                 return "Position 2 auto";

@@ -158,14 +158,32 @@ public class RobotContainer {
 
   /** This function returns the autonomous command based on the knob position. */
   public Command getAutonomousCommand() {
+
     // Return the command selected on the SendableChooser (built by AutoBuilder).
     Command selected = autoChooser.getSelected();
     if (selected != null) {
       return selected;
     }
-    return null;
+    //Manually create and send the autos -- Happens if smart dashboard has an issue
+    else{
+      //Get the autoname based on autonomous selector switch
+      String autoName = m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode());
 
-    
+      //Check that the auto exists
+      if (autoName != null){
+        try{
+          return new PathPlannerAuto(autoName);
+        }
+        catch (Error e){
+          //In the event the auto does not exist/there is a bug, return a "do nothing" auto
+          return null;
+        }
+      }
+      //Do nothing auto
+      else{
+        return null;
+      }
+    }
   }
 }
 
