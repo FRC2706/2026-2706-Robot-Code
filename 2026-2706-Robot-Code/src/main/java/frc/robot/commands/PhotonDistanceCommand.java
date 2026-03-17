@@ -12,7 +12,7 @@ import frc.robot.subsystems.PhotonSubsystem;
 /** An example command that uses an example subsystem. */
 public class PhotonDistanceCommand extends Command {
   @SuppressWarnings("PMD.UnusedPrivateField")
-  private final PhotonSubsystem m_subsystem;
+  public static PhotonSubsystem m_subsystem;
 
   /**
    * Creates a new PhotonGetDistance.
@@ -25,7 +25,9 @@ public class PhotonDistanceCommand extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+
+  }
   // Called every time the scheduler runs while the command is scheduled.
 
   @Override

@@ -28,7 +28,9 @@ public class PhotonSubsystem extends SubsystemBase {
     private static final double kCameraHeight = 0.44; // assigns camera height in meters
     private static final double kTargetHeight = 1.22; // assigns target height in meters
     private static double kCameraPitch = 30; // assigns camera angle in degrees
-    public double m_planarDistance = 0;       
+    public double m_planarDistance = 0;     
+    public int m_roundedPlanarDistance = 0; // Rounded planar distance stored as int
+    public double m_lastKnownDistance = 0; // Last known distance stored as double
     public Alliance currentAlliance = Alliance.Red;
     public PhotonSubsystem() {
     }
@@ -40,13 +42,6 @@ public class PhotonSubsystem extends SubsystemBase {
 
             if (result.hasTargets()) {
                 target = result.getBestTarget();
-            // Get ID, Yaw, Pitch, Area, Pose Ambiguity (this is a backup/alternative method to the one we did below)
-            int targetId = target.getFiducialId();
-            double yaw = target.getYaw();
-            double pitch = target.getPitch();
-            double area = target.getArea();
-
-
             }
 
             else {
@@ -66,16 +61,22 @@ public class PhotonSubsystem extends SubsystemBase {
             }
             Pose3d tagPose3d = tagPoseOpt.get();
 
-            // Unsure if these calculations raidans or degrees. if radians, remove the (Math.PI/180*) conversion factor
-            //m_planarDistance = (kTargetHeight-kCameraHeight)/(Math.tan((target.getPitch())+(kCameraPitch))); // Unsure if pitch is measured in raidans or degrees, if radians, remove the (Math.PI/180*) conversion factor
-            m_planarDistance = (kTargetHeight-kCameraHeight)/(Math.tan((Math.PI/180*target.getPitch())+(Math.PI/180*kCameraPitch)));
-            double denom = Math.tan(Math.toRadians(target.getPitch()) + Math.toRadians(kCameraPitch));
-                if (Math.abs(denom) < 1e-6) {
-                    m_planarDistance = Double.POSITIVE_INFINITY;
-                } 
-                else {
-                    m_planarDistance = (kTargetHeight - kCameraHeight) / denom;
-                }
+            // Find the distance between the camera and the target in meters. Convert degrees to radians because that's what Math.tan expects.
+            double denominator = Math.tan(Math.toRadians(target.getPitch()) + Math.toRadians(kCameraPitch));
+            if (Math.abs(denominator) <= 0) {
+                // sentinel for invalid / infinite distance
+                m_planarDistance = 0;
+            } 
+            if (denominator == 0){
+                m_planarDistance = 0;
+            }
+            else {
+                double planar = (kTargetHeight - kCameraHeight) / denominator;
+                // store as int (rounded) and as double (non-rounded)
+                m_roundedPlanarDistance = (int) Math.round(planar);
+                m_planarDistance = planar;
+                m_lastKnownDistance = m_planarDistance;
+            }
         }
         else {
             System.out.println("camera1 is null");
@@ -149,9 +150,21 @@ public int getTagID() {
     return -1;
 }
 
-    // Returns planarDistance calculated in periodic
+public void setLastKnownDistance(double fallbackDistance) {
+    if (hasTarget() && m_planarDistance >= 0) { // only use measurement if there is a valid target and distance is non-negative
+        m_lastKnownDistance = (double) m_planarDistance; // store the last known distance as a double for more precise fallback calculations
+    } 
+    else {
+        m_lastKnownDistance = fallbackDistance;
+    }
+}
+
   public double getDistance() {
+    // If there's no detected target, distance is set to the last known value, but if there has never been a target, return 0
+    if (hasTarget() == true) {
         return m_planarDistance;
+    }
+        return m_lastKnownDistance;
   }
 
   // Returns the 3D slant distance (direct distance to AprilTag)
