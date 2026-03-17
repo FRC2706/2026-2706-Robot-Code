@@ -43,13 +43,13 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final AutoSelectorKnobSubsystem m_AutoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  
+  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   private final CommandXboxController m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
-  private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
+  private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(m_PhotonSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -81,12 +81,11 @@ public class RobotContainer {
       // Toggle intake ON/OFF
     JoystickButton intakeToggleButton =
         new JoystickButton(m_operatorController.getHID(), XboxController.Button.kRightBumper.value);
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kRightBumper.value);
 
     // Run intake in reverse while held
     JoystickButton reverseButton =
         new JoystickButton(m_operatorController.getHID(), XboxController.Button.kLeftBumper.value);
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kLeftBumper.value);
+
 
     // Toggle intake to go down
     Trigger intakeDownButton =
