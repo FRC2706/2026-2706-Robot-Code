@@ -104,7 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
       case 2: // back wall
         return 3700;
       case 3: // variable shooting using the rounded photon distance
-        return m_PhotonSubsystem.getDistance(); 
+        return (int) Math.round(5.4627 * Math.pow(m_PhotonSubsystem.getDistance(), 2) + 495.68047 * m_PhotonSubsystem.getDistance() + 2050); 
       default:
         return 2650; // this is a fallback RPM, avg of other RPMs
     }

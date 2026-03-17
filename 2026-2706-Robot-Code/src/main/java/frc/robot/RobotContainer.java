@@ -67,7 +67,7 @@ public class RobotContainer {
     );
     // Configure the trigger bindings
     configureBindings();
-    CameraServer.startAutomaticCapture();
+    //CameraServer.startAutomaticCapture();
   }
 
   private void configureBindings() {

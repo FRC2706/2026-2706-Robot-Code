@@ -72,7 +72,11 @@ public class PhotonSubsystem extends SubsystemBase {
             if (Math.abs(denominator) < 1e-6) {
                 // sentinel for invalid / infinite distance
                 m_planarDistance = -1;
-            } else {
+            } 
+            if (denominator == 0){
+                m_roundedPlanarDistance = -1;
+            }
+            else {
                 double planar = (kTargetHeight - kCameraHeight) / denominator;
                 // store as int (rounded)
                 m_roundedPlanarDistance = (int) Math.round(planar);
