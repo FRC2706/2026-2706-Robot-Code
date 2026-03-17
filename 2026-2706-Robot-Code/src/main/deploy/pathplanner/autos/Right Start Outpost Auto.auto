@@ -9,15 +9,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "StartShooterTrench"
-                }
-              },
-              {
                 "type": "wait",
                 "data": {
                   "waitTime": 4.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartShooterTrench"
                 }
               }
             ]
@@ -42,12 +42,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "PrepareShooterOutpost"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Outpost Rotate to Hub"
@@ -58,15 +52,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "StartShooterTrench"
-                }
-              },
-              {
                 "type": "wait",
                 "data": {
                   "waitTime": 12.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartShooterTrench"
                 }
               }
             ]

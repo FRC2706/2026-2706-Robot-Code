@@ -9,15 +9,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "StartShooterHub"
-                }
-              },
-              {
                 "type": "wait",
                 "data": {
                   "waitTime": 4.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartShooterHub"
                 }
               }
             ]
@@ -48,15 +48,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "IntakeOn"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Depot Pick Up"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Depot Pick Up"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeOn"
+                }
+              }
+            ]
           }
         },
         {
@@ -78,12 +85,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "PrepareShooterDepot"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Depot Rotate to Hub"
@@ -94,15 +95,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "StartShooterDepot"
-                }
-              },
-              {
                 "type": "wait",
                 "data": {
                   "waitTime": 12.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartShooterDepot"
                 }
               }
             ]
