@@ -30,6 +30,7 @@ public class PhotonSubsystem extends SubsystemBase {
     private static double kCameraPitch = 30; // assigns camera angle in degrees
     public double m_planarDistance = 0;     
     public int m_roundedPlanarDistance = 0; // Rounded planar distance stored as int
+    public double m_lastKnownDistance = 0; // Last known distance stored as double
     public Alliance currentAlliance = Alliance.Red;
     public PhotonSubsystem() {
     }
@@ -41,13 +42,6 @@ public class PhotonSubsystem extends SubsystemBase {
 
             if (result.hasTargets()) {
                 target = result.getBestTarget();
-            // Get ID, Yaw, Pitch, Area, Pose Ambiguity (this is a backup/alternative method to the one we did below)
-            int targetId = target.getFiducialId();
-            double yaw = target.getYaw();
-            double pitch = target.getPitch();
-            double area = target.getArea();
-
-
             }
 
             else {
@@ -81,6 +75,7 @@ public class PhotonSubsystem extends SubsystemBase {
                 // store as int (rounded) and as double (non-rounded)
                 m_roundedPlanarDistance = (int) Math.round(planar);
                 m_planarDistance = planar;
+                m_lastKnownDistance = m_planarDistance;
             }
         }
         else {
@@ -155,15 +150,21 @@ public int getTagID() {
     return -1;
 }
 
-    // Returns PlanarDistance calculated in periodic
-  public double getDistance() {
-    if (m_planarDistance <= 0){
-        return 0;
-    }
+public void setLastKnownDistance(double fallbackDistance) {
+    if (hasTarget() && m_planarDistance >= 0) { // only use measurement if there is a valid target and distance is non-negative
+        m_lastKnownDistance = (double) m_planarDistance; // store the last known distance as a double for more precise fallback calculations
+    } 
     else {
+        m_lastKnownDistance = fallbackDistance;
+    }
+}
+
+  public double getDistance() {
+    // If there's no detected target, distance is set to the last known value, but if there has never been a target, return 0
+    if (hasTarget() == true) {
         return m_planarDistance;
     }
-
+        return m_lastKnownDistance;
   }
 
   // Returns the 3D slant distance (direct distance to AprilTag)
