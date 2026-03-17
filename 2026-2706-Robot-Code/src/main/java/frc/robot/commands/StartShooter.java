@@ -47,4 +47,3 @@ public class StartShooter extends Command {
     return false;
   }
 }
-

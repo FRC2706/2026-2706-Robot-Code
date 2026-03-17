@@ -10,18 +10,21 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.UtilityConstants;
 import frc.robot.UtilityConstants.shooterConstants;
 
+
 public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor1;
   private final SparkMax shooterMotor2;
   private final SparkMax feederMotor;
   private final SparkMax indexerMotor;
+  private final PhotonSubsystem m_PhotonSubsystem;
   
   private final RelativeEncoder m_encoder;
   private final SparkClosedLoopController m_pidControllerShooter; // New
   private final SparkClosedLoopController m_pidControllerFeeder; // New
   private final SparkClosedLoopController m_pidControllerIndexer; // New
 
-  public ShooterSubsystem() {
+  public ShooterSubsystem(PhotonSubsystem photonSubsystem) {
+    m_PhotonSubsystem = photonSubsystem;
     shooterMotor1 = new SparkMax(UtilityConstants.shooterConstants.MOTOR1_ID, MotorType.kBrushless);
     shooterMotor2 = new SparkMax(UtilityConstants.shooterConstants.MOTOR2_ID, MotorType.kBrushless);
     feederMotor = new SparkMax(UtilityConstants.shooterConstants.FEEDER_MOTOR_ID, MotorType.kBrushless);
@@ -92,7 +95,6 @@ public class ShooterSubsystem extends SubsystemBase {
     return (Math.abs(currentRPM - getDesiredVelocityRPM(position)) < tolerance);
   }
 
- 
   public int getDesiredVelocityRPM(int position) {
     switch (position) {
       case 0: // hub
@@ -101,6 +103,8 @@ public class ShooterSubsystem extends SubsystemBase {
         return 3250;
       case 2: // back wall
         return 3700;
+      case 3: // variable shooting using the photon distance with a quadratic regression formula (soft limit of 3250 RPM)
+        return Math.min((int) Math.round(5.4627 * Math.pow(m_PhotonSubsystem.getDistance(), 2) + 495.68047 * m_PhotonSubsystem.getDistance() + 2050), 3250); 
       default:
         return 2650; // this is a fallback RPM, avg of other RPMs
     }
