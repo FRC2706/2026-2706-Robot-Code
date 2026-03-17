@@ -132,3 +132,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   }
 }
+
+// 35-40 amps for indexer
+// 
