@@ -81,12 +81,11 @@ public class RobotContainer {
       // Toggle intake ON/OFF
     JoystickButton intakeToggleButton =
         new JoystickButton(m_operatorController.getHID(), XboxController.Button.kRightBumper.value);
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kRightBumper.value);
 
     // Run intake in reverse while held
     JoystickButton reverseButton =
         new JoystickButton(m_operatorController.getHID(), XboxController.Button.kLeftBumper.value);
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kLeftBumper.value);
+
 
     // Toggle intake to go down
     Trigger intakeDownButton =
