@@ -50,11 +50,11 @@ public class PhotonSubsystem extends SubsystemBase {
             }
             
             // Get the AprilTag's known field pose
-            Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
-            if (tagPoseOpt.isEmpty()) {
-                return;
-            }
-            Pose3d tagPose3d = tagPoseOpt.get();
+            //Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
+            //if (tagPoseOpt.isEmpty()) {
+            //    return;
+            //}
+            //Pose3d tagPose3d = tagPoseOpt.get();
 
             // Find the distance between the camera and the target in meters. Convert degrees to radians because that's what Math.tan expects.
             double denominator = Math.tan(Math.toRadians(target.getPitch()) + Math.toRadians(kCameraPitch));
