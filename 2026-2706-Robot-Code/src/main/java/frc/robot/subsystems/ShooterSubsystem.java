@@ -16,14 +16,15 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor2;
   private final SparkMax feederMotor;
   private final SparkMax indexerMotor;
+  private final PhotonSubsystem m_PhotonSubsystem;
   
   private final RelativeEncoder m_encoder;
   private final SparkClosedLoopController m_pidControllerShooter; // New
   private final SparkClosedLoopController m_pidControllerFeeder; // New
   private final SparkClosedLoopController m_pidControllerIndexer; // New
 
-  public ShooterSubsystem() {
-    m_PhotonSubsystem = new PhotonSubsystem();
+  public ShooterSubsystem(PhotonSubsystem photonSubsystem) {
+    m_PhotonSubsystem = photonSubsystem;
     shooterMotor1 = new SparkMax(UtilityConstants.shooterConstants.MOTOR1_ID, MotorType.kBrushless);
     shooterMotor2 = new SparkMax(UtilityConstants.shooterConstants.MOTOR2_ID, MotorType.kBrushless);
     feederMotor = new SparkMax(UtilityConstants.shooterConstants.FEEDER_MOTOR_ID, MotorType.kBrushless);
@@ -94,7 +95,6 @@ public class ShooterSubsystem extends SubsystemBase {
     return (Math.abs(currentRPM - getDesiredVelocityRPM(position)) < tolerance);
   }
 
-  PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
   public int getDesiredVelocityRPM(int position) {
     switch (position) {
       case 0: // hub
