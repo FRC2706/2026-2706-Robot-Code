@@ -46,14 +46,9 @@ public class PhotonSubsystem extends SubsystemBase {
 
             else {
                 target = null;
-            }
-
-            // If no targets, skip calculations
-            if (!result.hasTargets()) {
-                target = null;
                 return;
             }
-
+            
             // Get the AprilTag's known field pose
             Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
             if (tagPoseOpt.isEmpty()) {
