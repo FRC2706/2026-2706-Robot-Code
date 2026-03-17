@@ -29,7 +29,7 @@ public class PhotonSubsystem extends SubsystemBase {
     private static final double kTargetHeight = 1.22; // assigns target height in meters
     private static double kCameraPitch = 30; // assigns camera angle in degrees
     public double m_planarDistance = 0;     
-    public int m_roundedPlanarDistance = 0; // Rounded planar distance stored as int to be used for shooter distance calculations as it uses int distance values for its RPM lookup table  
+    public int m_roundedPlanarDistance = 0; // Rounded planar distance stored as int
     public Alliance currentAlliance = Alliance.Red;
     public PhotonSubsystem() {
     }
@@ -69,17 +69,18 @@ public class PhotonSubsystem extends SubsystemBase {
 
             // Find the distance between the camera and the target in meters. Convert degrees to radians because that's what Math.tan expects.
             double denominator = Math.tan(Math.toRadians(target.getPitch()) + Math.toRadians(kCameraPitch));
-            if (Math.abs(denominator) < 1e-6) {
+            if (Math.abs(denominator) <= 0) {
                 // sentinel for invalid / infinite distance
-                m_planarDistance = -1;
+                m_planarDistance = 0;
             } 
             if (denominator == 0){
-                m_roundedPlanarDistance = -1;
+                m_planarDistance = 0;
             }
             else {
                 double planar = (kTargetHeight - kCameraHeight) / denominator;
-                // store as int (rounded)
+                // store as int (rounded) and as double (non-rounded)
                 m_roundedPlanarDistance = (int) Math.round(planar);
+                m_planarDistance = planar;
             }
         }
         else {
@@ -154,9 +155,15 @@ public int getTagID() {
     return -1;
 }
 
-    // Returns roundedPlanarDistance calculated in periodic
-  public int getDistance() {
-        return m_roundedPlanarDistance;
+    // Returns PlanarDistance calculated in periodic
+  public double getDistance() {
+    if (m_planarDistance <= 0){
+        return 0;
+    }
+    else {
+        return m_planarDistance;
+    }
+
   }
 
   // Returns the 3D slant distance (direct distance to AprilTag)
