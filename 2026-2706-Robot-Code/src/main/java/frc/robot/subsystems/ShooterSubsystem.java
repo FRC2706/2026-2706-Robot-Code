@@ -9,8 +9,7 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.UtilityConstants;
 import frc.robot.UtilityConstants.shooterConstants;
-import frc.robot.commands.PhotonDistanceCommand;
-import frc.robot.subsystems.PhotonSubsystem;
+
 
 public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor1;
@@ -105,7 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
       case 2: // back wall
         return 3700;
       case 3: // variable shooting using the rounded photon distance
-        return m_PhotonSubsystem.getDistance(); // 
+        return m_PhotonSubsystem.getDistance(); 
       default:
         return 2650; // this is a fallback RPM, avg of other RPMs
     }
