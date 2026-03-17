@@ -75,10 +75,9 @@ public final class UtilityConstants {
                                indexerkD = 0,
                                indexerkFF = 0.00015;
   }
-
-
-
-    
-    
-  }
-
+  
+  public static class VisionConstants {
+    // Goal distance from the AprilTag (shooter distance to the net) in meters
+    public static final double kGoalDistance = 1.5; // Adjust this value for optimal shooting distance
+  }     
+}
