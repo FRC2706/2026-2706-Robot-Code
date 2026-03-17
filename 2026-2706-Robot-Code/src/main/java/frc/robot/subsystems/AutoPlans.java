@@ -160,6 +160,7 @@ public class AutoPlans extends SubsystemBase {
         }
     }
 
+    //Returns a command based on the auto number given
     public Command getAutonomousCommand(int commandIndex){
         switch(commandIndex){
             default:
