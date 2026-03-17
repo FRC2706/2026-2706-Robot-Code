@@ -20,6 +20,7 @@ import swervelib.math.SwerveMath;
 // Imports for pathplanner
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -112,7 +113,7 @@ public class SwerveSubsystem extends SubsystemBase{
             AutoBuilder.configure(
                 this::getPose, // Pass method supplying robot pose
                 this::resetOdometry, // Pass method reseting odometry
-                this::getFieldVelocity, // Pass method supplying robot relative chassis
+                this::getRobotVelocity, // Pass method supplying robot relative chassis
                 (speedsRobotRelative, moduleFeedForwards) -> {this.drive(speedsRobotRelative);}, // Pass method that will drive the robot -- only robot relative chassis speeds
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                         new PIDConstants(5.0, 0.0002, 0.01), // Translation PID constants
@@ -127,6 +128,9 @@ public class SwerveSubsystem extends SubsystemBase{
             // Handle exception as needed
             e.printStackTrace();
         }
+
+        //Prevents issue with java
+        PathfindingCommand.warmupCommand().schedule();
     }
 
     @Override

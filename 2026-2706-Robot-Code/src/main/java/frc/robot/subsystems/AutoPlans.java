@@ -40,6 +40,8 @@ public class AutoPlans extends SubsystemBase {
     private static final Field2d s_mainField = new Field2d();
     private static final Field2d s_autoSelectorField = new Field2d();
 
+    private PathPlannerAuto leftStartNeutralZoneDepotAuto, middleStartAuto, middleStartDepotAuto, middleStartOutpostAuto, rightStartNeutralZoneAuto, rightStartOutpostAuto, rightStartOutpostNeutralZoneAuto, testAuto;
+
     // Mapping of auto mode index -> Pose2d used by the auto-selector visualization.
     private static final Map<Integer, Pose2d> s_autoModePoses = new HashMap<>();
 
@@ -65,7 +67,27 @@ public class AutoPlans extends SubsystemBase {
             // ignore if selector isn't ready
         }
 
+        createAutos();
+
         registerCommands(intake, shooter);
+    }
+
+    /**Make all the Pathplanner autos */
+    public void createAutos(){
+        try{
+            leftStartNeutralZoneDepotAuto = new PathPlannerAuto("Left Start Neutral Zone Depot Auto");
+            middleStartAuto = new PathPlannerAuto("Middle Start Auto");
+            middleStartDepotAuto = new PathPlannerAuto("Middle Start Depot Auto");
+            middleStartOutpostAuto = new PathPlannerAuto("Middle Start Outpost Auto");
+            rightStartNeutralZoneAuto = new PathPlannerAuto("Right Start Neutral Zone Auto");
+            rightStartOutpostAuto = new PathPlannerAuto("Right Start Outpost Auto");
+            rightStartOutpostNeutralZoneAuto = new PathPlannerAuto("Right Start Outpost Neutral Zone Auto");
+            testAuto = new PathPlannerAuto("Test Auto");
+            
+
+        } catch (Throwable t){
+            System.out.println("Failed to create autos.");
+        }
     }
 
     /** Register PathPlanner named commands for intake actions. */
@@ -138,26 +160,26 @@ public class AutoPlans extends SubsystemBase {
         }
     }
 
-    public String getAutonomousCommand(int commandIndex){
+    public Command getAutonomousCommand(int commandIndex){
         switch(commandIndex){
             default:
                 return null;
             case 0:
                 return null; //Do nothing
             case 1:
-                return "Middle Start Auto"; 
+                return middleStartAuto; 
             case 2:
-                return "Right Start Outpost Auto"; 
+                return testAuto; 
             case 3:
-                return "Middle Start Depot Auto"; 
+                return middleStartDepotAuto; 
             case 4:
-                return "Right Start Outpost Neutral Zone Auto";
+                return rightStartOutpostNeutralZoneAuto;
             case 5:
-                return "Left Start Neutral Zone Depot Auto";
+                return leftStartNeutralZoneDepotAuto;
             case 6:
-                return "Middle Start Outpost Auto";
+                return middleStartOutpostAuto;
             case 7:
-                return "Right Start Neutral Zone Auto";
+                return rightStartNeutralZoneAuto;
         }
     }
     
