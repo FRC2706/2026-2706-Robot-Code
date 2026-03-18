@@ -4,7 +4,12 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.UtilityConstants;
 
+import org.littletonrobotics.junction.ConsoleSource.RoboRIO;
+
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.CANdle;
+import com.ctre.phoenix6.signals.RGBWColor;
 
 import edu.wpi.first.math.geometry.Pose2d;
 
@@ -13,7 +18,56 @@ public class AutoSelectorKnobSubsystem extends SubsystemBase {
 
     private final AnalogInput m_knob = new AnalogInput(UtilityConstants.RobotConstants.kSelectorSwitchPort);
 
+    //CANBus used for the candle
+    private final CANBus m_CANBus = new CANBus("rio");
+
+    //Instantiating CANdle
+    private final CANdle m_CANdle = new CANdle(50, m_CANBus);
+
+    //Purple colour for the CANdle
+    private final RGBWColor m_PurpleColour = new RGBWColor(255, 0, 255);
+
+    //No colour for CANdle
+    private final RGBWColor m_BlackColour = new RGBWColor(0,0,0);
+
+    //White colour for the CANdle
+    private final RGBWColor m_WhiteColour = new RGBWColor(255,255,255);
+
+    //Solid colour request for reseting the CANdle
+    private final SolidColor m_ResetRequest = new SolidColor(0, 7).withColor(m_BlackColour);
+
     public AutoSelectorKnobSubsystem() {
+    }
+
+    @Override
+    public void periodic(){
+        if (getAutoMode() == 0){
+            //Light up nothing if the auto mode is 0
+            resetCANdle();
+        }
+        else if (getAutoMode() <= 7){
+            //Light up the same amount of led's as the selected auto's index 
+           lightUpCandle(getAutoMode());
+        }
+    }
+
+    //Reset all the led's on the CANdle
+    public void resetCANdle(){
+        m_CANdle.setControl(m_ResetRequest);
+    }
+
+    //Light up a certain amount of led's with purple. On overflow, the colour will change to white
+    public void lightUpCandle(int ledAmount){
+        //Reset the CANdle first
+        resetCANdle();
+        
+        //Check if the ledAmount will result in an overflow or not
+        if (ledAmount <= 8){
+            m_CANdle.setControl(new SolidColor(0, ledAmount - 1).withColor(m_PurpleColour));
+        }
+        else{
+            m_CANdle.setControl(new SolidColor(0, ledAmount % 8).withColor(m_WhiteColour));
+        }
     }
 
     /**
