@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -65,6 +66,8 @@ public class IntakeSubsystem extends SubsystemBase {
                 .reverseSoftLimitEnabled(true);
 
             upDownConfig.smartCurrentLimit(3, 4);
+
+            upDownConfig.idleMode(IdleMode.kCoast);
 
             intakeUpDownMotor.configure(upDownConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
