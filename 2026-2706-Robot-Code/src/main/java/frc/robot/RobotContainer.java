@@ -9,7 +9,7 @@ import frc.robot.UtilityConstants.OperatorConstants;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
-
+import frc.robot.commands.ClearIndexerCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.RunIntakeCommandForward;
@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.StartShooter;
+import frc.robot.commands.StopIndexerCommand;
 import frc.robot.commands.StopShooter;
 
 /**
@@ -65,7 +66,7 @@ public class RobotContainer {
     );
     // Configure the trigger bindings
     configureBindings();
-    CameraServer.startAutomaticCapture();
+   // CameraServer.startAutomaticCapture();
   }
 
   private void configureBindings() {
@@ -75,6 +76,7 @@ public class RobotContainer {
     m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, 1)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, 2)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, 0)).onFalse(new StopShooter(m_ShooterSubsystem)); 
+    m_operatorController.b().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));
 
     // Toggle intake ON/OFF
     JoystickButton intakeToggleButton =
