@@ -1,16 +1,11 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,16 +13,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import java.util.HashMap;
 import java.util.Map;
 
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.AutoSelectorKnobSubsystem;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
 import frc.robot.commands.StartShooter;
 import frc.robot.commands.StopShooter;
-import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
 import frc.robot.commands.PrepareShooter;
 
