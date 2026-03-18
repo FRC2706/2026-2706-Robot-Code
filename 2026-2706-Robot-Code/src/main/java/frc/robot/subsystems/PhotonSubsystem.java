@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 // Class
 public class PhotonSubsystem extends SubsystemBase {
 
-    private final PhotonCamera camera1 = new PhotonCamera("Arducam_OV9281_USB_Camera"); //make sure this name matches the camera name in photonvision interface
+    public static PhotonCamera camera1 = new PhotonCamera("Arducam_OV9281_USB_Camera"); //make sure this name matches the camera name in photonvision interface
      //declares new camera object, not sure if it should be private or private final
     private PhotonPipelineResult result;
     private PhotonTrackedTarget target;

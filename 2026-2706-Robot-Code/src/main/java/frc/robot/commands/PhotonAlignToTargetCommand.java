@@ -5,11 +5,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.UtilityConstants.VisionConstants;
 import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import java.util.function.DoubleSupplier;
+
 
 /**
  * Command that rotates the robot to face an AprilTag while allowing the driver
@@ -19,12 +21,16 @@ import java.util.function.DoubleSupplier;
 public class PhotonAlignToTargetCommand extends Command {
   private final PhotonSubsystem m_photonSubsystem;
   private final SwerveSubsystem m_swerveSubsystem;
+  private final PIDController m_controller;
 
+  // PID constants - adjust/tune on robot
+  private static final double kP = 0.06; // deg -> deg/s
+  private static final double kI = 0.0;
+  private static final double kD = 0.002;
   // Goal distance from the AprilTag (in meters) (currently unused)
   private final double goalDistance;
 
   // Gains
-  private static final double kYawGain = 0.05; // units: (rad/s) per radian of yaw error
   private static final double kDeadbandDeg = 1.0; // degrees
 
   // Max automatic angular velocity (rad/s)
@@ -45,6 +51,7 @@ public class PhotonAlignToTargetCommand extends Command {
       DoubleSupplier omega,
       double driveDeadband,
       double angleDeadband) {
+    // Initialize fields in a clear order
     m_photonSubsystem = photonSubsystem;
     m_swerveSubsystem = swerveSubsystem;
     m_Vx = Vx;
@@ -54,8 +61,13 @@ public class PhotonAlignToTargetCommand extends Command {
     m_AngleDeadband = angleDeadband;
     this.goalDistance = VisionConstants.kGoalDistance;
 
+    // PID controller operates on degrees (measurement from PhotonSubsystem.getYaw())
+    m_controller = new PIDController(kP, kI, kD);
+    m_controller.enableContinuousInput(-180.0, 180.0);
+    m_controller.setTolerance(kDeadbandDeg);
+
     addRequirements(photonSubsystem, swerveSubsystem);
-  }
+  } 
 
   @Override
   public void initialize() {
@@ -96,25 +108,27 @@ public class PhotonAlignToTargetCommand extends Command {
       return;
     }
 
-    // We have a target: compute yaw error from vision (degrees)
-    double yawErrorDeg = m_photonSubsystem.getYaw();
-
-    // If inside the deadband, don't auto-rotate
-    if (Math.abs(yawErrorDeg) <= kDeadbandDeg) {
-      // Hold rotation (or allow small joystick override - here we hold)
-      commandedOmegaRadPerSec = 0.0;
+    // Decide rotation command: use vision PID when we have a tag, otherwise joystick
+    if (m_photonSubsystem.hasTarget()) {
+      double yawErrorDeg = m_photonSubsystem.getYaw();
+      // PID output is in deg/s (because input is degrees and kP tuned as deg->deg/s)
+      double pidOutDegPerSec = m_controller.calculate(yawErrorDeg, 0.0);
+      // convert deg/s -> rad/s for drivetrain
+      double pidOutRadPerSec = Math.toRadians(pidOutDegPerSec);
+      // clamp
+      commandedOmegaRadPerSec = Math.max(-kMaxAutoOmegaRadPerSec, Math.min(kMaxAutoOmegaRadPerSec, pidOutRadPerSec));
+      if (m_controller.atSetpoint()) {
+        commandedOmegaRadPerSec = 0.0;
+      }
     } else {
-      // Convert yaw error (deg -> rad), apply proportional gain (gain units: rad/s per rad)
-      double yawErrorRad = Math.toRadians(yawErrorDeg);
-      double omegaFromVision = -yawErrorRad * kYawGain; // negative sign to reduce yaw error direction
-
-      // Clamp to maximum automatic angular velocity
-      commandedOmegaRadPerSec = Math.max(-kMaxAutoOmegaRadPerSec, Math.min(kMaxAutoOmegaRadPerSec, omegaFromVision));
+      // No target: use joystick rotation (assumes joystick in [-1..1])
+      commandedOmegaRadPerSec = adjustedOmegaJoystick * m_swerveSubsystem.getMaximumChassisAngularVelocity();
     }
 
-    // Drive with driver translations and auto-rotation (rad/s)
+    // Single drive call per loop; use field-relative control (true)
     m_swerveSubsystem.drive(translation, commandedOmegaRadPerSec, true);
-  }
+    }
+  
 
   @Override
   public void end(boolean interrupted) {
