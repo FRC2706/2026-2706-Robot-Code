@@ -128,7 +128,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
 
     //Get the auto based on autonomous selector switch
-    System.out.println(m_autoSelectorKnobSubsystem.getAutoMode());
     Command auto = m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode());
 
     return auto;
