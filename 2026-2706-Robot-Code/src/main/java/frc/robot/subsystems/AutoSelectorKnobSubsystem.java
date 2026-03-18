@@ -41,14 +41,7 @@ public class AutoSelectorKnobSubsystem extends SubsystemBase {
     private final SolidColor m_ResetRequest = new SolidColor(0, 7).withColor(m_BlackColour);
 
     public AutoSelectorKnobSubsystem() {
-        //Applying configurations to the CANdle
-        CANdleConfiguration m_CaNdleConfiguration = new CANdleConfiguration();
-
-        m_CaNdleConfiguration.LED.BrightnessScalar = 0.5;
-        m_CaNdleConfiguration.LED.StripType = StripTypeValue.RGB;
-        m_CaNdleConfiguration.LED.LossOfSignalBehavior = LossOfSignalBehaviorValue.DisableLEDs;
-
-        m_CANdle.getConfigurator().apply(m_CaNdleConfiguration);
+        configureCANdle();
     }
 
     @Override
@@ -61,6 +54,18 @@ public class AutoSelectorKnobSubsystem extends SubsystemBase {
             //Light up the same amount of led's as the selected auto's index 
            lightUpCandle(getAutoMode());
         }
+    }
+
+    //Configure the CANdle
+    public void configureCANdle(){
+        //Applying configurations to the CANdle
+        CANdleConfiguration m_CaNdleConfiguration = new CANdleConfiguration();
+
+        m_CaNdleConfiguration.LED.BrightnessScalar = 0.5;
+        m_CaNdleConfiguration.LED.StripType = StripTypeValue.RGB;
+        m_CaNdleConfiguration.LED.LossOfSignalBehavior = LossOfSignalBehaviorValue.DisableLEDs;
+
+        m_CANdle.getConfigurator().apply(m_CaNdleConfiguration);
     }
 
     //Reset all the led's on the CANdle
