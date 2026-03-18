@@ -12,6 +12,7 @@ import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import java.util.function.DoubleSupplier;
 
+import org.photonvision.PhotonCamera;
 
 /**
  * Command that rotates the robot to face an AprilTag while allowing the driver
@@ -21,16 +22,18 @@ import java.util.function.DoubleSupplier;
 public class PhotonAlignToTargetCommand extends Command {
   private final PhotonSubsystem m_photonSubsystem;
   private final SwerveSubsystem m_swerveSubsystem;
-  private final PIDController m_controller;
+    private final PhotonCamera m_camera;
+    private final PIDController m_controller;
 
-  // PID constants - adjust/tune on robot
-  private static final double kP = 0.06; // deg -> deg/s
-  private static final double kI = 0.0;
-  private static final double kD = 0.002;
+    // PID constants - adjust these!
+    private final double kP = 0.1;
+    private final double kI = 0.0;
+    private final double kD = 0.0;
   // Goal distance from the AprilTag (in meters) (currently unused)
   private final double goalDistance;
 
   // Gains
+  private static final double kYawGain = 0.05; // units: (rad/s) per radian of yaw error
   private static final double kDeadbandDeg = 1.0; // degrees
 
   // Max automatic angular velocity (rad/s)
@@ -51,9 +54,12 @@ public class PhotonAlignToTargetCommand extends Command {
       DoubleSupplier omega,
       double driveDeadband,
       double angleDeadband) {
-    // Initialize fields in a clear order
+        m_swerveSubsystem = swerveSubsystem;
+        m_camera = photonSubsystem.camera1;
+        m_controller = new PIDController(kP, kI, kD);
+        addRequirements(m_swerveSubsystem);
+    {
     m_photonSubsystem = photonSubsystem;
-    m_swerveSubsystem = swerveSubsystem;
     m_Vx = Vx;
     m_Vy = Vy;
     m_Omega = omega;
@@ -61,12 +67,7 @@ public class PhotonAlignToTargetCommand extends Command {
     m_AngleDeadband = angleDeadband;
     this.goalDistance = VisionConstants.kGoalDistance;
 
-    // PID controller operates on degrees (measurement from PhotonSubsystem.getYaw())
-    m_controller = new PIDController(kP, kI, kD);
-    m_controller.enableContinuousInput(-180.0, 180.0);
-    m_controller.setTolerance(kDeadbandDeg);
-
-    addRequirements(photonSubsystem, swerveSubsystem);
+    addRequirements(photonSubsystem, swerveSubsystem);}
   } 
 
   @Override
@@ -108,25 +109,35 @@ public class PhotonAlignToTargetCommand extends Command {
       return;
     }
 
-    // Decide rotation command: use vision PID when we have a tag, otherwise joystick
-    if (m_photonSubsystem.hasTarget()) {
-      double yawErrorDeg = m_photonSubsystem.getYaw();
-      // PID output is in deg/s (because input is degrees and kP tuned as deg->deg/s)
-      double pidOutDegPerSec = m_controller.calculate(yawErrorDeg, 0.0);
-      // convert deg/s -> rad/s for drivetrain
-      double pidOutRadPerSec = Math.toRadians(pidOutDegPerSec);
-      // clamp
-      commandedOmegaRadPerSec = Math.max(-kMaxAutoOmegaRadPerSec, Math.min(kMaxAutoOmegaRadPerSec, pidOutRadPerSec));
-      if (m_controller.atSetpoint()) {
-        commandedOmegaRadPerSec = 0.0;
-      }
+    // We have a target: compute yaw error from vision (degrees)
+    double yawErrorDeg = m_photonSubsystem.getYaw();
+
+    // If inside the deadband, don't auto-rotate
+    if (Math.abs(yawErrorDeg) <= kDeadbandDeg) {
+      // Hold rotation (or allow small joystick override - here we hold)
+      commandedOmegaRadPerSec = 0.0;
     } else {
-      // No target: use joystick rotation (assumes joystick in [-1..1])
-      commandedOmegaRadPerSec = adjustedOmegaJoystick * m_swerveSubsystem.getMaximumChassisAngularVelocity();
+      // Convert yaw error (deg -> rad), apply proportional gain (gain units: rad/s per rad)
+      double yawErrorRad = Math.toRadians(yawErrorDeg);
+      double omegaFromVision = -yawErrorRad * kYawGain; // negative sign to reduce yaw error direction
+
+      // Clamp to maximum automatic angular velocity
+      commandedOmegaRadPerSec = Math.max(-kMaxAutoOmegaRadPerSec, Math.min(kMaxAutoOmegaRadPerSec, omegaFromVision));
     }
 
-    // Single drive call per loop; use field-relative control (true)
+    // Drive with driver translations and auto-rotation (rad/s)
     m_swerveSubsystem.drive(translation, commandedOmegaRadPerSec, true);
+            var result = m_camera.getLatestResult();
+        if (result.hasTargets()) {
+            // Calculate rotation speed based on yaw
+            double rotationSpeed = m_controller.calculate(result.getBestTarget().getYaw(), 0);
+            
+            // Drive the robot (forward speed, side speed, rotation speed)
+            m_swerveSubsystem.drive(translation, rotationSpeed, false);
+        } else {
+            // No target, stop turning
+            m_swerveSubsystem.drive(translation, 0, false);
+        }
     }
   
 
