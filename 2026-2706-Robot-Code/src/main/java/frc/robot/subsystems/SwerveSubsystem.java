@@ -46,7 +46,7 @@ public class SwerveSubsystem extends SubsystemBase{
         }
         else{
             // Flip for blue alliance
-            startingPose = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(180));
+            startingPose = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(0));
         }
         
         /*  Set the verbosity of the telemetry.  
