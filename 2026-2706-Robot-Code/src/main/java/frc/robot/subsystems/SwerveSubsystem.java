@@ -55,7 +55,7 @@ public class SwerveSubsystem extends SubsystemBase{
         }
         else{
             // Flip for blue alliance
-            startingPose = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(0));
+            startingPose = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(180));
         }
         
         // Parse swerve configurations and create swerve drive object
