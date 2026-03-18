@@ -73,12 +73,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "IntakeUp"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "L Neutral to Trench"
@@ -116,18 +110,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "IntakeDown"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -162,12 +144,6 @@
           "type": "wait",
           "data": {
             "waitTime": 0.1
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PrepareShooterDepot"
           }
         },
         {

@@ -67,12 +67,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "IntakeUp"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "R Neutral to Trench"
