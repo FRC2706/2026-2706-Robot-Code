@@ -19,6 +19,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.cameraserver.CameraServer;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PhotonSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -43,12 +44,13 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final AutoSelectorKnobSubsystem m_AutoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   private final CommandXboxController m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
-  private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
+  private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(m_PhotonSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -66,7 +68,7 @@ public class RobotContainer {
     );
     // Configure the trigger bindings
     configureBindings();
-   // CameraServer.startAutomaticCapture();
+    //CameraServer.startAutomaticCapture();
   }
 
   private void configureBindings() {
@@ -76,15 +78,17 @@ public class RobotContainer {
     m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, 1)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, 2)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, 0)).onFalse(new StopShooter(m_ShooterSubsystem)); 
+    m_operatorController.b().whileTrue(new StartShooter(m_ShooterSubsystem, 3)).onFalse(new StopShooter(m_ShooterSubsystem));    
     m_operatorController.start().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));
 
-    // Toggle intake ON/OFF
+      // Toggle intake ON/OFF
     JoystickButton intakeToggleButton =
         new JoystickButton(m_operatorController.getHID(), XboxController.Button.kRightBumper.value);
 
     // Run intake in reverse while held
     JoystickButton reverseButton =
         new JoystickButton(m_operatorController.getHID(), XboxController.Button.kLeftBumper.value);
+
 
     // Toggle intake to go down
     Trigger intakeDownButton =
