@@ -48,7 +48,6 @@ public class AutoSelectorKnobSubsystem extends SubsystemBase {
      */
     public int getAutoMode() {
         double voltage = getVoltage(); // 0-5V
-        System.out.println(voltage);
         if (voltage <= 2.64) {
             return 0;
         } else if (voltage <= 3.01) {

@@ -26,7 +26,7 @@ public final class UtilityConstants {
 
     public static final int kIntakeMotorID = 26;
     public static final int kIntakeUpDownMotorID = 25;
-    public static final double kIntakeSpeed = 4000;
+    public static final double kIntakeSpeed = 3750;
     public static final double kReverseIntakeSpeed = 1000;
     public static final double kStowPosition = 62;
     public static final double kFloorPosition = 0;
@@ -86,10 +86,9 @@ public final class UtilityConstants {
     }
 
   }
-
-
-
-    
-    
-  }
-
+  
+  public static class VisionConstants {
+    // Goal distance from the AprilTag (shooter distance to the net) in meters
+    public static final double kGoalDistance = 1.5; // Adjust this value for optimal shooting distance
+  }     
+}
