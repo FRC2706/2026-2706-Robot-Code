@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -40,7 +42,8 @@ public class AutoPlans extends SubsystemBase {
     private static final Field2d s_mainField = new Field2d();
     private static final Field2d s_autoSelectorField = new Field2d();
 
-    private PathPlannerAuto leftStartNeutralZoneDepotAuto, middleStartAuto, middleStartDepotAuto, middleStartOutpostAuto, rightStartNeutralZoneAuto, rightStartOutpostAuto, rightStartOutpostNeutralZoneAuto, testAuto;
+    private PathPlannerAuto leftStartNeutralZoneDepotAuto, middleStartDepotAuto, middleStartAuto, middleStartOutpostAuto, rightStartNeutralZoneAuto, rightStartOutpostAuto, rightStartOutpostNeutralZoneAuto, testAuto;
+    //private Command middleStartAuto;
 
     // Mapping of auto mode index -> Pose2d used by the auto-selector visualization.
     private static final Map<Integer, Pose2d> s_autoModePoses = new HashMap<>();
@@ -67,15 +70,17 @@ public class AutoPlans extends SubsystemBase {
             // ignore if selector isn't ready
         }
 
-        createAutos();
-
         registerCommands(intake, shooter);
+
+        createAutos(intake, shooter);
+
     }
 
     /**Make all the Pathplanner autos */
-    public void createAutos(){
+    public void createAutos(IntakeSubsystem intake, ShooterSubsystem shooter){
         try{
             leftStartNeutralZoneDepotAuto = new PathPlannerAuto("Left Start Neutral Zone Depot Auto");
+            //middleStartAuto = new ParallelDeadlineGroup(new WaitCommand(4), new StartShooter(shooter, shooterPositions.HUB));
             middleStartAuto = new PathPlannerAuto("Middle Start Auto");
             middleStartDepotAuto = new PathPlannerAuto("Middle Start Depot Auto");
             middleStartOutpostAuto = new PathPlannerAuto("Middle Start Outpost Auto");
