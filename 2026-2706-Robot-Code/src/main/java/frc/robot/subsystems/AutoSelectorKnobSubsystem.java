@@ -7,9 +7,13 @@ import frc.robot.UtilityConstants;
 import org.littletonrobotics.junction.ConsoleSource.RoboRIO;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CANdleConfiguration;
+import com.ctre.phoenix6.configs.CANdleConfigurator;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.CANdle;
+import com.ctre.phoenix6.signals.LossOfSignalBehaviorValue;
 import com.ctre.phoenix6.signals.RGBWColor;
+import com.ctre.phoenix6.signals.StripTypeValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
 
@@ -37,6 +41,14 @@ public class AutoSelectorKnobSubsystem extends SubsystemBase {
     private final SolidColor m_ResetRequest = new SolidColor(0, 7).withColor(m_BlackColour);
 
     public AutoSelectorKnobSubsystem() {
+        //Applying configurations to the CANdle
+        CANdleConfiguration m_CaNdleConfiguration = new CANdleConfiguration();
+
+        m_CaNdleConfiguration.LED.BrightnessScalar = 0.5;
+        m_CaNdleConfiguration.LED.StripType = StripTypeValue.RGB;
+        m_CaNdleConfiguration.LED.LossOfSignalBehavior = LossOfSignalBehaviorValue.DisableLEDs;
+
+        m_CANdle.getConfigurator().apply(m_CaNdleConfiguration);
     }
 
     @Override
