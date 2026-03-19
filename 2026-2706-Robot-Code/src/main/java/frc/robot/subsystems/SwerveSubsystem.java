@@ -219,6 +219,12 @@ public class SwerveSubsystem extends SubsystemBase{
     public void resetGyro()
     {
         swerveDrive.zeroGyro();
+        if (isRedAlliance()){
+            resetOdometry(new Pose2d(new Translation2d(0,0), new Rotation2d(Units.degreesToRadians(180))));
+        }
+        else{
+            resetOdometry(new Pose2d(new Translation2d(0,0), new Rotation2d(Units.degreesToRadians(0))));
+        }
     }
 
     // Resets the encoders -- should be used to manually reset robot (i.e after autonomous)
@@ -265,7 +271,7 @@ public class SwerveSubsystem extends SubsystemBase{
             }
         }
         else{
-            return false;
+            return true;
         }
     }
 
