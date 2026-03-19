@@ -34,7 +34,7 @@ public class PhotonAlignToTargetCommand extends Command {
 
   // Gains
   private static final double kYawGain = 0.05; // units: (rad/s) per radian of yaw error
-  private static final double kDeadbandDeg = 1.0; // degrees
+  private static final double kDeadbandDeg = 0.01; // degrees
 
   // Max automatic angular velocity (rad/s)
   private static final double kMaxAutoOmegaRadPerSec = 0.3;
@@ -44,7 +44,7 @@ public class PhotonAlignToTargetCommand extends Command {
   private final DoubleSupplier m_Vy;
   private final DoubleSupplier m_Omega;
   private final double m_DriveDeadband;
-  private final double m_AngleDeadband;
+  private static double m_AngleDeadband = 0.05; // degrees - if the driver's rotation input is within this range, ignore it and hold rotation
 
   public PhotonAlignToTargetCommand(
       PhotonSubsystem photonSubsystem,
