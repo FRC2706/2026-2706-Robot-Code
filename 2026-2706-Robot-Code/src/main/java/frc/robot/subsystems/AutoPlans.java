@@ -78,7 +78,6 @@ public class AutoPlans extends SubsystemBase {
     public void createAutos(){
         try{
             leftStartNeutralZoneDepotAuto = new PathPlannerAuto("Left Start Neutral Zone Depot Auto");
-            //middleStartAuto = new ParallelDeadlineGroup(new WaitCommand(4), new StartShooter(shooter, shooterPositions.HUB));
             middleStartAuto = new PathPlannerAuto("Middle Start Auto");
             middleStartDepotAuto = new PathPlannerAuto("Middle Start Depot Auto");
             middleStartOutpostAuto = new PathPlannerAuto("Middle Start Outpost Auto");
