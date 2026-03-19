@@ -76,7 +76,6 @@ public final class UtilityConstants {
                                indexerkFF = 0.00015;
 
     // Positions
-
     public static final class shooterPositions{
       public static final byte HUB = 0;
       public static final byte TRENCH_FAR = 1;

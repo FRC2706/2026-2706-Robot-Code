@@ -31,10 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.Filesystem;
 
 import java.io.File;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.StartShooter;
 import frc.robot.commands.StopIndexerCommand;
-import frc.robot.commands.StopShooter;
 
 
 // Pathplanner testing
@@ -92,7 +89,7 @@ public class RobotContainer {
     // This will configure AutoBuilder using the subsystem-provided callbacks.
     m_swerveSubsystem.setupPathPlanner();
 
-    // Now that AutoBuilder is configured, create autos and the chooser
+    // Now that AutoBuilder is configured create autos
     m_autoPlans = new AutoPlans(intakeSubsystem, m_autoSelectorKnobSubsystem, m_ShooterSubsystem);
 
     configureBindings();
@@ -103,10 +100,13 @@ public class RobotContainer {
     //Zero the gyro such that forward is where the robot is currently looking
     driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
     
+    //Turn shooter on and off at different rpm's
     m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.TRENCH_FAR)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.DEPOT)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.HUB)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.b().whileTrue(new StartShooter(m_ShooterSubsystem, 3)).onFalse(new StopShooter(m_ShooterSubsystem));    
+    
+    //Turn only the indexer when pressed
     m_operatorController.start().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));
 
       // Toggle intake ON/OFF
@@ -132,6 +132,7 @@ public class RobotContainer {
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
 
   }
+  
   /** This function returns the autonomous command based on the knob position. */
   public Command getAutonomousCommand() {
 
