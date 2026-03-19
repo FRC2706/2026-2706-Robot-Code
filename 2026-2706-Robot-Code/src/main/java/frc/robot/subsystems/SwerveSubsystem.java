@@ -55,7 +55,7 @@ public class SwerveSubsystem extends SubsystemBase{
         }
         else{
             // Flip for blue alliance
-            startingPose = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(180));
+            startingPose = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(0));
         }
         
         // Parse swerve configurations and create swerve drive object
@@ -116,8 +116,8 @@ public class SwerveSubsystem extends SubsystemBase{
                 this::getRobotVelocity, // Pass method supplying robot relative chassis
                 (speedsRobotRelative, moduleFeedForwards) -> {this.drive(speedsRobotRelative);}, // Pass method that will drive the robot -- only robot relative chassis speeds
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                        new PIDConstants(4.9, 0.0003, 0.015), // Translation PID constants
-                        new PIDConstants(0.0025, 0.0002, 0.0001) // Rotation PID constants
+                        new PIDConstants(5, 0.015, 0.02), // Translation PID constants
+                        new PIDConstants(0.0025, 0.0015, 0.0001) // Rotation PID constants
                 ),  
                 config, // Pass on the config
                 () -> isRedAlliance(), // Check which alliance the robot is on
@@ -131,6 +131,8 @@ public class SwerveSubsystem extends SubsystemBase{
 
         //Prevents issue with java
         PathfindingCommand.warmupCommand().schedule();
+        
+        
     }
 
     @Override

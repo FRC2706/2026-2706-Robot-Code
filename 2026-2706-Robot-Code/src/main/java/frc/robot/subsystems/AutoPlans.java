@@ -39,6 +39,9 @@ public class AutoPlans extends SubsystemBase {
     // Mapping of auto mode index -> Pose2d used by the auto-selector visualization.
     private static final Map<Integer, Pose2d> s_autoModePoses = new HashMap<>();
 
+    private final IntakeSubsystem m_intake;
+    private final ShooterSubsystem m_shooter;
+
     /**
      * Construct AutoPlans and register any named PathPlanner commands that autos may call.
      * Accepts the IntakeSubsystem so intake commands can be created with the proper subsystem
@@ -61,14 +64,17 @@ public class AutoPlans extends SubsystemBase {
             // ignore if selector isn't ready
         }
 
-        registerCommands(intake, shooter);
+        m_intake = intake;
+        m_shooter = shooter;
 
-        createAutos(intake, shooter);
+        registerCommands();
+
+        createAutos();
 
     }
 
     /**Make all the Pathplanner autos */
-    public void createAutos(IntakeSubsystem intake, ShooterSubsystem shooter){
+    public void createAutos(){
         try{
             leftStartNeutralZoneDepotAuto = new PathPlannerAuto("Left Start Neutral Zone Depot Auto");
             //middleStartAuto = new ParallelDeadlineGroup(new WaitCommand(4), new StartShooter(shooter, shooterPositions.HUB));
@@ -87,27 +93,27 @@ public class AutoPlans extends SubsystemBase {
     }
 
     /** Register PathPlanner named commands for intake actions. */
-    public void registerCommands(IntakeSubsystem intake, ShooterSubsystem shooter){
+    public void registerCommands(){
         try {
             Map<String, Command> eventMap = new HashMap<>();
 
-            eventMap.put("IntakeUp", new IntakeUpCommand(intake));
-            eventMap.put("IntakeDown", new IntakeDownCommand(intake));
-            eventMap.put("IntakeOn", new RunIntakeCommandForward(intake));
-            eventMap.put("IntakeReverse", new RunIntakeCommandReversed(intake));
-            eventMap.put("IntakeOff", new RunIntakeCommandForward(intake).withTimeout(0));
+            eventMap.put("IntakeUp", new IntakeUpCommand(m_intake));
+            eventMap.put("IntakeDown", new IntakeDownCommand(m_intake));
+            eventMap.put("IntakeOn", new RunIntakeCommandForward(m_intake));
+            eventMap.put("IntakeReverse", new RunIntakeCommandReversed(m_intake));
+            eventMap.put("IntakeOff", new RunIntakeCommandForward(m_intake).withTimeout(0));
 
-            eventMap.put("StartShooterHub", new StartShooter(shooter,shooterPositions.HUB));
-            eventMap.put("StartShooterTrench", new StartShooter(shooter,shooterPositions.TRENCH_CLOSE));
-            eventMap.put("StartShooterDepot", new StartShooter(shooter,shooterPositions.DEPOT));
-            eventMap.put("StartShooterOutpost", new StartShooter(shooter, shooterPositions.OUTPOST));
+            eventMap.put("StartShooterHub", new StartShooter(m_shooter,shooterPositions.HUB));
+            eventMap.put("StartShooterTrench", new StartShooter(m_shooter,shooterPositions.TRENCH_CLOSE));
+            eventMap.put("StartShooterDepot", new StartShooter(m_shooter,shooterPositions.DEPOT));
+            eventMap.put("StartShooterOutpost", new StartShooter(m_shooter, shooterPositions.OUTPOST));
 
-            eventMap.put("PrepareShooterHub", new PrepareShooter(shooter,shooterPositions.HUB));
-            eventMap.put("PrepareShooterTrench", new PrepareShooter(shooter,shooterPositions.TRENCH_CLOSE));
-            eventMap.put("PrepareShooterDepot", new PrepareShooter(shooter,shooterPositions.DEPOT));
-            eventMap.put("PrepaerShooterOutpost", new PrepareShooter(shooter,shooterPositions.OUTPOST));
+            eventMap.put("PrepareShooterHub", new PrepareShooter(m_shooter,shooterPositions.HUB));
+            eventMap.put("PrepareShooterTrench", new PrepareShooter(m_shooter,shooterPositions.TRENCH_CLOSE));
+            eventMap.put("PrepareShooterDepot", new PrepareShooter(m_shooter,shooterPositions.DEPOT));
+            eventMap.put("PrepaerShooterOutpost", new PrepareShooter(m_shooter,shooterPositions.OUTPOST));
 
-            eventMap.put("StopShooter", new StopShooter(shooter));
+            eventMap.put("StopShooter", new StopShooter(m_shooter));
 
             NamedCommands.registerCommands(eventMap);
         } catch (Throwable t) {

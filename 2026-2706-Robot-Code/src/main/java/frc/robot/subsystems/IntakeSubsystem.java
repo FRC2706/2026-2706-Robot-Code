@@ -63,7 +63,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 .reverseSoftLimit(UtilityConstants.RobotConstants.kFloorPosition)
                 .reverseSoftLimitEnabled(true);
 
-            upDownConfig.idleMode(SparkBaseConfig.IdleMode.kBrake);
+            upDownConfig.idleMode(SparkBaseConfig.IdleMode.kCoast);
             intakeUpDownMotor.configure(upDownConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
             
 
