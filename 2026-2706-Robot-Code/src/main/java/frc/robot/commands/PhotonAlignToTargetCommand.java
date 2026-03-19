@@ -34,7 +34,7 @@ public class PhotonAlignToTargetCommand extends Command {
 
   // Gains
   private static final double kYawGain = 0.05; // units: (rad/s) per radian of yaw error
-  private static final double kDeadbandDeg = 0.01; // degrees
+  private static final double kDeadbandDeg = 1.0; // degrees
 
   // Max automatic angular velocity (rad/s)
   private static final double kMaxAutoOmegaRadPerSec = 0.3;
