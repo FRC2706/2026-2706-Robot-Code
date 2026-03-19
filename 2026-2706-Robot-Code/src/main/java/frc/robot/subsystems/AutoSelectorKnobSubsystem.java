@@ -50,7 +50,7 @@ public class AutoSelectorKnobSubsystem extends SubsystemBase {
             //Light up nothing if the auto mode is 0
             resetCANdle();
         }
-        else if (getAutoMode() <= 7){
+        else{
             //Light up the same amount of led's as the selected auto's index 
            lightUpCandle(getAutoMode());
         }
