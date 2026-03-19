@@ -11,7 +11,6 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,7 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 // Class
 public class PhotonSubsystem extends SubsystemBase {
 
-    private final PhotonCamera camera1 = new PhotonCamera("Arducam_OV9281_USB_Camera"); //make sure this name matches the camera name in photonvision interface
+    public static PhotonCamera camera1 = new PhotonCamera("Arducam_OV9281_USB_Camera"); //make sure this name matches the camera name in photonvision interface
      //declares new camera object, not sure if it should be private or private final
     private PhotonPipelineResult result;
     private PhotonTrackedTarget target;
@@ -50,11 +49,11 @@ public class PhotonSubsystem extends SubsystemBase {
             }
             
             // Get the AprilTag's known field pose
-            Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
-            if (tagPoseOpt.isEmpty()) {
-                return;
-            }
-            Pose3d tagPose3d = tagPoseOpt.get();
+            //Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
+            //if (tagPoseOpt.isEmpty()) {
+            //    return;
+            //}
+            //Pose3d tagPose3d = tagPoseOpt.get();
 
             // Find the distance between the camera and the target in meters. Convert degrees to radians because that's what Math.tan expects.
             double denominator = Math.tan(Math.toRadians(target.getPitch()) + Math.toRadians(kCameraPitch));

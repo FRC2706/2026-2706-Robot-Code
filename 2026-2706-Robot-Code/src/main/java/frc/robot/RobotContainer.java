@@ -12,6 +12,7 @@ import frc.robot.commands.ResetGyroCommand;
 
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
+import frc.robot.commands.PhotonAlignToTargetCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
 import frc.robot.subsystems.AutoSelectorKnobSubsystem;
@@ -50,7 +51,7 @@ public class RobotContainer {
 
   private final CommandXboxController m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(m_PhotonSubsystem);
-
+  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
@@ -73,7 +74,8 @@ public class RobotContainer {
   private void configureBindings() {
     //Zero the gyro such that forward is where the robot is currently looking
     driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
-    
+    driverController.rightTrigger().whileTrue(new PhotonAlignToTargetCommand(m_PhotonSubsystem, m_swerveSubsystem, () -> -driverController.getLeftY(), () -> -driverController.getLeftY(), () -> -driverController.getRightX(), 0.1, 0.1));
+
     m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, 1)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, 2)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, 0)).onFalse(new StopShooter(m_ShooterSubsystem)); 
