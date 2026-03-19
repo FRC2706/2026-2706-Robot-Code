@@ -32,7 +32,7 @@ public class AutoPlans extends SubsystemBase {
     private static final Field2d s_mainField = new Field2d();
     private static final Field2d s_autoSelectorField = new Field2d();
 
-    private PathPlannerAuto middleStartAuto, testAuto;
+    private PathPlannerAuto middleStartAuto, rightStartAuto;
     //private Command middleStartAuto;
 
     // Mapping of auto mode index -> Pose2d used by the auto-selector visualization.
@@ -79,7 +79,7 @@ public class AutoPlans extends SubsystemBase {
     public void createAutos(){
         try{
             middleStartAuto = new PathPlannerAuto("Middle Start Auto");
-            testAuto = new PathPlannerAuto("Test Auto");
+            rightStartAuto = new PathPlannerAuto("Right Start Auto");
             
         } catch (Throwable t){
             System.out.println("Failed to create autos.");
@@ -161,7 +161,7 @@ public class AutoPlans extends SubsystemBase {
             case 1:
                 return middleStartAuto; 
             case 2:
-                return testAuto; 
+                return rightStartAuto; 
             case 3:
                 return null; 
             case 4:
