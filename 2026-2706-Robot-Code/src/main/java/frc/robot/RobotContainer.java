@@ -8,7 +8,7 @@ import frc.robot.UtilityConstants.OperatorConstants;
 
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
-
+import frc.robot.commands.ClearIndexerCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.RunIntakeCommandForward;
@@ -31,6 +31,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.Filesystem;
 
 import java.io.File;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.StartShooter;
+import frc.robot.commands.StopIndexerCommand;
+import frc.robot.commands.StopShooter;
 
 
 // Pathplanner testing
@@ -102,7 +106,9 @@ public class RobotContainer {
     m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, 1)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, 2)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, 0)).onFalse(new StopShooter(m_ShooterSubsystem)); 
-    m_operatorController.b().whileTrue(new StartShooter(m_ShooterSubsystem, 3)).onFalse(new StopShooter(m_ShooterSubsystem));
+    m_operatorController.b().whileTrue(new StartShooter(m_ShooterSubsystem, 3)).onFalse(new StopShooter(m_ShooterSubsystem));    
+    m_operatorController.start().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));
+
       // Toggle intake ON/OFF
     JoystickButton intakeToggleButton =
         new JoystickButton(m_operatorController.getHID(), XboxController.Button.kRightBumper.value);

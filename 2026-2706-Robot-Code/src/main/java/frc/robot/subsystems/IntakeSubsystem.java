@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -12,6 +13,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -63,7 +65,10 @@ public class IntakeSubsystem extends SubsystemBase {
                 .reverseSoftLimit(UtilityConstants.RobotConstants.kFloorPosition)
                 .reverseSoftLimitEnabled(true);
 
-            upDownConfig.idleMode(SparkBaseConfig.IdleMode.kCoast);
+            upDownConfig.smartCurrentLimit(3, 4);
+
+            upDownConfig.idleMode(IdleMode.kCoast);
+
             intakeUpDownMotor.configure(upDownConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
             
 
@@ -132,6 +137,7 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public void moveIntakeUp() {
     intakeUpDownPID.setSetpoint(UtilityConstants.RobotConstants.kStowPosition, ControlType.kPosition);
+    
 }
 
     /**
