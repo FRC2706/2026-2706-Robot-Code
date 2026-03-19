@@ -174,15 +174,15 @@ public class AutoPlans extends SubsystemBase {
             case 2:
                 return testAuto; 
             case 3:
-                return middleStartDepotAuto; 
+                return null; 
             case 4:
-                return rightStartOutpostNeutralZoneAuto;
+                return null;
             case 5:
-                return leftStartNeutralZoneDepotAuto;
+                return null;
             case 6:
-                return middleStartOutpostAuto;
+                return null;
             case 7:
-                return rightStartNeutralZoneAuto;
+                return null;
         }
     }
     
