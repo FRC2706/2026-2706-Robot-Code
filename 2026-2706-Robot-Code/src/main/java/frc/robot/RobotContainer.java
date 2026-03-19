@@ -31,10 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.Filesystem;
 
 import java.io.File;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.StartShooter;
 import frc.robot.commands.StopIndexerCommand;
-import frc.robot.commands.StopShooter;
 
 
 // Pathplanner testing
@@ -103,10 +100,13 @@ public class RobotContainer {
     //Zero the gyro such that forward is where the robot is currently looking
     driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
     
+    //Run shooter
     m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.TRENCH_FAR)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.DEPOT)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.HUB)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.b().whileTrue(new StartShooter(m_ShooterSubsystem, 3)).onFalse(new StopShooter(m_ShooterSubsystem));    
+   
+    //Run indexer only
     m_operatorController.start().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));
 
       // Toggle intake ON/OFF

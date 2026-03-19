@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import frc.robot.commands.IntakeUpCommand;
+import frc.robot.commands.ClearIndexerCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
@@ -33,7 +34,7 @@ public class AutoPlans extends SubsystemBase {
     private static final Field2d s_mainField = new Field2d();
     private static final Field2d s_autoSelectorField = new Field2d();
 
-    private PathPlannerAuto leftStartNeutralZoneDepotAuto, middleStartDepotAuto, middleStartAuto, middleStartOutpostAuto, rightStartNeutralZoneAuto, rightStartOutpostAuto, rightStartOutpostNeutralZoneAuto, testAuto;
+    private PathPlannerAuto leftStartNeutralZoneDepotAuto, middleStartDepotAuto, middleStartAuto, middleStartOutpostAuto, rightStartNeutralZoneAuto, rightStartOutpostAuto, rightStartOutpostNeutralZoneAuto, rightStartAuto;
     //private Command middleStartAuto;
 
     // Mapping of auto mode index -> Pose2d used by the auto-selector visualization.
@@ -84,7 +85,7 @@ public class AutoPlans extends SubsystemBase {
             rightStartNeutralZoneAuto = new PathPlannerAuto("Right Start Neutral Zone Auto");
             rightStartOutpostAuto = new PathPlannerAuto("Right Start Outpost Auto");
             rightStartOutpostNeutralZoneAuto = new PathPlannerAuto("Right Start Outpost Neutral Zone Auto");
-            testAuto = new PathPlannerAuto("Test Auto");
+            rightStartAuto = new PathPlannerAuto("Right Start Auto");
             
 
         } catch (Throwable t){
@@ -111,7 +112,10 @@ public class AutoPlans extends SubsystemBase {
             eventMap.put("PrepareShooterHub", new PrepareShooter(m_shooter,shooterPositions.HUB));
             eventMap.put("PrepareShooterTrench", new PrepareShooter(m_shooter,shooterPositions.TRENCH_CLOSE));
             eventMap.put("PrepareShooterDepot", new PrepareShooter(m_shooter,shooterPositions.DEPOT));
-            eventMap.put("PrepaerShooterOutpost", new PrepareShooter(m_shooter,shooterPositions.OUTPOST));
+            eventMap.put("PrepareShooterOutpost", new PrepareShooter(m_shooter,shooterPositions.OUTPOST));
+
+            eventMap.put("SpinIndexer", new ClearIndexerCommand(m_shooter));
+            eventMap.put("StopIndexer", new ClearIndexerCommand(m_shooter).withTimeout(0));
 
             eventMap.put("StopShooter", new StopShooter(m_shooter));
 
@@ -172,15 +176,19 @@ public class AutoPlans extends SubsystemBase {
             case 1:
                 return middleStartAuto; 
             case 2:
-                return testAuto; 
+                return rightStartAuto; 
             case 3:
-                return middleStartDepotAuto; 
+                //return middleStartDepotAuto; 
+                return null;
             case 4:
-                return rightStartOutpostNeutralZoneAuto;
+                //return rightStartOutpostNeutralZoneAuto;
+                return null;
             case 5:
-                return leftStartNeutralZoneDepotAuto;
+                //return leftStartNeutralZoneDepotAuto;
+                return null;
             case 6:
-                return middleStartOutpostAuto;
+                //return middleStartOutpostAuto;
+                return null;
             case 7:
                 return rightStartNeutralZoneAuto;
         }

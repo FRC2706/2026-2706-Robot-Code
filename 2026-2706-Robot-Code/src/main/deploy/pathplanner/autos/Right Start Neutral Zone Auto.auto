@@ -56,8 +56,20 @@
                 "data": {
                   "name": "IntakeOn"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpinIndexer"
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopIndexer"
           }
         },
         {
@@ -79,7 +91,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 12.0
+                  "waitTime": 6.0
                 }
               },
               {
