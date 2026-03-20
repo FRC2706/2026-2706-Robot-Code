@@ -9,7 +9,7 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.UtilityConstants;
 import frc.robot.UtilityConstants.shooterConstants;
-
+import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor1;
@@ -90,21 +90,25 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public boolean isRPMinRange(int position) {
     double currentRPM = m_encoder.getVelocity();
-    double tolerance = 150;
+    double tolerance = 100;
 
     return (Math.abs(currentRPM - getDesiredVelocityRPM(position)) < tolerance);
   }
 
   public int getDesiredVelocityRPM(int position) {
     switch (position) {
-      case 0: // hub
-        return 1950;
-      case 1: // trench
+      case shooterPositions.HUB: 
+        return 2050;
+      case shooterPositions.TRENCH_FAR: 
         return 3250;
-      case 2: // back wall
+      case shooterPositions.DEPOT:
         return 3700;
       case 3: // variable shooting using the photon distance with the inverse of a quadratic regression formula from an rpm vs. distance graph (soft limit of 5000 RPM)
         return Math.min((int) Math.round(Math.sqrt((m_PhotonSubsystem.getDistance() + 19.73755)/(5.13131*Math.pow(10, -8)))-17562.4743), 5000); 
+      case shooterPositions.TRENCH_CLOSE: 
+        return 3150;
+      case shooterPositions.OUTPOST:
+        return 4030;
       default:
         return 2650; // this is a fallback RPM, avg of other RPMs
     }

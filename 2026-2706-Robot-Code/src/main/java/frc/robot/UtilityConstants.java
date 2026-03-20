@@ -31,7 +31,7 @@ public final class UtilityConstants {
     public static final double kStowPosition = 62;
     public static final double kFloorPosition = 0;
     public static final double kTolerance = 0.3;
-
+ 
     public static final double kUpDownP = 0.012;
     public static final double kUpDownI = 0.0;
     public static final double kUpDownD = 0.0; 
@@ -74,6 +74,16 @@ public final class UtilityConstants {
                                indexerkI = 0,
                                indexerkD = 0,
                                indexerkFF = 0.00015;
+
+    // Positions
+    public static final class shooterPositions{
+      public static final byte HUB = 0;
+      public static final byte TRENCH_FAR = 1;
+      public static final byte DEPOT = 2;
+      public static final byte TRENCH_CLOSE = 7;
+      public static final byte OUTPOST = 8;
+    }
+
   }
   
   public static class VisionConstants {

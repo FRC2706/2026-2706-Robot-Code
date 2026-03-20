@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // Imports necessary to create SwerveDrive object
 import java.io.File;
+import java.util.function.DoubleSupplier;
 
 //Useful imports for swerve
 import edu.wpi.first.wpilibj.DriverStation;
@@ -14,10 +15,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import swervelib.math.SwerveMath;
 
 // Imports for pathplanner
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -28,18 +31,24 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class SwerveSubsystem extends SubsystemBase{
 
-    double maximumSpeed = 4.5;
+    double maximumSpeed = 3;
 
     // Swerve drive object
     private final SwerveDrive swerveDrive; 
+    // Field2d visualization is now centralized in AutoPlans; SwerveSubsystem will
+    // update the shared field via AutoPlans.setMainFieldRobotPose(...)
 
     // Provide swerve configuration file as arguement
     public SwerveSubsystem(File swerveJsonDirectory){
         
-        // Set up starting position depending on alliance for odometry. Assumes blue alliance by default
+        // Set up starting position depending on alliance for odometry
         boolean redAlliance = isRedAlliance();
         Pose2d startingPose;
 
+        // Set the verbosity of the telemetry.  HIGH is good for debugging, but may cause performance issues.  Adjust as needed.
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.INFO; 
+
+        // TODO: Set up different starting positions
         if (redAlliance){
             // Units are in meters
             startingPose =  new Pose2d(new Translation2d(16, 4), Rotation2d.fromDegrees(180));
@@ -49,13 +58,6 @@ public class SwerveSubsystem extends SubsystemBase{
             startingPose = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(0));
         }
         
-        /*  Set the verbosity of the telemetry.  
-            LOW -- Minimal information
-            HIGH -- Frequent updates on encoders and imu; Should not be used during driving as the robot will timeout
-            INFO -- Enough information to use advantage scope
-        */
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.INFO; 
-
         // Parse swerve configurations and create swerve drive object
         try{
             swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, startingPose);
@@ -65,16 +67,39 @@ public class SwerveSubsystem extends SubsystemBase{
         }
 
         // Configure Swerve Drive
-        swerveDrive.setHeadingCorrection(true); // Turn on to correct heading
-        swerveDrive.setCosineCompensator(true); // Turn on to automatically slow or speed up swerve modules that should be close to their desired state in theory
-        swerveDrive.angularVelocityCorrection = true; // Reduces drift
-        swerveDrive.autonomousAngularVelocityCorrection = true; // Reduces drift
-        swerveDrive.setAngularVelocityCompensation(true, true, 0.1); // Tune to compensate for angular skew in movement
-        swerveDrive.setModuleEncoderAutoSynchronize(true, 1); // Turn on to periodcally synchronize absolute encoders and motor encoders during periods without movement
-        swerveDrive.synchronizeModuleEncoders();
+        // Some configurations rely on an IMU being present in the underlying swervelib SwerveDrive.
+        // In simulation or if the IMU isn't available, these calls can throw a NullPointerException
+        // (see logs). Wrap configuration in a try/catch and disable angular-velocity-based
+        // compensations if they fail so the robot code keeps running.
+        try {
+            swerveDrive.setHeadingCorrection(true); // Turn on to correct heading
+            swerveDrive.setCosineCompensator(true); // Turn on to automatically slow or speed up swerve modules that should be close to their desired state in theory
+            swerveDrive.angularVelocityCorrection = true;
+            swerveDrive.autonomousAngularVelocityCorrection = true;
+            swerveDrive.setAngularVelocityCompensation(true, true, 0.1); // Tune to compensate for angular skew in movement
+            swerveDrive.setModuleEncoderAutoSynchronize(true, 1); // Turn on to periodcally synchronize absolute encoders and motor encoders during periods without movement
+            swerveDrive.synchronizeModuleEncoders();
+        } catch (Throwable t) {
+            // Defensive: disable IMU/ang. vel. dependent features and continue running
+            System.err.println("Warning: failed to configure angular-velocity/IMU features in SwerveDrive. Disabling those features.\n" + t);
+            try {
+                swerveDrive.angularVelocityCorrection = false;
+                swerveDrive.autonomousAngularVelocityCorrection = false;
+                // Attempt to disable compensation; library method may still throw, so ignore exceptions
+                try {
+                    swerveDrive.setAngularVelocityCompensation(false, false, 0.0);
+                } catch (Throwable ignore) {
+                    // ignore
+                }
+            } catch (Throwable ignore) {
+                // ignore
+            }
+        }
     
-        //Initialize set-up for pathplanner
-        setupPathPlanner();
+    // NOTE: Do not call setupPathPlanner() here; it is invoked from RobotContainer to avoid
+    // double-configuration of AutoBuilder. PathPlanner's AutoBuilder.configure(...) must be
+    // called exactly once during program startup.
+    // AutoPlans publishes the shared Field2d; nothing to publish here.
     }
 
     //Sets up pathplanner
@@ -91,8 +116,8 @@ public class SwerveSubsystem extends SubsystemBase{
                 this::getRobotVelocity, // Pass method supplying robot relative chassis
                 (speedsRobotRelative, moduleFeedForwards) -> {this.drive(speedsRobotRelative);}, // Pass method that will drive the robot -- only robot relative chassis speeds
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                        new PIDConstants(0.0025, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(0.0025, 0.0, 0.0) // Rotation PID constants
+                        new PIDConstants(5, 0.015, 0.02), // Translation PID constants
+                        new PIDConstants(0.0025, 0.0015, 0.0001) // Rotation PID constants
                 ),  
                 config, // Pass on the config
                 () -> isRedAlliance(), // Check which alliance the robot is on
@@ -103,9 +128,13 @@ public class SwerveSubsystem extends SubsystemBase{
             // Handle exception as needed
             e.printStackTrace();
         }
+
+        //Prevents issue with java
+        PathfindingCommand.warmupCommand().schedule();
+        
+        
     }
 
-    //Periodically updates odometry
     @Override
     public void periodic(){
         updateOdometry();
@@ -125,16 +154,54 @@ public class SwerveSubsystem extends SubsystemBase{
    */
     public void drive(Translation2d translation, double rotation, boolean fieldRelative)
     {
-        swerveDrive.drive(translation,
-                        rotation,
-                        fieldRelative,
-                        false); // Open loop is disabled since it shouldn't be used most of the time.
+        try {
+            swerveDrive.drive(translation,
+                              rotation,
+                              fieldRelative,
+                              false); // Open loop is disabled since it shouldn't be used most of the time.
+        } catch (Throwable t) {
+            // Defensive: if the underlying swervelib throws (for example, because IMU is null),
+            // log once and try to disable IMU-dependent behavior to prevent further crashes.
+            System.err.println("SwerveSubsystem: drive() failed, disabling IMU-dependent features. Exception: " + t);
+            try {
+                swerveDrive.angularVelocityCorrection = false;
+                swerveDrive.autonomousAngularVelocityCorrection = false;
+                try { swerveDrive.setAngularVelocityCompensation(false, false, 0.0); } catch (Throwable ignore) {}
+            } catch (Throwable ignore) {}
+        }
     }
 
     //Controls the drivebase using ChassisSpeeds -- primarily for PathPlanner
     public void drive(ChassisSpeeds speeds)
     {
-        swerveDrive.drive(speeds);
+        try {
+            swerveDrive.drive(speeds);
+        } catch (Throwable t) {
+            System.err.println("SwerveSubsystem: drive(ChassisSpeeds) failed, disabling IMU-dependent features. Exception: " + t);
+            try {
+                swerveDrive.angularVelocityCorrection = false;
+                swerveDrive.autonomousAngularVelocityCorrection = false;
+                try { swerveDrive.setAngularVelocityCompensation(false, false, 0.0); } catch (Throwable ignore) {}
+            } catch (Throwable ignore) {}
+        }
+    }
+
+    public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX)
+    {
+        return run(() -> {
+            swerveDrive.drive(
+                SwerveMath.scaleTranslation(
+                    new Translation2d(
+                        translationX.getAsDouble() * swerveDrive.getMaximumChassisVelocity(),
+                        translationY.getAsDouble() * swerveDrive.getMaximumChassisVelocity()
+                    ),
+                    0.8
+                ),
+                Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity(),
+                true,
+                false
+            );
+        });
     }
 
     /**
@@ -143,7 +210,7 @@ public class SwerveSubsystem extends SubsystemBase{
      *
      * @param initialHolonomicPose The pose to set the odometry to
      */
-    public void resetOdometry(Pose2d initialHolonomicPose)
+    public void resetOdometry( Pose2d initialHolonomicPose)
     {
         swerveDrive.resetOdometry(initialHolonomicPose);
     }
@@ -152,6 +219,12 @@ public class SwerveSubsystem extends SubsystemBase{
     public void resetGyro()
     {
         swerveDrive.zeroGyro();
+        if (isRedAlliance()){
+            resetOdometry(new Pose2d(new Translation2d(0,0), new Rotation2d(Units.degreesToRadians(180))));
+        }
+        else{
+            resetOdometry(new Pose2d(new Translation2d(0,0), new Rotation2d(Units.degreesToRadians(0))));
+        }
     }
 
     // Resets the encoders -- should be used to manually reset robot (i.e after autonomous)
@@ -173,6 +246,12 @@ public class SwerveSubsystem extends SubsystemBase{
     // Updates the odometry; Should be run periodically
     public void updateOdometry(){
         swerveDrive.updateOdometry();
+        // Update field visualization with the latest pose
+        try {
+            frc.robot.subsystems.AutoPlans.setMainFieldRobotPose(swerveDrive.getPose());
+        } catch (Throwable ignore) {
+            // If the field can't be updated for any reason, ignore to avoid spamming logs
+        }
     }
 
     // Forces the drive train to not move by pointing all the swerve modueles to the center of the robot
@@ -180,7 +259,7 @@ public class SwerveSubsystem extends SubsystemBase{
         swerveDrive.lockPose();
     }
 
-    // Check if the current alliance is the red alliance. Defaults to being on blue alliance
+    // Check if the current alliance is the red alliance. Defaults to being on red alliance
     public boolean isRedAlliance(){
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()){
@@ -192,7 +271,7 @@ public class SwerveSubsystem extends SubsystemBase{
             }
         }
         else{
-            return false;
+            return true;
         }
     }
 
@@ -217,6 +296,11 @@ public class SwerveSubsystem extends SubsystemBase{
         return swerveDrive.getRobotVelocity();
     }
 
+    //Return field relative velocity
+    public ChassisSpeeds getFieldVelocity(){
+        return swerveDrive.getFieldVelocity();
+    }
+
     //Autonmous Path Following Commands
     public Command getAutounomousCommand(String pathName){
         return new PathPlannerAuto(pathName);
@@ -238,4 +322,3 @@ public class SwerveSubsystem extends SubsystemBase{
                                         );
     }
 }
-
