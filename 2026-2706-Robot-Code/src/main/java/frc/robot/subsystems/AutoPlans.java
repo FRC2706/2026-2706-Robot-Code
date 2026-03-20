@@ -14,12 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import frc.robot.commands.IntakeUpCommand;
+import frc.robot.commands.ClearIndexerCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
 import frc.robot.commands.StartShooter;
 import frc.robot.commands.StopShooter;
 import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
+import frc.robot.commands.PrepareShooter;
 
 public class AutoPlans extends SubsystemBase {
     // Position 1 Start State: Vel = 0, Rot = -90, x = 3.505, y = 6.344, heading = -90.148, NCL = 0.825
@@ -32,7 +34,7 @@ public class AutoPlans extends SubsystemBase {
     private static final Field2d s_mainField = new Field2d();
     private static final Field2d s_autoSelectorField = new Field2d();
 
-    private PathPlannerAuto middleStartAuto, rightStartAuto;
+    private PathPlannerAuto leftStartNeutralZoneDepotAuto, middleStartDepotAuto, middleStartAuto, middleStartOutpostAuto, rightStartNeutralZoneAuto, rightStartOutpostAuto, rightStartOutpostNeutralZoneAuto, rightStartAuto;
     //private Command middleStartAuto;
 
     // Mapping of auto mode index -> Pose2d used by the auto-selector visualization.
@@ -63,14 +65,11 @@ public class AutoPlans extends SubsystemBase {
             // ignore if selector isn't ready
         }
 
-        //Populate subsystems
         m_intake = intake;
         m_shooter = shooter;
 
-        //Register commands
         registerCommands();
 
-        //Create pathplanner autos before using them in autonomous mode
         createAutos();
 
     }
@@ -78,9 +77,16 @@ public class AutoPlans extends SubsystemBase {
     /**Make all the Pathplanner autos */
     public void createAutos(){
         try{
+            leftStartNeutralZoneDepotAuto = new PathPlannerAuto("Left Start Neutral Zone Depot Auto");
             middleStartAuto = new PathPlannerAuto("Middle Start Auto");
+            middleStartDepotAuto = new PathPlannerAuto("Middle Start Depot Auto");
+            middleStartOutpostAuto = new PathPlannerAuto("Middle Start Outpost Auto");
+            rightStartNeutralZoneAuto = new PathPlannerAuto("Right Start Neutral Zone Auto");
+            rightStartOutpostAuto = new PathPlannerAuto("Right Start Outpost Auto");
+            rightStartOutpostNeutralZoneAuto = new PathPlannerAuto("Right Start Outpost Neutral Zone Auto");
             rightStartAuto = new PathPlannerAuto("Right Start Auto");
             
+
         } catch (Throwable t){
             System.out.println("Failed to create autos.");
         }
@@ -101,6 +107,14 @@ public class AutoPlans extends SubsystemBase {
             eventMap.put("StartShooterTrench", new StartShooter(m_shooter,shooterPositions.TRENCH_CLOSE));
             eventMap.put("StartShooterDepot", new StartShooter(m_shooter,shooterPositions.DEPOT));
             eventMap.put("StartShooterOutpost", new StartShooter(m_shooter, shooterPositions.OUTPOST));
+
+            eventMap.put("PrepareShooterHub", new PrepareShooter(m_shooter,shooterPositions.HUB));
+            eventMap.put("PrepareShooterTrench", new PrepareShooter(m_shooter,shooterPositions.TRENCH_CLOSE));
+            eventMap.put("PrepareShooterDepot", new PrepareShooter(m_shooter,shooterPositions.DEPOT));
+            eventMap.put("PrepareShooterOutpost", new PrepareShooter(m_shooter,shooterPositions.OUTPOST));
+
+            eventMap.put("SpinIndexer", new ClearIndexerCommand(m_shooter));
+            eventMap.put("StopIndexer", new ClearIndexerCommand(m_shooter).withTimeout(0));
 
             eventMap.put("StopShooter", new StopShooter(m_shooter));
 
@@ -163,15 +177,19 @@ public class AutoPlans extends SubsystemBase {
             case 2:
                 return rightStartAuto; 
             case 3:
-                return null; 
+                //return middleStartDepotAuto; 
+                return null;
             case 4:
+                //return rightStartOutpostNeutralZoneAuto;
                 return null;
             case 5:
+                //return leftStartNeutralZoneDepotAuto;
                 return null;
             case 6:
+                //return middleStartOutpostAuto;
                 return null;
             case 7:
-                return null;
+                return rightStartNeutralZoneAuto;
         }
     }
     

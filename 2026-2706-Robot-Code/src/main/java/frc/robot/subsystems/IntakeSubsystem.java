@@ -67,7 +67,6 @@ public class IntakeSubsystem extends SubsystemBase {
             upDownConfig.idleMode(IdleMode.kCoast);
 
             intakeUpDownMotor.configure(upDownConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-            
 
             SparkMaxConfig speedConfig = new SparkMaxConfig();
             speedConfig.closedLoop
