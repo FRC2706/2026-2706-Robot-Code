@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import frc.robot.commands.IntakeUpCommand;
+import frc.robot.commands.PrepareShooterCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
@@ -103,6 +104,11 @@ public class AutoPlans extends SubsystemBase {
             eventMap.put("StartShooterOutpost", new StartShooter(m_shooter, shooterPositions.OUTPOST));
 
             eventMap.put("StopShooter", new StopShooter(m_shooter));
+
+            eventMap.put("PrepareShooterHub", new PrepareShooterCommand(m_shooter,shooterPositions.HUB));
+            eventMap.put("PrepareShooterTrench", new PrepareShooterCommand(m_shooter, shooterPositions.TRENCH_CLOSE));
+            eventMap.put("PrepareShooterDepot", new PrepareShooterCommand(m_shooter, shooterPositions.DEPOT));
+            eventMap.put("PrepareShooterOutpost", new PrepareShooterCommand(m_shooter, shooterPositions.OUTPOST));
 
             NamedCommands.registerCommands(eventMap);
         } catch (Throwable t) {
