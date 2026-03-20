@@ -103,8 +103,8 @@ public class ShooterSubsystem extends SubsystemBase {
         return 3250;
       case 2: // back wall
         return 3700;
-      case 3: // variable shooting using the photon distance with a quadratic regression formula (soft limit of 3250 RPM)
-        return Math.min((int) Math.round(5.4627 * Math.pow(m_PhotonSubsystem.getDistance(), 2) + 495.68047 * m_PhotonSubsystem.getDistance() + 2050), 3250); 
+      case 3: // variable shooting using the photon distance with the inverse of a quadratic regression formula from an rpm vs. distance graph (soft limit of 5000 RPM)
+        return Math.min((int) Math.round(Math.sqrt((m_PhotonSubsystem.getDistance() + 19.73755)/(5.13131*Math.pow(10, -8)))-17562.4743), 5000); 
       default:
         return 2650; // this is a fallback RPM, avg of other RPMs
     }
