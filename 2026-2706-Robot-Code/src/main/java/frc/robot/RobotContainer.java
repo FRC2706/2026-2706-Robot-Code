@@ -5,41 +5,37 @@
 package frc.robot;
 
 import frc.robot.UtilityConstants.OperatorConstants;
-
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
+import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
-
+import frc.robot.commands.ClearIndexerCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.PhotonSubsystem;
+import frc.robot.commands.StartShooter;
+import frc.robot.commands.StopShooter;
+
 import frc.robot.subsystems.AutoSelectorKnobSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.cameraserver.CameraServer;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PhotonSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import edu.wpi.first.wpilibj.Filesystem;
+
 import java.io.File;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.StartShooter;
-import frc.robot.commands.StopShooter;
+import frc.robot.commands.StopIndexerCommand;
+
+
+// Pathplanner testing
+import frc.robot.subsystems.AutoPlans;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -48,124 +44,102 @@ import frc.robot.commands.StopShooter;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  // The robot's subsystems and commands are defined here...
 
   // Subsystem
-  //private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final AutoSelectorKnobSubsystem m_AutoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
+  private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
+
+  // Pathplanner 
+  private final AutoPlans m_autoPlans;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
-
   private final CommandXboxController m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
-  private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
-  // private final CommandXboxController m_driverController =
-  //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(m_PhotonSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
     // Left joystick controls the robot's translation movements (up moves the robot up, left moves the robot left, e.t.c)
     // Right joystick controls the rate of rotation (left rotates the robot counter clock-wise, right rotates the robot clock-wise)
-    m_swerveSubsystem.setDefaultCommand(
-      new SwerveDriveCommand(m_swerveSubsystem,
-       () -> -driverController.getLeftY(), 
-       () -> -driverController.getLeftX(), 
-       () -> -driverController.getRightX(),
-       0.1,
-       0.1
-       )
-    );
+    //If driving on red alliance, the controls should be flipped
+    if (m_swerveSubsystem.isRedAlliance()){
+      m_swerveSubsystem.setDefaultCommand(
+        new SwerveDriveCommand(
+            m_swerveSubsystem,
+            () -> driverController.getLeftY(), // Forward/backward
+            () -> driverController.getLeftX(), // Left/right
+            () -> -driverController.getRightX(),0.1,0.1)
+      );
+    }
+    else{
+      m_swerveSubsystem.setDefaultCommand(
+        new SwerveDriveCommand(
+            m_swerveSubsystem,
+            () -> -driverController.getLeftY(), // Forward/backward
+            () -> -driverController.getLeftX(), // Left/right
+            () -> -driverController.getRightX(),0.1,0.1)
+      );
+    }
 
-    // Configure the trigger bindings
+    // Configure PathPlanner/AutoBuilder now that the swerve subsystem exists
+    // This will configure AutoBuilder using the subsystem-provided callbacks.
+    m_swerveSubsystem.setupPathPlanner();
+
+    // Now that AutoBuilder is configured create autos
+    m_autoPlans = new AutoPlans(intakeSubsystem, m_autoSelectorKnobSubsystem, m_ShooterSubsystem);
+
     configureBindings();
-
     CameraServer.startAutomaticCapture();
   }
 
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    //new Trigger(m_exampleSubsystem::exampleCondition)
-        //.onTrue(new ExampleCommand(m_exampleSubsystem));
-
-
     //Zero the gyro such that forward is where the robot is currently looking
     driverController.start().onTrue(new ResetGyroCommand(m_swerveSubsystem));
+    
+    //Turn shooter on and off at different rpm's
+    m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.TRENCH_FAR)).onFalse(new StopShooter(m_ShooterSubsystem)); 
+    m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.DEPOT)).onFalse(new StopShooter(m_ShooterSubsystem)); 
+    m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.HUB)).onFalse(new StopShooter(m_ShooterSubsystem)); 
+    m_operatorController.b().whileTrue(new StartShooter(m_ShooterSubsystem, 3)).onFalse(new StopShooter(m_ShooterSubsystem));    
+    
+    //Turn only the indexer when pressed
+    m_operatorController.start().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));
 
-    // Toggle intake ON/OFF
+      // Toggle intake ON/OFF
     JoystickButton intakeToggleButton =
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kA.value);
+        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kRightBumper.value);
 
     // Run intake in reverse while held
     JoystickButton reverseButton =
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kB.value);
+        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kLeftBumper.value);
+
 
     // Toggle intake to go down
-    JoystickButton intakeDownButton =
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kY.value);
+    Trigger intakeDownButton =
+        new Trigger(() -> m_operatorController.getRightTriggerAxis() > 0.1);
 
     // Toggle intake to go up
-    JoystickButton intakeUpButton =
-        new JoystickButton(m_operatorController.getHID(), XboxController.Button.kX.value);
+    Trigger intakeUpButton =
+        new Trigger(() -> m_operatorController.getLeftTriggerAxis() > 0.1);
 
     intakeDownButton.toggleOnTrue(new IntakeDownCommand(intakeSubsystem));
     intakeUpButton.toggleOnTrue(new IntakeUpCommand(intakeSubsystem));
     intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
 
-    m_operatorController.rightBumper().whileTrue(new StartShooter(m_ShooterSubsystem)).onFalse(new StopShooter(m_ShooterSubsystem));
   }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-    //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-
+  
   /** This function returns the autonomous command based on the knob position. */
   public Command getAutonomousCommand() {
-    int mode = m_AutoSelectorKnobSubsystem.getAutoMode();
-    System.out.println("Auto Mode = " + mode); // debug print
-    
-    switch (mode) {
-      case 0:
-        return null; // do nothing
-      case 1:
-        return null;
-      case 2:
-        return new PrintCommand("2");
-        //DriveTimed(2.0, 0.3, m_robotDrive);
-      case 3:
-        return new PrintCommand("3");
-        //null;
-      case 4:
-        return new PrintCommand("4");
-        //null;
-      case 5:
-        return new PrintCommand("5");
-        //null;
-      case 6:
-        return new PrintCommand("6");
-        //null;
-      case 7:
-        return new PrintCommand("7");
-        //null;
-      case 8:
-        return new PrintCommand("8");
-        //null;
-      case 9:
-        return new PrintCommand("9");
-        //null;
-      case 10:
-        return new PrintCommand("10");
-        //null;
-      case 11:
-        return new PrintCommand("11");
-        //null;
-      default:
-        return null;
-    }
+
+    //Get the auto based on autonomous selector switch
+    Command auto = m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode());
+
+    return auto;
   }
+  
 }

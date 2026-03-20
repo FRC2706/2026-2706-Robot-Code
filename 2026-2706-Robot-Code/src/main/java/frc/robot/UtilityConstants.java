@@ -28,10 +28,10 @@ public final class UtilityConstants {
     public static final int kIntakeUpDownMotorID = 25;
     public static final double kIntakeSpeed = 4000;
     public static final double kReverseIntakeSpeed = 1000;
-    public static final double kStowPosition = 57;
+    public static final double kStowPosition = 62;
     public static final double kFloorPosition = 0;
     public static final double kTolerance = 0.3;
-
+ 
     public static final double kUpDownP = 0.012;
     public static final double kUpDownI = 0.0;
     public static final double kUpDownD = 0.0; 
@@ -74,11 +74,20 @@ public final class UtilityConstants {
                                indexerkI = 0,
                                indexerkD = 0,
                                indexerkFF = 0.00015;
+
+    // Positions
+    public static final class shooterPositions{
+      public static final byte HUB = 0;
+      public static final byte TRENCH_FAR = 1;
+      public static final byte DEPOT = 2;
+      public static final byte TRENCH_CLOSE = 7;
+      public static final byte OUTPOST = 8;
+    }
+
   }
-
-
-
-    
-    
-  }
-
+  
+  public static class VisionConstants {
+    // Goal distance from the AprilTag (shooter distance to the net) in meters
+    public static final double kGoalDistance = 1.5; // Adjust this value for optimal shooting distance
+  }     
+}
