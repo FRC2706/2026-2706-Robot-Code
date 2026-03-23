@@ -26,7 +26,11 @@ public final class UtilityConstants {
 
     public static final int kIntakeMotorID = 26;
     public static final int kIntakeUpDownMotorID = 25;
-    public static final double kIntakeSpeed = 4200;
+    public static final double kIntakeSpeed = 4500; 
+    /* 4000 -> original RPM (pre-north bay testing)
+     * 4200 -> with net (not successful at all)
+     * 4500 -> with plastic bag 
+     */
     public static final double kReverseIntakeSpeed = 1000;
     public static final double kStowPosition = 62;
     public static final double kFloorPosition = 0;
