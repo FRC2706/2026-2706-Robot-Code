@@ -51,18 +51,18 @@ public class AutoPlans extends SubsystemBase {
         // Publish the shared Field2d visualizations to SmartDashboard so they appear
         // in the simulator/dashboard. Doing this here keeps field-related configuration
         // in one place.
-        SmartDashboard.putData("Field", s_mainField);
-        SmartDashboard.putData("AutoSelectorField", s_autoSelectorField);
+        //SmartDashboard.putData("Field", s_mainField);
+        //SmartDashboard.putData("AutoSelectorField", s_autoSelectorField);
 
         // Initialize default auto-mode poses used by the selector visualization
-        initializeAutoModePoses();
+        //initializeAutoModePoses();
 
         // Set initial selector pose based on the current knob reading
-        try {
-            setAutoSelectorFieldRobotPose(getAutoModePose(selector.getAutoMode()));
-        } catch (Throwable ignore) {
-            // ignore if selector isn't ready
-        }
+    //    //try {
+    //         //setAutoSelectorFieldRobotPose(getAutoModePose(selector.getAutoMode()));
+    //     } catch (Throwable ignore) {
+    //         // ignore if selector isn't ready
+    //     }
 
         //Populate subsystems
         m_intake = intake;
