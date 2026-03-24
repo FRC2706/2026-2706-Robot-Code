@@ -6,10 +6,16 @@ import com.revrobotics.spark.SparkClosedLoopController; // New
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.UtilityConstants;
 import frc.robot.UtilityConstants.shooterConstants;
 import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
+
+import java.util.Map;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor1;
@@ -85,7 +91,23 @@ public class ShooterSubsystem extends SubsystemBase {
 
     indexerMotor.configure(indexerConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-    //-------------------------//
+    // --- SHUFFLEBOARD LAYOUT ---
+    ShuffleboardTab dashboard = Shuffleboard.getTab("Driver Screen");
+
+    // TODO ready to shoot
+    dashboard.addBoolean("Ready to Shoot", () -> true)
+      .withWidget(BuiltInWidgets.kBooleanBox)
+      .withProperties(Map.of(
+          "Color when true", "#00FF00", // Bright Green for ACTIVE
+          "Color when false", "#FF0000" // Bright Red for INACTIVE
+      ))
+      .withPosition(8, 1)
+      .withSize(1, 1);
+
+      dashboard.addNumber("Target Distance", () -> 0.0)
+        .withWidget(BuiltInWidgets.kTextView)
+        .withPosition(8, 2)
+        .withSize(1, 1);
   }
 
   public boolean isRPMinRange(int position) {
