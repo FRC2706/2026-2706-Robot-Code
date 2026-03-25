@@ -10,6 +10,7 @@ import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
 import frc.robot.commands.ClearIndexerCommand;
 import frc.robot.commands.IntakeDownCommand;
+import frc.robot.commands.IntakeIn;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
@@ -24,6 +25,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -126,7 +129,7 @@ public class RobotContainer {
     Trigger intakeUpButton =
         new Trigger(() -> m_operatorController.getLeftTriggerAxis() > 0.1);
 
-    intakeDownButton.toggleOnTrue(new IntakeDownCommand(intakeSubsystem));
+    intakeDownButton.toggleOnTrue(((new IntakeIn(intakeSubsystem)).andThen(Commands.deadline(new WaitCommand(1), new IntakeDownCommand(intakeSubsystem)))).repeatedly());
     intakeUpButton.toggleOnTrue(new IntakeUpCommand(intakeSubsystem));
     intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));

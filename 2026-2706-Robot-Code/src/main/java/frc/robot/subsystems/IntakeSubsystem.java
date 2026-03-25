@@ -127,15 +127,27 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public void moveIntakeDown() {
     intakeUpDownPID.setSetpoint(UtilityConstants.RobotConstants.kFloorPosition, ControlType.kPosition);
-}
+    }
 
     /**
      * Moves the intake up.
      */
     public void moveIntakeUp() {
     intakeUpDownPID.setSetpoint(UtilityConstants.RobotConstants.kStowPosition, ControlType.kPosition);
-    
-}
+    }
+
+    /**
+     * Gets the current on the intake motor
+     * 
+     * @return the current on the intake motor
+     */
+    public double getIntakeCurrent(){
+        return intakeMotor.getOutputCurrent();
+    }
+
+    public boolean isCurrentNominal(){
+        return (getIntakeCurrent() < UtilityConstants.RobotConstants.kNominalCurrent);
+    }
 
     /**
      * Periodically updates the SmartDashboard with the intake motor's RPM and current.
