@@ -11,20 +11,12 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.ResetMode;
-
-import java.util.ResourceBundle.Control;
-
 import com.revrobotics.PersistMode;
-import com.revrobotics.spark.SparkSoftLimit.SoftLimitDirection;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-import frc.robot.Constants;
-import frc.robot.Constants.*;
-
-
+import frc.robot.UtilityConstants;
 
 /**
  * The Intake class represents the intake subsystem of the robot.
@@ -39,19 +31,19 @@ public class IntakeSubsystem extends SubsystemBase {
     private final SparkClosedLoopController m_intakeController; 
 
     // Cached PID values to detect changes from dashboard
-    private double lastP = RobotConstants.kUpDownP;
-    private double lastI = RobotConstants.kUpDownI;
-    private double lastD = RobotConstants.kUpDownD;
+    private double lastP = UtilityConstants.RobotConstants.kUpDownP;
+    private double lastI = UtilityConstants.RobotConstants.kUpDownI;
+    private double lastD = UtilityConstants.RobotConstants.kUpDownD;
 
     /**
      * Constructs a new Intake subsystem.
      * Initializes the intake motor.
      */
     public IntakeSubsystem() {
-        intakeMotor = new SparkMax(Constants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
+        intakeMotor = new SparkMax(UtilityConstants.RobotConstants.kIntakeMotorID, MotorType.kBrushless);
         m_intakeController = intakeMotor.getClosedLoopController();
 
-        intakeUpDownMotor = new SparkMax(Constants.RobotConstants.kIntakeUpDownMotorID, MotorType.kBrushless);
+        intakeUpDownMotor = new SparkMax(UtilityConstants.RobotConstants.kIntakeUpDownMotorID, MotorType.kBrushless);
         intakeUpDownEncoder = intakeUpDownMotor.getEncoder();
         intakeUpDownPID = intakeUpDownMotor.getClosedLoopController();
         
@@ -60,41 +52,45 @@ public class IntakeSubsystem extends SubsystemBase {
 
         SparkMaxConfig upDownConfig = new SparkMaxConfig();
             upDownConfig.closedLoop
-                .p(RobotConstants.kUpDownP)
-                .i(RobotConstants.kUpDownI)
-                .d(RobotConstants.kUpDownD);
+                .p(UtilityConstants.RobotConstants.kUpDownP)
+                .i(UtilityConstants.RobotConstants.kUpDownI)
+                .d(UtilityConstants.RobotConstants.kUpDownD);
 
             upDownConfig.softLimit
-                .forwardSoftLimit(RobotConstants.kStowPosition)
+                .forwardSoftLimit(UtilityConstants.RobotConstants.kStowPosition)
                 .forwardSoftLimitEnabled(true)
-                .reverseSoftLimit(RobotConstants.kFloorPosition)
+                .reverseSoftLimit(UtilityConstants.RobotConstants.kFloorPosition)
                 .reverseSoftLimitEnabled(true);
+
+            upDownConfig.smartCurrentLimit(3, 4);
+
+            upDownConfig.idleMode(IdleMode.kCoast);
+
             intakeUpDownMotor.configure(upDownConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-
+            
 
             SparkMaxConfig speedConfig = new SparkMaxConfig();
             speedConfig.closedLoop
-                .p(RobotConstants.kSpeedP)
-                .i(RobotConstants.kSpeedI)
-                .d(RobotConstants.kSpeedD);
+                .p(UtilityConstants.RobotConstants.kSpeedP)
+                .i(UtilityConstants.RobotConstants.kSpeedI)
+                .d(UtilityConstants.RobotConstants.kSpeedD);
 
-            speedConfig.closedLoop.feedForward.kV(RobotConstants.kSpeedV);
+            speedConfig.closedLoop.feedForward.kV(UtilityConstants.RobotConstants.kSpeedV);
 
             intakeMotor.configure(speedConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // Pre-populate dashboard tuning fields with current constants
-        SmartDashboard.putNumber("UpDown/P Gain", RobotConstants.kUpDownP);
-        SmartDashboard.putNumber("UpDown/I Gain", RobotConstants.kUpDownI);
-        SmartDashboard.putNumber("UpDown/D Gain", RobotConstants.kUpDownD);
-        SmartDashboard.putNumber("Intake/Speed", RobotConstants.kIntakeSpeed);
+        SmartDashboard.putNumber("UpDown/P Gain", UtilityConstants.RobotConstants.kUpDownP);
+        SmartDashboard.putNumber("UpDown/I Gain", UtilityConstants.RobotConstants.kUpDownI);
+        SmartDashboard.putNumber("UpDown/D Gain", UtilityConstants.RobotConstants.kUpDownD);
+        SmartDashboard.putNumber("Intake/Speed", UtilityConstants.RobotConstants.kIntakeSpeed);
     }
 
     /**
      * Starts the intake motor.
      */
     public void startIntake() {
-        m_intakeController.setSetpoint(RobotConstants.kIntakeSpeed, ControlType.kVelocity);
+        m_intakeController.setSetpoint(UtilityConstants.RobotConstants.kIntakeSpeed, ControlType.kVelocity);
 
     }
 
@@ -102,7 +98,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * Starts the intake motor, but backwards.
      */
     public void reverseIntake() {
-        m_intakeController.setSetpoint(-RobotConstants.kReverseIntakeSpeed, ControlType.kVelocity);
+        m_intakeController.setSetpoint(-UtilityConstants.RobotConstants.kReverseIntakeSpeed, ControlType.kVelocity);
 
     }
 
@@ -130,14 +126,15 @@ public class IntakeSubsystem extends SubsystemBase {
      * Moves the intake down.
      */
     public void moveIntakeDown() {
-    intakeUpDownPID.setSetpoint(RobotConstants.kFloorPosition, ControlType.kPosition);
+    intakeUpDownPID.setSetpoint(UtilityConstants.RobotConstants.kFloorPosition, ControlType.kPosition);
 }
 
     /**
      * Moves the intake up.
      */
     public void moveIntakeUp() {
-    intakeUpDownPID.setSetpoint(RobotConstants.kStowPosition, ControlType.kPosition);
+    intakeUpDownPID.setSetpoint(UtilityConstants.RobotConstants.kStowPosition, ControlType.kPosition);
+    
 }
 
     /**

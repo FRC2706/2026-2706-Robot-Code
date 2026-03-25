@@ -26,6 +26,8 @@ import frc.robot.subsystems.FMS_Subsystem;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
+
+
   private final RobotContainer m_robotContainer;
 
   /**
@@ -36,7 +38,9 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    
   }
+
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -91,6 +95,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
   }
 
   //Setup for reading the FMS message. 
@@ -104,31 +109,8 @@ public class Robot extends TimedRobot {
   XboxController operator = new XboxController(1);
 
   @Override
-  public void teleopPeriodic() {
-    boolean isHubActiveUpdate = fms.isHubActive();
-    // This tells us when our hub status changes, and what it changes to.
-    if (isHubActiveUpdate != hubCurrentState) {
-      System.out.println("Hub is now " + (isHubActiveUpdate ? "active" : "inactive"));
+  public void teleopPeriodic() {}
 
-      // Controller rumble that Jacob asked for
-      driver.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
-      operator.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
-      rumbleTimer.reset(); rumbleTimer.start(); rumbling = true;
-      matchTime = DriverStation.getMatchTime();
-      hasRobotRecivedMessage = true;
-    }
-     // Prevents constant controller rumble
-    if (rumbling && rumbleTimer.hasElapsed(3.0)) {
-      driver.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
-      operator.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
-      rumbling = false;
-      rumbleTimer.stop();
-    }
-    //Prevents constant stream of print commands.
-    hubCurrentState = isHubActiveUpdate;
-  }
-
- 
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
