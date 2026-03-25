@@ -4,9 +4,19 @@
 
 package frc.robot;
 
+import java.util.Optional;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.FMS_Subsystem;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -35,6 +45,7 @@ public class Robot extends TimedRobot {
    * <p>This runs after the mode specific periodic functions, but before LiveWindow and
    * SmartDashboard integrated updating.
    */
+
   @Override
   public void robotPeriodic() {
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
@@ -72,15 +83,52 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    Optional<Alliance> teamAllainceColour = DriverStation.getAlliance();
+    boolean checkForFMSConnection = DriverStation.isFMSAttached();
+    System.out.println("Our alliance is: " + teamAllainceColour);
+    System.out.println("The FMS connection status is: " + checkForFMSConnection);
+    
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
   }
 
-  /** This function is called periodically during operator control. */
-  @Override
-  public void teleopPeriodic() {}
+  //Setup for reading the FMS message. 
+  private final FMS_Subsystem fms = new FMS_Subsystem();
+  private final Timer rumbleTimer = new Timer();
+  private boolean hubCurrentState = false;
+  private boolean hasRobotRecivedMessage = false;
+  private double matchTime;
+  private boolean rumbling = false;
+  XboxController driver = new XboxController(0);
+  XboxController operator = new XboxController(1);
 
+  @Override
+  public void teleopPeriodic() {
+    boolean isHubActiveUpdate = fms.isHubActive();
+    // This tells us when our hub status changes, and what it changes to.
+    if (isHubActiveUpdate != hubCurrentState) {
+      System.out.println("Hub is now " + (isHubActiveUpdate ? "active" : "inactive"));
+
+      // Controller rumble that Jacob asked for
+      driver.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
+      operator.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
+      rumbleTimer.reset(); rumbleTimer.start(); rumbling = true;
+      matchTime = DriverStation.getMatchTime();
+      hasRobotRecivedMessage = true;
+    }
+     // Prevents constant controller rumble
+    if (rumbling && rumbleTimer.hasElapsed(3.0)) {
+      driver.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
+      operator.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
+      rumbling = false;
+      rumbleTimer.stop();
+    }
+    //Prevents constant stream of print commands.
+    hubCurrentState = isHubActiveUpdate;
+  }
+
+ 
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
