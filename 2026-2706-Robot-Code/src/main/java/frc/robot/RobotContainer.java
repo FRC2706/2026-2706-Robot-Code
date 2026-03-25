@@ -3,8 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
-import frc.robot.Constants.OperatorConstants;
+import frc.robot.UtilityConstants.OperatorConstants;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.ResetGyroCommand;
