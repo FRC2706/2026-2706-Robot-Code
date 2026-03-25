@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.AutoSelectorKnobSubsystem;
 import frc.robot.commands.SwerveDriveCommand;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -54,7 +55,9 @@ public class RobotContainer {
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+  private final PhotonSubsystem m_photonSubsystem = new PhotonSubsystem();
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(m_photonSubsystem);
+  
   // Pathplanner testing
   private final AutoPlans m_autoPlans;
   private final SendableChooser<Command> autoChooser;
