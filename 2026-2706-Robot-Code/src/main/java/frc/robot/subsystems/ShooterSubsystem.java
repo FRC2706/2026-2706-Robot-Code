@@ -5,7 +5,10 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkClosedLoopController; // New
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.UtilityConstants;
 import frc.robot.UtilityConstants.shooterConstants;
@@ -45,16 +48,16 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterConfig.closedLoop.p(shooterConstants.shooterkP);         
     shooterConfig.closedLoop.i(shooterConstants.shooterkI);
     shooterConfig.closedLoop.d(shooterConstants.shooterkD);
-    shooterConfig.closedLoop.velocityFF(shooterConstants.shooterkFF);
+    shooterConfig.closedLoop.feedForward.kV(shooterConstants.shooterkFF);
     shooterConfig.closedLoop.outputRange(-1, 1);
    
     shooterConfig.smartCurrentLimit(currentLimit);
 
-    shooterMotor1.configure(shooterConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    shooterMotor1.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig followerConfig = new SparkMaxConfig();
     followerConfig.follow(shooterMotor1); // Tells motor 2 to do whatever motor 1 does
-    shooterMotor2.configure(followerConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    shooterMotor2.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 
     //-------Feeder & Indexer configuration & PID-----------//
@@ -65,12 +68,12 @@ public class ShooterSubsystem extends SubsystemBase {
     feederConfig.closedLoop.p(shooterConstants.feederkP); // will change later    
     feederConfig.closedLoop.i(shooterConstants.feederkI);
     feederConfig.closedLoop.d(shooterConstants.feederkD);
-    feederConfig.closedLoop.velocityFF(shooterConstants.feederkFF);
+    feederConfig.closedLoop.feedForward.kV(shooterConstants.feederkFF);
     feederConfig.closedLoop.outputRange(-1, 1);
     feederConfig.smartCurrentLimit(currentLimit);
 
 
-    feederMotor.configure(feederConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    feederMotor.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     
     SparkMaxConfig indexerConfig = new SparkMaxConfig();
@@ -79,11 +82,11 @@ public class ShooterSubsystem extends SubsystemBase {
     indexerConfig.closedLoop.p(shooterConstants.indexerkP);  // will change later   
     indexerConfig.closedLoop.i(shooterConstants.indexerkI);
     indexerConfig.closedLoop.d(shooterConstants.indexerkD);
-    indexerConfig.closedLoop.velocityFF(shooterConstants.indexerkFF);
+    indexerConfig.closedLoop.feedForward.kV(shooterConstants.indexerkFF);
     indexerConfig.closedLoop.outputRange(-1, 1);
     indexerConfig.smartCurrentLimit(currentLimit);
 
-    indexerMotor.configure(indexerConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+    indexerMotor.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     //-------------------------//
   }
