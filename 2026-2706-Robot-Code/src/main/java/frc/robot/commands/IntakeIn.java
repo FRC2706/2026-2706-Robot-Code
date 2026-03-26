@@ -24,6 +24,6 @@ public class IntakeIn extends Command{
 
     @Override
     public boolean isFinished() {
-        return m_IntakeSubsystem.isCurrentNominal();
+        return m_IntakeSubsystem.isIntakeCurrentNominal();
     }
 }

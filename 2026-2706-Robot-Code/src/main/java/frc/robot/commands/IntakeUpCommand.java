@@ -18,7 +18,12 @@ public class IntakeUpCommand extends Command {
     }
 
     @Override
+    public void end(boolean interrupted){
+        intake.stopIntakeUpDown();
+    }
+
+    @Override
     public boolean isFinished() {
-        return true;
+        return intake.isArmCurrentNominal();
     }
 }

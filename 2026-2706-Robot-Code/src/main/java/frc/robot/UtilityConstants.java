@@ -45,7 +45,8 @@ public final class UtilityConstants {
     public static final double kSpeedD = 0.005; 
     public static final double kSpeedV = 0.0022;
 
-    public static final double kNominalCurrent = 50;
+    public static final double kIntakeNominalCurrent = 50;
+    public static final double kArmNominalCurrent = 20;
   }
 
   public static final class CANID {

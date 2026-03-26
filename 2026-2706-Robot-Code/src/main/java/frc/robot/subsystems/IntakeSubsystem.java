@@ -137,6 +137,13 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
+     * Stop the intake from moving up or down
+     */
+    public void stopIntakeUpDown(){
+        intakeMotor.stopMotor();
+    }
+
+    /**
      * Gets the current on the intake motor
      * 
      * @return the current on the intake motor
@@ -145,9 +152,27 @@ public class IntakeSubsystem extends SubsystemBase {
         return intakeMotor.getOutputCurrent();
     }
 
-    public boolean isCurrentNominal(){
-        return (getIntakeCurrent() < UtilityConstants.RobotConstants.kNominalCurrent);
+    /**
+     * @return if the current on the intake motor is under the highest expected current
+     */
+    public boolean isIntakeCurrentNominal(){
+        return (getIntakeCurrent() < UtilityConstants.RobotConstants.kIntakeNominalCurrent);
     }
+
+    /**
+     * @return the current on the intake motor
+     */
+    public double getArmCurrent(){
+        return intakeUpDownMotor.getOutputCurrent();
+    }
+
+    /**
+     * @return if the current on the arm motor is under the highest expected current
+     */
+    public boolean isArmCurrentNominal(){
+        return (getArmCurrent() < UtilityConstants.RobotConstants.kArmNominalCurrent);
+    }
+
 
     /**
      * Periodically updates the SmartDashboard with the intake motor's RPM and current.
