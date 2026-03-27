@@ -13,6 +13,7 @@ import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
+import frc.robot.commands.IntakeMidCommand;
 import frc.robot.commands.StartShooter;
 import frc.robot.commands.StopShooter;
 
@@ -130,6 +131,9 @@ public class RobotContainer {
     intakeUpButton.toggleOnTrue(new IntakeUpCommand(intakeSubsystem));
     intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
+
+    //Moves the intake to the middle position; Defaults to moving it down after finishing
+    m_operatorController.leftStick().onTrue(new IntakeMidCommand(intakeSubsystem)).onFalse(new IntakeUpCommand(intakeSubsystem));
 
   }
   

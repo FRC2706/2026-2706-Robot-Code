@@ -145,4 +145,19 @@ public class ShooterSubsystem extends SubsystemBase {
   public void stopIndexer(){
     indexerMotor.stopMotor();
   }
+
+  //Feed the shooter at varying speeds depending on the position of the robot; Further positions require lower rpm (lower shooting rate)
+  public void feedShooter(int position){
+    switch(position){
+      case shooterPositions.HUB:
+        {
+          break;
+        }
+        
+      case shooterPositions.DEPOT:
+        {
+          break;
+        }
+    }
+  }
 }
