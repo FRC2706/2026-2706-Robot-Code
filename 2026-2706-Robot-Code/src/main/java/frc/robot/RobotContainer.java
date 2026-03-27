@@ -134,8 +134,8 @@ public class RobotContainer {
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
 
     //Moves the intake up and down while turning the intake Defaults to moving it down after finishing
-    //m_operatorController.leftStick().onTrue(new IntakeMidCommand(intakeSubsystem)).onFalse(new IntakeUpCommand(intakeSubsystem));
-    m_operatorController.leftStick().onTrue(new IntakeAgitateCommand(intakeSubsystem)).onFalse(new IntakeUpCommand(intakeSubsystem));
+    //m_operatorController.back().onTrue(new IntakeMidCommand(intakeSubsystem)).onFalse(new IntakeUpCommand(intakeSubsystem));
+    m_operatorController.back().onTrue(new IntakeAgitateCommand(intakeSubsystem)).onFalse(new IntakeUpCommand(intakeSubsystem));
 
   }
   
