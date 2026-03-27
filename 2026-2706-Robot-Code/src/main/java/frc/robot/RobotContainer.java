@@ -9,6 +9,7 @@ import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
 import frc.robot.commands.ClearIndexerCommand;
+import frc.robot.commands.IntakeAgitateCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.RunIntakeCommandForward;
@@ -132,8 +133,9 @@ public class RobotContainer {
     intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
 
-    //Moves the intake to the middle position; Defaults to moving it down after finishing
-    m_operatorController.leftStick().onTrue(new IntakeMidCommand(intakeSubsystem)).onFalse(new IntakeUpCommand(intakeSubsystem));
+    //Moves the intake up and down while turning the intake Defaults to moving it down after finishing
+    //m_operatorController.leftStick().onTrue(new IntakeMidCommand(intakeSubsystem)).onFalse(new IntakeUpCommand(intakeSubsystem));
+    m_operatorController.leftStick().onTrue(new IntakeAgitateCommand(intakeSubsystem)).onFalse(new IntakeUpCommand(intakeSubsystem));
 
   }
   
