@@ -27,7 +27,10 @@ public final class UtilityConstants {
     public static final int kIntakeMotorID = 26;
     public static final int kIntakeUpDownMotorID = 25;
     public static final double kIntakeSpeed = 4000; 
-    public static final double kAgitateArmTime = 3;
+    //Time before robot arm moves up
+    public static final double kAgitateArmTimeMid = 1;
+    //Time before robot arm moves down
+    public static final double kAgitateArmTimeDown = 3;
     public static final double kAgitateRollerTime = 2;
     /* 4000 -> original RPM (pre-north bay testing)
      * 4200 -> with net (not successful at all)

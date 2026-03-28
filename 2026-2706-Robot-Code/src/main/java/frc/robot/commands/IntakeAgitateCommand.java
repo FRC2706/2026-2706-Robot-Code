@@ -7,7 +7,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeAgitateCommand extends Command{
     private final IntakeSubsystem m_IntakeSubsystem;
-    private double timeSinceArmChange = Timer.getFPGATimestamp();
+    private double timeSinceArmDown = Timer.getFPGATimestamp();
+    private double timeSinceArmUp = Timer.getFPGATimestamp();
     private double timeSinceRollerChange = Timer.getFPGATimestamp();
     private boolean isAtMid = false;
     private boolean isRollerOn = false;
@@ -31,18 +32,17 @@ public class IntakeAgitateCommand extends Command{
         double time = Timer.getFPGATimestamp();
 
         //Every few seconds, move the intake up and down
-        if (time - timeSinceArmChange >= UtilityConstants.RobotConstants.kAgitateArmTime){
-            timeSinceArmChange = time;
-
-            if (isAtMid){
-                m_IntakeSubsystem.moveIntakeUp();
-                isAtMid = false;
-            }
-            else{
-                m_IntakeSubsystem.moveIntakeMid();
-                isAtMid = true;
-            }
+        if (time - timeSinceArmDown >= UtilityConstants.RobotConstants.kAgitateArmTimeMid && !isAtMid){
+            timeSinceArmUp = time;
+            isAtMid = true;            
+            m_IntakeSubsystem.moveIntakeMid();  
         }
+        else if (time - timeSinceArmUp >= UtilityConstants.RobotConstants.kAgitateArmTimeDown && isAtMid){
+            timeSinceArmDown = time;
+            m_IntakeSubsystem.moveIntakeUp();
+            isAtMid = false;
+        }
+
 
         //Every few seconds, turn the intake roller on and off
         if (time - timeSinceRollerChange >= UtilityConstants.RobotConstants.kAgitateRollerTime){
