@@ -93,7 +93,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public boolean isRPMinRange(int position) {
     double currentRPM = m_encoder.getVelocity();
-    double tolerance = 100;
+    double tolerance = 75;
 
     return (Math.abs(currentRPM - getDesiredVelocityRPM(position)) < tolerance);
   }
@@ -134,7 +134,7 @@ public class ShooterSubsystem extends SubsystemBase {
     m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity);
     
     // figure out how much faster this should go
-    m_pidControllerFeeder.setSetpoint(getDesiredVelocityRPM(position)*11, SparkBase.ControlType.kVelocity);
+    m_pidControllerFeeder.setSetpoint(getDesiredVelocityRPM(position)*9, SparkBase.ControlType.kVelocity);
     m_pidControllerIndexer.setSetpoint(getDesiredVelocityRPM(position)*12, SparkBase.ControlType.kVelocity);
   }
 
