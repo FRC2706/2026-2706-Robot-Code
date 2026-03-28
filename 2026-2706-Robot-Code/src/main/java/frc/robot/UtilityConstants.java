@@ -30,7 +30,7 @@ public final class UtilityConstants {
     //Time before robot arm moves up
     public static final double kAgitateArmTimeMid = 1;
     //Time before robot arm moves down
-    public static final double kAgitateArmTimeDown = 3;
+    public static final double kAgitateArmTimeDown = 3.5;
     public static final double kAgitateRollerTime = 2;
     /* 4000 -> original RPM (pre-north bay testing)
      * 4200 -> with net (not successful at all)
@@ -39,7 +39,7 @@ public final class UtilityConstants {
     public static final double kReverseIntakeSpeed = 1000;
     public static final double kStowPosition = 65;
     public static final double kFloorPosition = 0;
-    public static final double kMidPosition = 25;
+    public static final double kMidPosition = 15;
     public static final double kTolerance = 0.3;
  
     public static final double kUpDownP = 0.012;
