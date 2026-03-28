@@ -81,8 +81,8 @@ public class RobotContainer {
       m_swerveSubsystem.setDefaultCommand(
         new SwerveDriveCommand(
             m_swerveSubsystem,
-            () -> -driverController.getLeftY(), // Forward/backward
-            () -> -driverController.getLeftX(), // Left/right
+            () -> driverController.getLeftY(), // Forward/backward
+            () -> driverController.getLeftX(), // Left/right
             () -> -driverController.getRightX(),0.1,0.1)
       );
     }
