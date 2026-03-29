@@ -22,6 +22,9 @@ import frc.robot.subsystems.AutoSelectorKnobSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PhotonSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
@@ -33,6 +36,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.Filesystem;
 
 import java.io.File;
+import java.util.function.Consumer;
+
 import frc.robot.commands.StopIndexerCommand;
 
 
@@ -51,7 +56,7 @@ public class RobotContainer {
   // Subsystem
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
+  //private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
   private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
 
   // Pathplanner 
@@ -60,7 +65,7 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandXboxController m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
-  private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(m_PhotonSubsystem);
+  private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -81,8 +86,8 @@ public class RobotContainer {
       m_swerveSubsystem.setDefaultCommand(
         new SwerveDriveCommand(
             m_swerveSubsystem,
-            () -> driverController.getLeftY(), // Forward/backward
-            () -> driverController.getLeftX(), // Left/right
+            () -> -driverController.getLeftY(), // Forward/backward
+            () -> -driverController.getLeftX(), // Left/right
             () -> -driverController.getRightX(),0.1,0.1)
       );
     }
@@ -95,7 +100,7 @@ public class RobotContainer {
     m_autoPlans = new AutoPlans(intakeSubsystem, m_autoSelectorKnobSubsystem, m_ShooterSubsystem);
 
     configureBindings();
-    CameraServer.startAutomaticCapture();
+    // CameraServer.startAutomaticCapture();
   }
 
   private void configureBindings() {
@@ -106,7 +111,7 @@ public class RobotContainer {
     m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.TRENCH_FAR)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.DEPOT)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.HUB)).onFalse(new StopShooter(m_ShooterSubsystem)); 
-    m_operatorController.b().whileTrue(new StartShooter(m_ShooterSubsystem, 3)).onFalse(new StopShooter(m_ShooterSubsystem));    
+    //m_operatorController.b().whileTrue(new StartShooter(m_ShooterSubsystem, 3)).onFalse(new StopShooter(m_ShooterSubsystem));    
     
     //Turn only the indexer when pressed
     m_operatorController.start().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));
@@ -145,7 +150,17 @@ public class RobotContainer {
     //Get the auto based on autonomous selector switch
     Command auto = m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode());
 
-    return auto;
+    Consumer<Boolean> resetGyro = (b) -> {
+      if (b) {
+        if (!m_swerveSubsystem.isRedAlliance());
+        Pose2d swervePos = m_swerveSubsystem.getPose();
+        Rotation2d swerveRot = swervePos.getRotation();
+        swerveRot.rotateBy(new Rotation2d(Units.degreesToRadians(180)));
+        m_swerveSubsystem.resetOdometry(new Pose2d(swervePos.getTranslation(),swerveRot));
+      }
+    };
+
+    return auto.finallyDo((boolean b) -> resetGyro.accept(b));
   }
   
 }

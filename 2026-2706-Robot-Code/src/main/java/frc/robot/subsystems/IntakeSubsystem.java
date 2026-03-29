@@ -62,7 +62,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 .reverseSoftLimit(UtilityConstants.RobotConstants.kFloorPosition)
                 .reverseSoftLimitEnabled(true);
 
-            upDownConfig.smartCurrentLimit(3, 4);
+            upDownConfig.smartCurrentLimit(10, 20);
 
             upDownConfig.idleMode(IdleMode.kCoast);
 
