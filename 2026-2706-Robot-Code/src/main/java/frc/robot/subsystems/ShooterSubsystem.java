@@ -103,7 +103,7 @@ public class ShooterSubsystem extends SubsystemBase {
       case shooterPositions.HUB: 
         return 2050;
       case shooterPositions.TRENCH_FAR: 
-        return 3250;
+        return 3200;
       case shooterPositions.DEPOT:
         return 3700;
       case 3: // variable shooting using the photon distance with the inverse of a quadratic regression formula from an rpm vs. distance graph (soft limit of 5000 RPM)

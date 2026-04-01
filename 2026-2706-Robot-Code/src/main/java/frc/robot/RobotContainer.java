@@ -12,6 +12,7 @@ import frc.robot.commands.ClearIndexerCommand;
 import frc.robot.commands.IntakeAgitateCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
+import frc.robot.commands.LockPoseCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
 import frc.robot.commands.IntakeMidCommand;
@@ -142,6 +143,8 @@ public class RobotContainer {
     //m_operatorController.back().onTrue(new IntakeMidCommand(intakeSubsystem)).onFalse(new IntakeUpCommand(intakeSubsystem));
     m_operatorController.back().onTrue(new IntakeAgitateCommand(intakeSubsystem)).onFalse(new IntakeUpCommand(intakeSubsystem));
 
+    //Locks the position of the robot to prevent moving when pressing "A" on the driver controller
+    driverController.leftBumper().onTrue(new LockPoseCommand(m_swerveSubsystem)).onFalse(new LockPoseCommand(m_swerveSubsystem).withTimeout(0));
   }
   
   /** This function returns the autonomous command based on the knob position. */
