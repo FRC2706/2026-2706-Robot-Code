@@ -141,7 +141,7 @@ public class ShooterSubsystem extends SubsystemBase {
     
     // figure out how much faster this should go
     m_pidControllerFeeder.setSetpoint(4000, SparkBase.ControlType.kVelocity);
-    m_pidControllerIndexer.setSetpoint(2000, SparkBase.ControlType.kVelocity);
+    m_pidControllerIndexer.setSetpoint(3000, SparkBase.ControlType.kVelocity);
   }
 
   public void clearIndexer(){
