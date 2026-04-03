@@ -13,6 +13,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -54,7 +56,6 @@ public class PhotonSubsystem extends SubsystemBase {
             if (tagPoseOpt.isEmpty()) {
                 return;
             }
-            Pose3d tagPose3d = tagPoseOpt.get();
 
             // Find the distance between the camera and the target in meters. Convert degrees to radians because that's what Math.tan expects.
             double denominator = Math.tan(Math.toRadians(target.getPitch()) + Math.toRadians(kCameraPitch));
@@ -74,7 +75,7 @@ public class PhotonSubsystem extends SubsystemBase {
             }
         }
         else {
-            System.out.println("camera1 is null");
+            // Camera not available; silence console to avoid spam during matches.
             target = null;
             result = null;
         }
@@ -109,41 +110,48 @@ public class PhotonSubsystem extends SubsystemBase {
         return 0.0;
     }
 
-    // Returns cameraToTarget transform3d things??
+    // Returns cameraToTarget transform3d things
     public Transform3d cameraToTarget() {
-        if (!hasTarget()) return new Transform3d();
-        return new Transform3d(target.getBestCameraToTarget().getTranslation(), target.getBestCameraToTarget().getRotation());
+        if (!hasTarget()) return new Transform3d(new Translation3d(), new Rotation3d());
+        try {
+            var camToTarget = target.getBestCameraToTarget();
+            return new Transform3d(camToTarget.getTranslation(), camToTarget.getRotation());
+        } catch (Exception e) {
+            return new Transform3d(new Translation3d(), new Rotation3d());
+        }
+    }
+
+    /** Public accessor for the PhotonCamera used by this subsystem. */
+    public PhotonCamera getCamera() {
+        return camera1;
     }
 
 
 // Returns AprilTag ID of the detected target, or -1 if no target (or if targets are not one of the 3 listed for each alliance)
-public int getTagID() {
-    Optional<Alliance> allianceOpt = DriverStation.getAlliance();
-    allianceOpt.ifPresent(a -> currentAlliance = a);
-    currentAlliance = allianceOpt.get(); // Update current alliance before checking targets
-    if (!hasTarget()) return -1;
-    
-    int targetId = target.getFiducialId();
-    if (targetId < 0) return -1;
- 
-    if (currentAlliance == Alliance.Red) {
-        // RED ALLIANCE CODE: only accept 8, 2, 10
-        if (targetId == 8 || targetId == 2 || targetId == 10) {
-            return targetId;
-        } else {
-            return -1;
-        }
-    } else if (currentAlliance == Alliance.Blue) {
-        // BLUE ALLIANCE CODE: only accept 24, 25, 27
-        if (targetId == 24 || targetId == 25 || targetId == 27) {
-            return targetId;
-        } else {
-            return -1;
-        }
-    }
+    public int getTagID() {
+        Optional<Alliance> allianceOpt = DriverStation.getAlliance();
+        allianceOpt.ifPresent(a -> currentAlliance = a);
+        if (!hasTarget()) return -1;
 
-    return -1;
-}
+        int targetId = target.getFiducialId();
+        if (targetId < 0) return -1;
+
+        if (currentAlliance == Alliance.Red) {
+            if (targetId == 8 || targetId == 2 || targetId == 10) {
+                return targetId;
+            } else {
+                return -1;
+            }
+        } else if (currentAlliance == Alliance.Blue) {
+            if (targetId == 24 || targetId == 25 || targetId == 27) {
+                return targetId;
+            } else {
+                return -1;
+            }
+        }
+
+        return -1;
+    }
 
 public void setLastKnownDistance(double fallbackDistance) {
     if (hasTarget() && m_planarDistance >= 0) { // only use measurement if there is a valid target and distance is non-negative

@@ -7,6 +7,8 @@ package frc.robot;
 import frc.robot.UtilityConstants.OperatorConstants;
 import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
 import frc.robot.commands.SwerveDriveCommand;
+import frc.robot.commands.PhotonAlignToTargetCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.ResetGyroCommand;
 import frc.robot.commands.ClearIndexerCommand;
 import frc.robot.commands.IntakeDownCommand;
@@ -104,7 +106,18 @@ public class RobotContainer {
     m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.TRENCH_FAR)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.DEPOT)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.HUB)).onFalse(new StopShooter(m_ShooterSubsystem)); 
-    m_operatorController.b().whileTrue(new StartShooter(m_ShooterSubsystem, 3)).onFalse(new StopShooter(m_ShooterSubsystem));    
+  m_operatorController.b().whileTrue(
+    new ParallelCommandGroup(
+      new StartShooter(m_ShooterSubsystem, 3),
+      new PhotonAlignToTargetCommand(
+        m_PhotonSubsystem,
+        m_swerveSubsystem,
+        () -> -driverController.getLeftY(),
+        () -> -driverController.getLeftX(),
+        () -> -driverController.getRightX(),
+        0.1,
+        0.1)))
+      .onFalse(new StopShooter(m_ShooterSubsystem));    
     
     //Turn only the indexer when pressed
     m_operatorController.start().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));
