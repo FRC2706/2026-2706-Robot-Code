@@ -61,6 +61,7 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterMotor1.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig followerConfig = new SparkMaxConfig();
+    followerConfig.smartCurrentLimit(currentLimit);
     followerConfig.follow(shooterMotor1); // Tells motor 2 to do whatever motor 1 does
     shooterMotor2.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -97,7 +98,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public boolean isRPMinRange(int position) {
     double currentRPM = m_encoder.getVelocity();
-    double tolerance = 100;
+    double tolerance = 75;
 
     return (Math.abs(currentRPM - getDesiredVelocityRPM(position)) < tolerance);
   }
@@ -105,7 +106,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public int getDesiredVelocityRPM(int position) {
     switch (position) {
       case shooterPositions.HUB: 
-        return 2000;
+        return 1700;
       case shooterPositions.TRENCH_FAR: 
         return 3250;
       case shooterPositions.DEPOT:

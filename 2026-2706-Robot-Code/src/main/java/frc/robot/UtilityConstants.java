@@ -66,15 +66,15 @@ public final class UtilityConstants {
 
     // PID VALUES
 
-    public static final double shooterkP = 0.00005,
+    public static final double shooterkP = 0.000325,
                                shooterkI = 0,
-                               shooterkD = 0,
-                               shooterkFF = 0.0021,
+                               shooterkD = 0.015,
+                               shooterkFF = 0.0023,
 
-                               shooterAgressivekP = 0.00005,
-                               shooterAgressivekI = 0.00001,
-                               shooterAgressivekD = 0.00001,
-                               shooterAgressivekFF=0,
+                               shooterAgressivekP = 0.000325,
+                               shooterAgressivekI = 0,
+                               shooterAgressivekD = 0.005,
+                               shooterAgressivekFF=0.0023,
 
                                feederkP = 0.0001,
                                feederkI = 0.00003,
