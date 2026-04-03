@@ -69,15 +69,15 @@ public final class UtilityConstants {
                                shooterkD = 0,
                                shooterkFF = 0.0021,
 
-                               feederkP = 0.000001,
-                               feederkI = 0,
-                               feederkD = 0,
-                               feederkFF = 0.00015,
+                               feederkP = 0.0001,
+                               feederkI = 0.00003,
+                               feederkD = 0.0001,
+                               feederkFF = 0.001,
 
                                indexerkP = 0.000001,
                                indexerkI = 0,
                                indexerkD = 0,
-                               indexerkFF = 0.00015;
+                               indexerkFF = 0.00202;
 
     // Positions
     public static final class shooterPositions{
