@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkClosedLoopController; // New
@@ -45,10 +46,14 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkMaxConfig shooterConfig = new SparkMaxConfig();
     shooterConfig.inverted(false);
     
-    shooterConfig.closedLoop.p(shooterConstants.shooterkP);         
-    shooterConfig.closedLoop.i(shooterConstants.shooterkI);
-    shooterConfig.closedLoop.d(shooterConstants.shooterkD);
-    shooterConfig.closedLoop.feedForward.kV(shooterConstants.shooterkFF);
+    shooterConfig.closedLoop.p(shooterConstants.shooterkP,ClosedLoopSlot.kSlot0);         
+    shooterConfig.closedLoop.i(shooterConstants.shooterkI,ClosedLoopSlot.kSlot0);
+    shooterConfig.closedLoop.d(shooterConstants.shooterkD,ClosedLoopSlot.kSlot0);
+    shooterConfig.closedLoop.feedForward.kV(shooterConstants.shooterkFF,ClosedLoopSlot.kSlot0);
+    shooterConfig.closedLoop.p(shooterConstants.shooterAgressivekP,ClosedLoopSlot.kSlot1);         
+    shooterConfig.closedLoop.i(shooterConstants.shooterAgressivekI,ClosedLoopSlot.kSlot1);
+    shooterConfig.closedLoop.d(shooterConstants.shooterAgressivekD,ClosedLoopSlot.kSlot1);
+    shooterConfig.closedLoop.feedForward.kV(shooterConstants.shooterkFF,ClosedLoopSlot.kSlot1);
     shooterConfig.closedLoop.outputRange(-1, 1);
    
     shooterConfig.smartCurrentLimit(currentLimit);
@@ -123,14 +128,14 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void spinningUp(int position) {
-    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity);
+    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity,ClosedLoopSlot.kSlot1);
     feederMotor.stopMotor();
     indexerMotor.stopMotor();
 
   }
 
   public void ready(int position) {
-    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity);
+    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity,ClosedLoopSlot.kSlot0);
     
     // figure out how much faster this should go
     m_pidControllerFeeder.setSetpoint(4000, SparkBase.ControlType.kVelocity);
