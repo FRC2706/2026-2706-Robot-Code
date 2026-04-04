@@ -19,6 +19,7 @@ import java.util.Map;
 
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.PrepareShooterCommand;
+import frc.robot.commands.IntakeAgitateCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
@@ -37,7 +38,7 @@ public class AutoPlans extends SubsystemBase {
     private static final Field2d s_mainField = new Field2d();
     private static final Field2d s_autoSelectorField = new Field2d();
 
-    private PathPlannerAuto middleStartAuto, rightStartAuto;
+    private PathPlannerAuto leftStartNeutralZoneAuto, rightStartNeutralZoneAuto;
     private Command middleShootAuto, rightTrenchShootAuto, leftTrenchShootAuto;
 
     // Mapping of auto mode index -> Pose2d used by the auto-selector visualization.
@@ -69,8 +70,8 @@ public class AutoPlans extends SubsystemBase {
     /**Make all the Pathplanner autos */
     public void createAutos(){
         try{
-            middleStartAuto = new PathPlannerAuto("Middle Start Auto");
-            rightStartAuto = new PathPlannerAuto("Right Start Auto");
+            leftStartNeutralZoneAuto = new PathPlannerAuto("Left Start Neutral Zone Auto");
+            rightStartNeutralZoneAuto = new PathPlannerAuto("Right Start Neutral Zone Auto");
             middleShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians((270 + addInversion()) % 360)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.HUB)));
             rightTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians(0 + addInversion())))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
             leftTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians((180 + addInversion()) % 360)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
@@ -112,6 +113,8 @@ public class AutoPlans extends SubsystemBase {
             eventMap.put("PrepareShooterTrench", new PrepareShooterCommand(m_shooter, shooterPositions.TRENCH_CLOSE));
             eventMap.put("PrepareShooterDepot", new PrepareShooterCommand(m_shooter, shooterPositions.DEPOT));
             eventMap.put("PrepareShooterOutpost", new PrepareShooterCommand(m_shooter, shooterPositions.OUTPOST));
+
+            eventMap.put("AgitateIntake", new IntakeAgitateCommand(m_intake));
 
             NamedCommands.registerCommands(eventMap);
         } catch (Throwable t) {
@@ -174,9 +177,9 @@ public class AutoPlans extends SubsystemBase {
             case 3:
                 return leftTrenchShootAuto; 
             case 4:
-                return null;
+                return leftStartNeutralZoneAuto;
             case 5:
-                return null;
+                return rightStartNeutralZoneAuto;
             case 6:
                 return null;
             case 7:
