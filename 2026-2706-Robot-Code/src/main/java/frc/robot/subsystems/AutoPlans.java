@@ -1,7 +1,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -9,6 +12,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,23 +38,25 @@ public class AutoPlans extends SubsystemBase {
     private static final Field2d s_autoSelectorField = new Field2d();
 
     private PathPlannerAuto middleStartAuto, rightStartAuto;
-    //private Command middleStartAuto;
+    private Command middleShootAuto, rightTrenchShootAuto, leftTrenchShootAuto;
 
     // Mapping of auto mode index -> Pose2d used by the auto-selector visualization.
     private static final Map<Integer, Pose2d> s_autoModePoses = new HashMap<>();
 
     private final IntakeSubsystem m_intake;
     private final ShooterSubsystem m_shooter;
+    private final SwerveSubsystem m_swerveSubsystem;
 
     /**
      * Construct AutoPlans and register any named PathPlanner commands that autos may call.
      * Accepts the IntakeSubsystem so intake commands can be created with the proper subsystem
      * instance.
      */
-    public AutoPlans(IntakeSubsystem intake, AutoSelectorKnobSubsystem selector, ShooterSubsystem shooter) {
+    public AutoPlans(IntakeSubsystem intake, AutoSelectorKnobSubsystem selector, ShooterSubsystem shooter, SwerveSubsystem swerveSubsystem) {
         //Populate subsystems
         m_intake = intake;
         m_shooter = shooter;
+        m_swerveSubsystem = swerveSubsystem;
 
         //Register commands
         registerCommands();
@@ -65,9 +71,22 @@ public class AutoPlans extends SubsystemBase {
         try{
             middleStartAuto = new PathPlannerAuto("Middle Start Auto");
             rightStartAuto = new PathPlannerAuto("Right Start Auto");
+            middleShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians((270 + addInversion()) % 360)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.HUB)));
+            rightTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians(0 + addInversion())))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
+            leftTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians((180 + addInversion()) % 360)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
             
         } catch (Throwable t){
             System.out.println("Failed to create autos.");
+        }
+    }
+
+    /**Returns the amount of degrees necessary for an inversion if necessary*/
+    public int addInversion(){
+        if (m_swerveSubsystem.isRedAlliance()){
+            return 180;
+        }
+        else{
+            return 0;
         }
     }
 
@@ -149,11 +168,11 @@ public class AutoPlans extends SubsystemBase {
             case 0:
                 return null; //Do nothing
             case 1:
-                return middleStartAuto; 
+                return middleShootAuto; 
             case 2:
-                return rightStartAuto; 
+                return rightTrenchShootAuto; 
             case 3:
-                return null; 
+                return leftTrenchShootAuto; 
             case 4:
                 return null;
             case 5:

@@ -98,7 +98,7 @@ public class RobotContainer {
     m_swerveSubsystem.setupPathPlanner();
 
     // Now that AutoBuilder is configured create autos
-    m_autoPlans = new AutoPlans(intakeSubsystem, m_autoSelectorKnobSubsystem, m_ShooterSubsystem);
+    m_autoPlans = new AutoPlans(intakeSubsystem, m_autoSelectorKnobSubsystem, m_ShooterSubsystem, m_swerveSubsystem);
 
     configureBindings();
     // CameraServer.startAutomaticCapture();
