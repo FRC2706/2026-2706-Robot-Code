@@ -35,9 +35,7 @@ public class SwerveSubsystem extends SubsystemBase{
 
     // Swerve drive object
     private final SwerveDrive swerveDrive; 
-    // Field2d visualization is now centralized in AutoPlans; SwerveSubsystem will
-    // update the shared field via AutoPlans.setMainFieldRobotPose(...)
-
+    
     // Provide swerve configuration file as arguement
     public SwerveSubsystem(File swerveJsonDirectory){
         

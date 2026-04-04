@@ -15,6 +15,8 @@ public class SwerveDriveCommand extends Command{
     private final Double m_DriveDeadband;
     private final Double m_AngleDeadband;
 
+    public static boolean isRedAlliance = true;
+
     public SwerveDriveCommand(SwerveSubsystem swerveDrive, DoubleSupplier Vx, DoubleSupplier Vy, DoubleSupplier omega, Double driveDeadband, Double angleDeadband) {
         m_SwerveDrive = swerveDrive;
         m_Vx = Vx;
@@ -23,9 +25,16 @@ public class SwerveDriveCommand extends Command{
         m_DriveDeadband = driveDeadband;
         m_AngleDeadband = angleDeadband;
 
+        isRedAlliance = m_SwerveDrive.isRedAlliance();
+
         addRequirements(m_SwerveDrive);
     }
 
+    @Override
+    public void initialize() {
+        isRedAlliance = m_SwerveDrive.isRedAlliance();
+    }
+    
     @Override
     public void execute() {
 
@@ -33,6 +42,18 @@ public class SwerveDriveCommand extends Command{
         double m_AdjustedVx = m_Vx.getAsDouble();
         double m_AdjustedVy = m_Vy.getAsDouble();
         double m_AdjustedOmega = m_Omega.getAsDouble();
+
+        //Apply inversions based on alliance
+        if (isRedAlliance){
+            m_AdjustedVx = -m_Vx.getAsDouble();
+            m_AdjustedVy = -m_Vy.getAsDouble();
+            m_AdjustedOmega = m_Omega.getAsDouble();
+        }
+        else{
+            m_AdjustedVx = m_Vx.getAsDouble();
+            m_AdjustedVy = m_Vy.getAsDouble();
+            m_AdjustedOmega = m_Omega.getAsDouble();
+        }
 
         //Applying deadbands
         if (Math.abs(m_AdjustedVx) < m_DriveDeadband){
