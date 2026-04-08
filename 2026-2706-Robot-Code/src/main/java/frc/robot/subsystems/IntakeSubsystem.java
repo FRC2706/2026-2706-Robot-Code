@@ -62,7 +62,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 .reverseSoftLimit(UtilityConstants.RobotConstants.kFloorPosition)
                 .reverseSoftLimitEnabled(true);
 
-            upDownConfig.smartCurrentLimit(3, 4);
+            upDownConfig.smartCurrentLimit(10, 20);
 
             upDownConfig.idleMode(IdleMode.kCoast);
 
@@ -133,9 +133,15 @@ public class IntakeSubsystem extends SubsystemBase {
      * Moves the intake up.
      */
     public void moveIntakeUp() {
-    intakeUpDownPID.setSetpoint(UtilityConstants.RobotConstants.kStowPosition, ControlType.kPosition);
-    
-}
+        intakeUpDownPID.setSetpoint(UtilityConstants.RobotConstants.kStowPosition, ControlType.kPosition);
+    }
+
+    /**
+     * Moves the intake to the mid position to let left over balls rool down
+     */
+    public void moveIntakeMid(){
+        intakeUpDownPID.setSetpoint(UtilityConstants.RobotConstants.kMidPosition, ControlType.kPosition);
+    }
 
     /**
      * Periodically updates the SmartDashboard with the intake motor's RPM and current.
