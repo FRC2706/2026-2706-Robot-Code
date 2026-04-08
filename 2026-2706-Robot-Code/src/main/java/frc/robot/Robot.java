@@ -3,20 +3,10 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
-import java.util.Optional;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.FMS_Subsystem;
+
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -38,7 +28,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    
   }
 
 
@@ -87,30 +76,17 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    Optional<Alliance> teamAllainceColour = DriverStation.getAlliance();
-    boolean checkForFMSConnection = DriverStation.isFMSAttached();
-    System.out.println("Our alliance is: " + teamAllainceColour);
-    System.out.println("The FMS connection status is: " + checkForFMSConnection);
-    
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
 
   }
 
-  //Setup for reading the FMS message. 
-  private final FMS_Subsystem fms = new FMS_Subsystem();
-  private final Timer rumbleTimer = new Timer();
-  private boolean hubCurrentState = false;
-  private boolean hasRobotRecivedMessage = false;
-  private double matchTime;
-  private boolean rumbling = false;
-  XboxController driver = new XboxController(0);
-  XboxController operator = new XboxController(1);
-
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
+ 
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
