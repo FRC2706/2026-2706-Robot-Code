@@ -2,12 +2,90 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class FMS_Subsystem {
+
+
+public class FMS_Subsystem extends SubsystemBase {
+    // Setup for reading the FMS message. 
+    private final Timer rumbleTimer = new Timer();
+    private boolean hubCurrentState = false;
+    private boolean hubCurrentStateRumble = false;
+    private boolean hasRobotRecivedMessage = false;
+    private boolean isHubActiveUpdate = isHubActive();
+    private double matchTime;
+    private DoublePublisher matchTimePub;
+    private BooleanPublisher isHubActivePub;
+    private BooleanPublisher isDSConnectedPub;
+    private BooleanPublisher isFMSConnectedPub;
+    private BooleanPublisher isJoystickConnectedPub;
+    private boolean rumbling = false;
+    XboxController driver = new XboxController(0);
+    XboxController operator = new XboxController(1);
+    
+    public FMS_Subsystem(){
+        // Dashboard setup includes Match time, hub status, and connection status of the driver station, FMS, and joysticks.
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        NetworkTable table = inst.getTable("datatable");
+        matchTimePub = table.getDoubleTopic("MatchTime").publish();
+        isHubActivePub = table.getBooleanTopic("IsHubActive").publish();
+        isDSConnectedPub = table.getBooleanTopic("IsConnected").publish();
+        isFMSConnectedPub = table.getBooleanTopic("IsFMSConnected").publish();
+        isJoystickConnectedPub = table.getBooleanTopic("IsJoystickConnected").publish();
+    }
+    
+    @Override
+    public void periodic(){
+    //more dashboard setup stuff
+    matchTime = DriverStation.getMatchTime();
+    matchTimePub.set(matchTime);
+    isHubActivePub.set(isHubActive());
+    isDSConnectedPub.set(DriverStation.isDSAttached());
+    isFMSConnectedPub.set(DriverStation.isFMSAttached());
+    isJoystickConnectedPub.set(DriverStation.isJoystickConnected(0) && DriverStation.isJoystickConnected(1));
+    
+    isHubActiveUpdate = isHubActive();
+    if (isHubActiveUpdate != hubCurrentState) {
+      System.out.println("Hub is now " + (isHubActiveUpdate ? "active" : "inactive"));
+      hasRobotRecivedMessage = true;
+    }
+    //Prevents constant stream of print commands.
+    hubCurrentState = isHubActiveUpdate;
+
+    // Rumble section
+    boolean isHubActiveUpdateRumble = isHubActive10Seconds();
+    // This tells us when our hub status changes, and what it changes to.
+    if (isHubActiveUpdateRumble != hubCurrentStateRumble) {
+
+      // Controller rumble that Jacob asked for
+      driver.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
+      operator.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
+      rumbleTimer.reset(); rumbleTimer.start(); rumbling = true;
+      hasRobotRecivedMessage = true;
+    }
+     // Prevents constant controller rumble
+    if (rumbling && rumbleTimer.hasElapsed(0.8)) {
+      driver.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
+      operator.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
+      rumbling = false;
+      rumbleTimer.stop();
+    }
+    // Prevents constant stream of print commands.
+    hubCurrentStateRumble = isHubActiveUpdateRumble;
+    }
+    // Boolean that updates the hub status.
     public boolean isHubActive() {
       Optional<Alliance> alliance = DriverStation.getAlliance();
+
       // If we have no alliance, we cannot be enabled, therefore no hub.
       if (alliance.isEmpty()) {
         return false;
@@ -22,7 +100,7 @@ public class FMS_Subsystem {
       }
 
       // We're teleop enabled, compute.
-      double matchTime = DriverStation.getMatchTime();
+        matchTime = DriverStation.getMatchTime();
       String gameData = DriverStation.getGameSpecificMessage();
       // If we have no game data, we cannot compute, assume hub is active, as its likely early in teleop.
       if (gameData.isEmpty()) {
@@ -44,6 +122,11 @@ public class FMS_Subsystem {
         case Blue -> redInactiveFirst;
       };
 
+      // Hub is always enabled in autonomous.
+      if (DriverStation.isAutonomousEnabled()) {
+        return true;
+      }
+
       if (matchTime > 130) {
         // Transition shift, hub is active.
         return true;
@@ -63,23 +146,22 @@ public class FMS_Subsystem {
         // End game, hub always active.
         return true;
       }
+      
     }
-    public boolean countdownForHubStatus() {
+    // Boolean that updates 10 seconds before hub changes to trigger the rumble.
+    public boolean isHubActive10Seconds() {
       double matchTime = DriverStation.getMatchTime();
-      if (matchTime == 102) {
-        // 3 seconds before shift 1
+      if (matchTime < 115 && matchTime > 114.8) {
+        // 10 seconds before shift 1
         return true;
-      } else if (matchTime == 77) {
-        // 3 seconds before shift 2
+      } else if (matchTime < 90 && matchTime > 89.8) {
+        // 10 seconds before shift 2
         return true;
-      } else if (matchTime == 52) {
-        // 3 seconds before shift 3
+      } else if (matchTime < 65 && matchTime > 64.8) {
+        // 10 seconds before shift 3
         return true;
-      } else if (matchTime == 27) {
-        // 3 seconds before shift 4
-        return true;
-      } else if (matchTime == 3) {
-        // 3 seconds before end game
+      } else if (matchTime < 40 && matchTime > 49.8) {
+        // 10 seconds before shift 4
         return true;
       } else {
         return false;

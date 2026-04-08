@@ -51,7 +51,7 @@ public class RobotContainer {
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
   private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
   private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
-
+  private final FMS_Subsystem m_FMS_Subsystem = new FMS_Subsystem();
   // Pathplanner 
   private final AutoPlans m_autoPlans;
 
