@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 
 
@@ -20,7 +20,6 @@ public class FMS_Subsystem extends SubsystemBase {
     private final Timer rumbleTimer = new Timer();
     private boolean hubCurrentState = false;
     private boolean hubCurrentStateRumble = false;
-    private boolean hasRobotRecivedMessage = false;
     private boolean isHubActiveUpdate = isHubActive();
     private double matchTime;
     private DoublePublisher matchTimePub;
@@ -29,10 +28,13 @@ public class FMS_Subsystem extends SubsystemBase {
     private BooleanPublisher isFMSConnectedPub;
     private BooleanPublisher isJoystickConnectedPub;
     private boolean rumbling = false;
-    XboxController driver = new XboxController(0);
-    XboxController operator = new XboxController(1);
-    
-    public FMS_Subsystem(){
+    private CommandXboxController driver;
+    private CommandXboxController operator;
+
+    public FMS_Subsystem(CommandXboxController driver, CommandXboxController operator) {
+        // Initialize controllers
+        this.driver = driver;
+        this.operator = operator;
         // Dashboard setup includes Match time, hub status, and connection status of the driver station, FMS, and joysticks.
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable table = inst.getTable("datatable");
@@ -56,7 +58,6 @@ public class FMS_Subsystem extends SubsystemBase {
     isHubActiveUpdate = isHubActive();
     if (isHubActiveUpdate != hubCurrentState) {
       System.out.println("Hub is now " + (isHubActiveUpdate ? "active" : "inactive"));
-      hasRobotRecivedMessage = true;
     }
     //Prevents constant stream of print commands.
     hubCurrentState = isHubActiveUpdate;
@@ -66,11 +67,10 @@ public class FMS_Subsystem extends SubsystemBase {
     // This tells us when our hub status changes, and what it changes to.
     if (isHubActiveUpdateRumble != hubCurrentStateRumble) {
 
-      // Controller rumble that Jacob asked for
+      // Controller rumble 
       driver.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
       operator.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
       rumbleTimer.reset(); rumbleTimer.start(); rumbling = true;
-      hasRobotRecivedMessage = true;
     }
      // Prevents constant controller rumble
     if (rumbling && rumbleTimer.hasElapsed(0.8)) {
@@ -148,6 +148,7 @@ public class FMS_Subsystem extends SubsystemBase {
       }
       
     }
+    
     // Boolean that updates 10 seconds before hub changes to trigger the rumble.
     public boolean isHubActive10Seconds() {
       double matchTime = DriverStation.getMatchTime();
