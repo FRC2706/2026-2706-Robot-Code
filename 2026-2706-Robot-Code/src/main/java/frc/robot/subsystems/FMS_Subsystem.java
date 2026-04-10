@@ -152,16 +152,16 @@ public class FMS_Subsystem extends SubsystemBase {
     public boolean isHubActive10Seconds() {
       double matchTime = DriverStation.getMatchTime();
       if (matchTime < 115 && matchTime > 114.8) {
-        // 10 seconds before shift 1
-        return true;
-      } else if (matchTime < 90 && matchTime > 89.8) {
         // 10 seconds before shift 2
         return true;
-      } else if (matchTime < 65 && matchTime > 64.8) {
+      } else if (matchTime < 90 && matchTime > 89.8) {
         // 10 seconds before shift 3
         return true;
-      } else if (matchTime < 40 && matchTime > 49.8) {
+      } else if (matchTime < 65 && matchTime > 64.8) {
         // 10 seconds before shift 4
+        return true;
+      } else if (matchTime < 40 && matchTime > 39.8) {
+        // 10 seconds before end game
         return true;
       } else {
         return false;
