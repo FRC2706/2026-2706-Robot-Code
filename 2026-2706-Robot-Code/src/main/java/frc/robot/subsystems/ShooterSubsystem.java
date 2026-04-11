@@ -52,10 +52,6 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterConfig.closedLoop.i(shooterConstants.shooterkI,ClosedLoopSlot.kSlot0);
     shooterConfig.closedLoop.d(shooterConstants.shooterkD,ClosedLoopSlot.kSlot0);
     shooterConfig.closedLoop.feedForward.kV(shooterConstants.shooterkFF,ClosedLoopSlot.kSlot0);
-    shooterConfig.closedLoop.p(shooterConstants.shooterAgressivekP,ClosedLoopSlot.kSlot1);         
-    shooterConfig.closedLoop.i(shooterConstants.shooterAgressivekI,ClosedLoopSlot.kSlot1);
-    shooterConfig.closedLoop.d(shooterConstants.shooterAgressivekD,ClosedLoopSlot.kSlot1);
-    shooterConfig.closedLoop.feedForward.kV(shooterConstants.shooterkFF,ClosedLoopSlot.kSlot1);
     shooterConfig.closedLoop.outputRange(-1, 1);
    
     shooterConfig.smartCurrentLimit(currentLimit);
@@ -113,9 +109,8 @@ public class ShooterSubsystem extends SubsystemBase {
         return 2750;
       case shooterPositions.DEPOT:
         return 3000;
-      case 3: // variable shooting using the photon distance with the inverse of a quadratic regression formula from an rpm vs. distance graph (soft limit of 5000 RPM)
-        return customRPM;  
-      //return Math.min((int) Math.round(Math.sqrt((m_PhotonSubsystem.getDistance() + 19.73755)/(5.13131*Math.pow(10, -8)))-17562.4743), 5000); 
+      case 3:
+        return 2700;  //Random rpm -- to be replaced with vision equation
       case shooterPositions.TRENCH_CLOSE: 
         return 2690;
       case shooterPositions.OUTPOST:
@@ -132,7 +127,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void spinningUp(int position) {
-    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity,ClosedLoopSlot.kSlot1);
+    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity,ClosedLoopSlot.kSlot0);
     feederMotor.stopMotor();
     indexerMotor.stopMotor();
 
@@ -152,24 +147,5 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void stopIndexer(){
     indexerMotor.stopMotor();
-  }
-
-  //Feed the shooter at varying speeds depending on the position of the robot; Further positions require lower rpm (lower shooting rate)
-  public void feedShooter(int position){
-    switch(position){
-      case shooterPositions.HUB:
-        {
-          break;
-        }
-        
-      case shooterPositions.DEPOT:
-        {
-          break;
-        }
-    }
-  }
-
-  public double getShooterRPM(){
-    return shooterMotor1.getEncoder().getVelocity();
   }
 }

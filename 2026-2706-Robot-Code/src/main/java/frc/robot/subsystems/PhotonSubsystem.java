@@ -34,7 +34,7 @@ public class PhotonSubsystem extends SubsystemBase {
     public Alliance currentAlliance = Alliance.Blue;
     public PhotonSubsystem() {
     }
-
+    /* 
     @Override
      public void periodic() {
          if (camera1 != null) {
@@ -168,4 +168,5 @@ public class PhotonSubsystem extends SubsystemBase {
      double heightDiff = kTargetHeight - kCameraHeight;
      return Math.hypot(m_planarDistance, heightDiff);
    }
+     */
 }
