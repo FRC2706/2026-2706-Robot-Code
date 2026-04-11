@@ -46,7 +46,7 @@ public class SwerveSubsystem extends SubsystemBase{
         Pose2d startingPose;
 
         // Set the verbosity of the telemetry.  HIGH is good for debugging, but may cause performance issues.  Adjust as needed.
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.INFO; 
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.POSE; 
 
         // TODO: Set up different starting positions
         if (redAlliance){
