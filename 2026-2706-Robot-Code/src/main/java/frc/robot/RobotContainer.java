@@ -58,6 +58,9 @@ public class RobotContainer {
   // Subsystem
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+
+
+  //TO BE COMMENTED OUT
   private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
   private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
 
@@ -69,6 +72,7 @@ public class RobotContainer {
   private final CommandXboxController m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
 
+  // TO BE REMOVED
   private final TempFMS m_TempFMS = new TempFMS(m_PhotonSubsystem, m_ShooterSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
