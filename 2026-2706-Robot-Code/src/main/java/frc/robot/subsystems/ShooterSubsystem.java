@@ -19,15 +19,15 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor2;
   private final SparkMax feederMotor;
   private final SparkMax indexerMotor;
-  //private final PhotonSubsystem m_PhotonSubsystem;
+  private final PhotonSubsystem m_PhotonSubsystem;
   
   private final RelativeEncoder m_encoder;
   private final SparkClosedLoopController m_pidControllerShooter; // New
   private final SparkClosedLoopController m_pidControllerFeeder; // New
   private final SparkClosedLoopController m_pidControllerIndexer; // New
 
-  public ShooterSubsystem() {
-    //m_PhotonSubsystem = photonSubsystem;
+  public ShooterSubsystem(PhotonSubsystem photonSubsystem) {
+    m_PhotonSubsystem = photonSubsystem;
     shooterMotor1 = new SparkMax(UtilityConstants.shooterConstants.MOTOR1_ID, MotorType.kBrushless);
     shooterMotor2 = new SparkMax(UtilityConstants.shooterConstants.MOTOR2_ID, MotorType.kBrushless);
     feederMotor = new SparkMax(UtilityConstants.shooterConstants.FEEDER_MOTOR_ID, MotorType.kBrushless);
@@ -107,8 +107,8 @@ public class ShooterSubsystem extends SubsystemBase {
       case shooterPositions.DEPOT:
         return 3700;
       case 3: // variable shooting using the photon distance with the inverse of a quadratic regression formula from an rpm vs. distance graph (soft limit of 5000 RPM)
-        return 0;  
-      //return Math.min((int) Math.round(Math.sqrt((m_PhotonSubsystem.getDistance() + 19.73755)/(5.13131*Math.pow(10, -8)))-17562.4743), 5000); 
+        //return 0;  
+        return Math.min((int) Math.round(Math.sqrt((m_PhotonSubsystem.getDistance() + 19.73755)/(5.13131*Math.pow(10, -8)))-17562.4743), 5000); 
       case shooterPositions.TRENCH_CLOSE: 
         return 3150;
       case shooterPositions.OUTPOST:
