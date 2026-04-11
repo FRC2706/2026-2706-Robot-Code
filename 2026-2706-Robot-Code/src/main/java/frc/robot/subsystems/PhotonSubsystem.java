@@ -32,12 +32,14 @@ public class PhotonSubsystem extends SubsystemBase {
     public int m_roundedPlanarDistance = 0; // Rounded planar distance stored as int
     public double m_lastKnownDistance = 0; // Last known distance stored as double
     public Alliance currentAlliance = Alliance.Red;
+    private boolean printed_state = false; // Flag to track if "camera1 is null" has been printed
     public PhotonSubsystem() {
     }
 
     @Override
      public void periodic() {
          if (camera1 != null) {
+            printed_state = false; // reset printed state when camera is available
              result = camera1.getLatestResult();
 
             if (result.hasTargets()) {
@@ -74,9 +76,12 @@ public class PhotonSubsystem extends SubsystemBase {
              }
          }
          else {
-             System.out.println("camera1 is null");
-             target = null;
-             result = null;
+            if (printed_state == false) {
+                System.out.println("camera1 is null");
+                printed_state = true;
+            }
+            target = null;
+            result = null;
          }
      }
 
