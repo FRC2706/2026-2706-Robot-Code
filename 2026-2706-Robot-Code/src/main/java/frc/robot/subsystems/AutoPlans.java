@@ -72,6 +72,7 @@ public class AutoPlans extends SubsystemBase {
         try{
             leftStartNeutralZoneAuto = new PathPlannerAuto("Left Start Neutral Zone Auto");
             rightStartNeutralZoneAuto = new PathPlannerAuto("Right Start Neutral Zone Auto");
+            // UPDATE STARTING POS
             middleShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians((270 + addInversion()) % 360)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.HUB)));
             rightTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians(0 + addInversion())))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
             leftTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians((180 + addInversion()) % 360)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));

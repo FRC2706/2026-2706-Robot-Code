@@ -216,12 +216,15 @@ public class SwerveSubsystem extends SubsystemBase{
     //Resets the gyro angle to zero and resets odometry 
     public void resetGyro()
     {
+
+        Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
+
         swerveDrive.zeroGyro();
         if (isRedAlliance()){
-            resetOdometry(new Pose2d(new Translation2d(0,0), new Rotation2d(Units.degreesToRadians(180))));
+            resetOdometry(new Pose2d(robotTranslation, new Rotation2d(Units.degreesToRadians(180))));
         }
         else{
-            resetOdometry(new Pose2d(new Translation2d(0,0), new Rotation2d(Units.degreesToRadians(0))));
+            resetOdometry(new Pose2d(robotTranslation, new Rotation2d(Units.degreesToRadians(0))));
         }
     }
 
