@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 // Imports
 import java.util.Optional;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -30,17 +31,17 @@ public class PhotonSubsystem extends SubsystemBase {
     private PhotonPipelineResult result;
     private PhotonTrackedTarget target;
     public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    private static final double kCameraHeight = 0.44; // assigns camera height in meters
-    private static final double kTargetHeight = 1.22; // assigns target height in meters
-    private static double kCameraPitch = 30; // assigns camera angle in degrees
+    private static final double kCameraHeight = 0.45; // assigns camera height in meters
+    private static final double kTargetHeight = 1.13; // assigns target height in meters
+    private static double kCameraPitch = Math.toRadians(30); // assigns camera angle in degrees
     public double m_planarDistance = 0;     
-    public int m_roundedPlanarDistance = 0; // Rounded planar distance stored as int
+    //public int m_roundedPlanarDistance = 0; // Rounded planar distance stored as int
     public double m_lastKnownDistance = 0; // Last known distance stored as double
     public Alliance currentAlliance = Alliance.Blue;
     private boolean printed_state = false; // Flag to track if "camera1 is null" has been printed
     // NetworkTables entries for sharing vision data
     private final DoublePublisher m_planarDistanceEntry;
-    private final DoublePublisher m_roundedPlanarDistanceEntry;
+    //private final DoublePublisher m_roundedPlanarDistanceEntry;
     private final BooleanPublisher m_hasTargetEntry;
     private final DoublePublisher m_lastKnownDistanceEntry;
 
@@ -48,68 +49,40 @@ public class PhotonSubsystem extends SubsystemBase {
         NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
         NetworkTable networkTable = networkTableInstance.getTable("datatable");
         m_planarDistanceEntry = networkTable.getDoubleTopic("planarDistanceMeters").publish();
-        m_roundedPlanarDistanceEntry = networkTable.getDoubleTopic("planarDistanceRounded").publish();
+        //m_roundedPlanarDistanceEntry = networkTable.getDoubleTopic("planarDistanceRounded").publish();
         m_hasTargetEntry = networkTable.getBooleanTopic("hasTarget").publish();
         m_lastKnownDistanceEntry = networkTable.getDoubleTopic("lastKnownDistanceMeters").publish();
     }
 
     @Override
      public void periodic() {
-         if (camera1 != null) {
+
+        // Publish values to NetworkTables for external consumers (defensive, don't throw)
+        m_planarDistanceEntry.set(m_planarDistance);
+        //m_roundedPlanarDistanceEntry.set(m_roundedPlanarDistance);
+        m_hasTargetEntry.set(hasTarget());
+        m_lastKnownDistanceEntry.set(m_lastKnownDistance);
+
+      
             printed_state = false; // reset printed state when camera is available
              result = camera1.getLatestResult();
 
             if (result.hasTargets()) {
                  target = result.getBestTarget();
-             }
 
-             else {
-                 target = null;
-                 return;
              }
             
              // Get the AprilTag's known field pose
-             Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
-             if (tagPoseOpt.isEmpty()) {
-                 return;
-             }
+             //Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
+             //if (tagPoseOpt.isEmpty()) {
+             //    return;
+             //}
              // We have the tag pose if needed in the future
 
              // Find the distance between the camera and the target in meters. Convert degrees to radians because that's what Math.tan expects.
-             double denominator = Math.tan(Math.toRadians(target.getPitch()) + Math.toRadians(kCameraPitch));
-             if (Math.abs(denominator) <= 0) {
-                 // sentinel for invalid / infinite distance
-                 m_planarDistance = 0;
-            } 
-             if (denominator == 0){
-                 m_planarDistance = 0;
-            }
-             else {
-                 double planar = (kTargetHeight - kCameraHeight) / denominator;
-                 // store as int (rounded) and as double (non-rounded)
-                 m_roundedPlanarDistance = (int) Math.round(planar);
-                 m_planarDistance = planar;
+                 m_planarDistance = (kTargetHeight-kCameraHeight)/(Math.tan(kCameraPitch+Math.toRadians(target.getPitch())));
                  m_lastKnownDistance = m_planarDistance;
              }
-         }
-         else {
-            if (printed_state == false) {
-                System.out.println("camera1 is null");
-                printed_state = true;
-            }
-            target = null;
-            result = null;
-         }
-
-        // Publish values to NetworkTables for external consumers (defensive, don't throw)
-        try {
-            m_planarDistanceEntry.set(m_planarDistance);
-            m_roundedPlanarDistanceEntry.set(m_roundedPlanarDistance);
-            m_hasTargetEntry.set(hasTarget());
-            m_lastKnownDistanceEntry.set(m_lastKnownDistance);
-        } catch (Exception ignored) {
-        }
-     }
 
      // Returns true if the camera detects an AprilTag
      public boolean hasTarget() {
