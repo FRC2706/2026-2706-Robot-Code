@@ -14,6 +14,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -45,6 +46,10 @@ public class PhotonSubsystem extends SubsystemBase {
     private final BooleanPublisher m_hasTargetEntry;
     private final DoublePublisher m_lastKnownDistanceEntry;
 
+    /** Transform describing the robot->camera mounting pose. Update values to match your robot's camera mount.
+     * By default this is the identity transform (camera coincident with robot origin). */
+    private static final Transform3d kRobotToCamera = new Transform3d();
+
     public PhotonSubsystem() {
         NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
         NetworkTable networkTable = networkTableInstance.getTable("datatable");
@@ -72,17 +77,12 @@ public class PhotonSubsystem extends SubsystemBase {
                  target = result.getBestTarget();
 
              }
-            
-             // Get the AprilTag's known field pose
-             //Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
-             //if (tagPoseOpt.isEmpty()) {
-             //    return;
-             //}
-             // We have the tag pose if needed in the future
-
-             // Find the distance between the camera and the target in meters. Convert degrees to radians because that's what Math.tan expects.
-        
-                m_planarDistance = PhotonUtils.calculateDistanceToTargetMeters(kCameraHeight, kTargetHeight, kCameraPitch, Math.toRadians(target.getPitch()))/Math.cos(Math.toRadians(target.getYaw()));
+    
+                // Use the measured camera->target translation from PhotonVision for accurate distances.
+                Translation3d camTranslation = target.getBestCameraToTarget().getTranslation();
+                // Planar distance (ground-plane) — ignore vertical component
+                m_planarDistance = Math.hypot(camTranslation.getX(), camTranslation.getY());
+                // Last known planar distance
                 m_lastKnownDistance = m_planarDistance;
                  
              }
@@ -124,8 +124,41 @@ public class PhotonSubsystem extends SubsystemBase {
      // Returns cameraToTarget transform3d things??
      public Transform3d cameraToTarget() {
          if (!hasTarget()) return new Transform3d();
-         return new Transform3d(target.getBestCameraToTarget().getTranslation(), target.getBestCameraToTarget().getRotation());
+         // PhotonTrackedTarget provides the measured camera->target transform directly
+         return target.getBestCameraToTarget();
      }
+
+    /**
+     * Estimate the camera pose on the field using the detected AprilTag and the tag's known field pose.
+     * Returns an empty Optional if there is no target or the tag id is not in the field layout.
+     */
+    public Optional<Pose3d> getEstimatedCameraPose() {
+        if (!hasTarget()) return Optional.empty();
+        int fiducialId = target.getFiducialId();
+        if (fiducialId < 0) return Optional.empty();
+
+        Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(fiducialId);
+        if (tagPoseOpt.isEmpty()) return Optional.empty();
+
+        Pose3d tagPose = tagPoseOpt.get();
+        Transform3d camToTarget = target.getBestCameraToTarget();
+        Transform3d targetToCamera = camToTarget.inverse();
+        Pose3d cameraPose = tagPose.transformBy(targetToCamera);
+        return Optional.of(cameraPose);
+    }
+
+    /**
+     * Estimate the robot pose on the field by applying the inverse of the robot->camera mounting
+     * transform to the estimated camera pose. Returns an empty Optional if the camera pose cannot
+     * be estimated (no target, unknown tag id, etc.).
+     */
+    public Optional<Pose3d> getEstimatedRobotPose() {
+        Optional<Pose3d> camPoseOpt = getEstimatedCameraPose();
+        if (camPoseOpt.isEmpty()) return Optional.empty();
+        Pose3d cameraPose = camPoseOpt.get();
+        Pose3d robotPose = cameraPose.transformBy(kRobotToCamera.inverse());
+        return Optional.of(robotPose);
+    }
 
 
 // // Returns AprilTag ID of the detected target, or -1 if no target (or if targets are not one of the 3 listed for each alliance)
