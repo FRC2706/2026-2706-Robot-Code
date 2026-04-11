@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.BooleanPublisher;
 
 // Class
 public class PhotonSubsystem extends SubsystemBase {
@@ -37,19 +39,18 @@ public class PhotonSubsystem extends SubsystemBase {
     public Alliance currentAlliance = Alliance.Blue;
     private boolean printed_state = false; // Flag to track if "camera1 is null" has been printed
     // NetworkTables entries for sharing vision data
-    private final NetworkTable m_ntTable;
-    private final NetworkTableEntry m_planarDistanceEntry;
-    private final NetworkTableEntry m_roundedPlanarDistanceEntry;
-    private final NetworkTableEntry m_hasTargetEntry;
-    private final NetworkTableEntry m_lastKnownDistanceEntry;
+    private final DoublePublisher m_planarDistanceEntry;
+    private final DoublePublisher m_roundedPlanarDistanceEntry;
+    private final BooleanPublisher m_hasTargetEntry;
+    private final DoublePublisher m_lastKnownDistanceEntry;
 
     public PhotonSubsystem() {
-        var inst = NetworkTableInstance.getDefault();
-        m_ntTable = inst.getTable("photon");
-        m_planarDistanceEntry = m_ntTable.getEntry("planarDistanceMeters");
-        m_roundedPlanarDistanceEntry = m_ntTable.getEntry("planarDistanceRounded");
-        m_hasTargetEntry = m_ntTable.getEntry("hasTarget");
-        m_lastKnownDistanceEntry = m_ntTable.getEntry("lastKnownDistanceMeters");
+        NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
+        NetworkTable networkTable = networkTableInstance.getTable("datatable");
+        m_planarDistanceEntry = networkTable.getDoubleTopic("planarDistanceMeters").publish();
+        m_roundedPlanarDistanceEntry = networkTable.getDoubleTopic("planarDistanceRounded").publish();
+        m_hasTargetEntry = networkTable.getBooleanTopic("hasTarget").publish();
+        m_lastKnownDistanceEntry = networkTable.getDoubleTopic("lastKnownDistanceMeters").publish();
     }
 
     @Override
@@ -102,10 +103,10 @@ public class PhotonSubsystem extends SubsystemBase {
 
         // Publish values to NetworkTables for external consumers (defensive, don't throw)
         try {
-            m_planarDistanceEntry.setDouble(m_planarDistance);
-            m_roundedPlanarDistanceEntry.setNumber(m_roundedPlanarDistance);
-            m_hasTargetEntry.setBoolean(hasTarget());
-            m_lastKnownDistanceEntry.setDouble(m_lastKnownDistance);
+            m_planarDistanceEntry.set(m_planarDistance);
+            m_roundedPlanarDistanceEntry.set(m_roundedPlanarDistance);
+            m_hasTargetEntry.set(hasTarget());
+            m_lastKnownDistanceEntry.set(m_lastKnownDistance);
         } catch (Exception ignored) {
         }
      }

@@ -9,6 +9,7 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 
+import java.lang.Math;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.UtilityConstants;
 import frc.robot.UtilityConstants.shooterConstants;
@@ -107,7 +108,7 @@ public class ShooterSubsystem extends SubsystemBase {
     return (Math.abs(currentRPM - getDesiredVelocityRPM(position)) < tolerance);
   }
 
-  public int getDesiredVelocityRPM(int position) {
+  public double getDesiredVelocityRPM(int position) {
     switch (position) {
       case shooterPositions.HUB: 
         return 1700;
@@ -119,7 +120,7 @@ public class ShooterSubsystem extends SubsystemBase {
         //return 0;  
         // Prefer NetworkTables value (allows external processes to override); fallback to PhotonSubsystem if NT missing
         double ntDistance = m_planarDistanceEntry.getDouble(m_PhotonSubsystem.getDistance());
-        return Math.min((int) Math.round(Math.sqrt((ntDistance + 19.73755)/(5.13131*Math.pow(10, -8)))-17562.4743), 5000);
+        return 1694 + 283*ntDistance + -240*Math.pow(ntDistance, 2) + 82*Math.pow(ntDistance, 3) + -11.4*Math.pow(ntDistance, 4) + 0.688*Math.pow(ntDistance, 5) + -0.0146*Math.pow(ntDistance, 6);
       case shooterPositions.TRENCH_CLOSE: 
         return 3150;
       case shooterPositions.OUTPOST:
