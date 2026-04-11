@@ -27,8 +27,6 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkClosedLoopController m_pidControllerFeeder; // New
   private final SparkClosedLoopController m_pidControllerIndexer; // New
 
-  public int customRPM = 0;
-
   public ShooterSubsystem() {
     //m_PhotonSubsystem = photonSubsystem;
     shooterMotor1 = new SparkMax(UtilityConstants.shooterConstants.MOTOR1_ID, MotorType.kBrushless);

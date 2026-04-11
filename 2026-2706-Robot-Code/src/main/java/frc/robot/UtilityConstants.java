@@ -75,11 +75,6 @@ public final class UtilityConstants {
                                shooterkD = 0.015,
                                shooterkFF = 0.00211,
 
-                               shooterAgressivekP = 0.00045,
-                               shooterAgressivekI = 0,
-                               shooterAgressivekD = 0.015,
-                               shooterAgressivekFF=0.00211,
-
                                feederkP = 0.0001,
                                feederkI = 0.00003,
                                feederkD = 0.0001,
