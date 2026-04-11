@@ -31,7 +31,7 @@ public class PhotonSubsystem extends SubsystemBase {
     public double m_planarDistance = 0;     
     public int m_roundedPlanarDistance = 0; // Rounded planar distance stored as int
     public double m_lastKnownDistance = 0; // Last known distance stored as double
-    public Alliance currentAlliance = Alliance.Red;
+    public Alliance currentAlliance = Alliance.Blue;
     public PhotonSubsystem() {
     }
 
