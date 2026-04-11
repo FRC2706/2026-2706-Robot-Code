@@ -173,26 +173,4 @@ public class ShooterSubsystem extends SubsystemBase {
   public double getShooterRPM(){
     return shooterMotor1.getEncoder().getVelocity();
   }
-
-  public void changeNormalPID(double p, double i, double d){
-    SparkMaxConfig shooterConfig = new SparkMaxConfig();
-    
-    shooterConfig.closedLoop.p(p,ClosedLoopSlot.kSlot0);         
-    shooterConfig.closedLoop.i(i,ClosedLoopSlot.kSlot0);
-    shooterConfig.closedLoop.d(d,ClosedLoopSlot.kSlot0);
-    shooterConfig.closedLoop.feedForward.kV(shooterConstants.shooterkFF,ClosedLoopSlot.kSlot0);
-
-    shooterMotor1.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-  }
-
-  public void changeAggressivePID(double p, double i, double d){
-    SparkMaxConfig shooterConfig = new SparkMaxConfig();
-
-    shooterConfig.closedLoop.p(p,ClosedLoopSlot.kSlot1);         
-    shooterConfig.closedLoop.i(i,ClosedLoopSlot.kSlot1);
-    shooterConfig.closedLoop.d(d,ClosedLoopSlot.kSlot1);
-    shooterConfig.closedLoop.feedForward.kV(shooterConstants.shooterkFF,ClosedLoopSlot.kSlot1);
-
-    shooterMotor1.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-  }
 }
