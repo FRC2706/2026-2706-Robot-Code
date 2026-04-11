@@ -57,6 +57,7 @@ public class PhotonSubsystem extends SubsystemBase {
     @Override
      public void periodic() {
 
+        try{
         // Publish values to NetworkTables for external consumers (defensive, don't throw)
         m_planarDistanceEntry.set(m_planarDistance);
         //m_roundedPlanarDistanceEntry.set(m_roundedPlanarDistance);
@@ -80,9 +81,16 @@ public class PhotonSubsystem extends SubsystemBase {
              // We have the tag pose if needed in the future
 
              // Find the distance between the camera and the target in meters. Convert degrees to radians because that's what Math.tan expects.
-                 m_planarDistance = (kTargetHeight-kCameraHeight)/(Math.tan(kCameraPitch+Math.toRadians(target.getPitch())));
-                 m_lastKnownDistance = m_planarDistance;
+        
+                m_planarDistance = PhotonUtils.calculateDistanceToTargetMeters(kCameraHeight, kTargetHeight, kCameraPitch, Math.toRadians(target.getPitch()))/Math.cos(Math.toRadians(target.getYaw()));
+                m_lastKnownDistance = m_planarDistance;
+                 
              }
+             catch(Exception e){
+                System.out.println(e);
+             }
+            }
+            
 
      // Returns true if the camera detects an AprilTag
      public boolean hasTarget() {

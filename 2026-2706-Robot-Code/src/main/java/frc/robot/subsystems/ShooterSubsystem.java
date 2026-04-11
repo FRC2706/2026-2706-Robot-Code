@@ -119,7 +119,7 @@ public class ShooterSubsystem extends SubsystemBase {
       case 3: // variable shooting using the photon distance with the inverse of a quadratic regression formula from an rpm vs. distance graph (soft limit of 5000 RPM)
         //return 0;  
         // Prefer NetworkTables value (allows external processes to override); fallback to PhotonSubsystem if NT missing
-        double ntDistance = m_planarDistanceEntry.getDouble(m_PhotonSubsystem.getDistance());
+        double ntDistance = m_PhotonSubsystem.getDistance();
         return 1694 + 283*ntDistance + -240*Math.pow(ntDistance, 2) + 82*Math.pow(ntDistance, 3) + -11.4*Math.pow(ntDistance, 4) + 0.688*Math.pow(ntDistance, 5) + -0.0146*Math.pow(ntDistance, 6);
       case shooterPositions.TRENCH_CLOSE: 
         return 3150;
