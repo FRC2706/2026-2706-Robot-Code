@@ -28,7 +28,8 @@ public class TempFMS extends SubsystemBase{
         NetworkTable networkTable = networkTableInstance.getTable("datatable");
         shooterRPMPublisher = networkTable.getDoubleTopic("Shooter RPM").publish();
         distanceToAprilTagPublisher = networkTable.getDoubleTopic("Distance to April Tag").publish();
-        customRPMSubscriber = networkTable.getIntegerTopic("Variable RPM").subscribe(0);
+        networkTable.getIntegerTopic("Variable RPM").publish();
+        customRPMSubscriber = networkTable.getIntegerTopic("Variable RPM").subscribe(1700);
     }
 
     @Override
