@@ -70,20 +70,20 @@ public final class UtilityConstants {
 
     // PID VALUES
 
-    public static final double shooterkP = 0.00005,
+    public static final double shooterkP = 0.00045,
                                shooterkI = 0,
-                               shooterkD = 0,
-                               shooterkFF = 0.0021,
+                               shooterkD = 0.015,
+                               shooterkFF = 0.00211,
 
-                               feederkP = 0.000001,
-                               feederkI = 0,
-                               feederkD = 0,
-                               feederkFF = 0.00015,
+                               feederkP = 0.0001,
+                               feederkI = 0.00003,
+                               feederkD = 0.0001,
+                               feederkFF = 0.001,
 
                                indexerkP = 0.000001,
                                indexerkI = 0,
                                indexerkD = 0,
-                               indexerkFF = 0.00015;
+                               indexerkFF = 0.00202;
 
     // Positions
     public static final class shooterPositions{

@@ -24,11 +24,11 @@ public class PhotonDistanceCommand extends Command {
 
   }
 
-  // @Override
-  // public void execute() {
-  //   m_subsystem.getDistance();
+  @Override
+  public void execute() {
+    m_subsystem.getDistance();
 
-  // }
+  }
 
   @Override
   public void end(boolean interrupted) {}

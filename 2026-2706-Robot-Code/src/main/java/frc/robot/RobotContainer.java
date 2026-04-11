@@ -115,12 +115,13 @@ public class RobotContainer {
     m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.DEPOT)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.HUB)).onFalse(new StopShooter(m_ShooterSubsystem)); 
   // When B is held: first align to the AprilTag, then start the shooter using photon distance
-  m_operatorController.b().whileTrue(
-    new SequentialCommandGroup(
-      new PhotonAlignToTargetCommand(m_PhotonSubsystem, m_swerveSubsystem),
-      new StartShooter(m_ShooterSubsystem, 3)
-    )
-  ).onFalse(new StopShooter(m_ShooterSubsystem));    
+    m_operatorController.b().whileTrue(
+        new StartShooter(m_ShooterSubsystem, 3)
+    ).onFalse(new StopShooter(m_ShooterSubsystem));   
+    
+    driverController.b().whileTrue(
+        new PhotonAlignToTargetCommand(m_PhotonSubsystem, m_swerveSubsystem)  
+    ).onFalse(new ResetGyroCommand(m_swerveSubsystem).withTimeout(0));
     
     //Turn only the indexer when pressed
     m_operatorController.start().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));

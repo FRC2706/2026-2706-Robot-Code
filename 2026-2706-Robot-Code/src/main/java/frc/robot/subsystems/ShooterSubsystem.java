@@ -93,7 +93,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public boolean isRPMinRange(int position) {
     double currentRPM = m_encoder.getVelocity();
-    double tolerance = 75;
+    double tolerance = 50;
 
     return (Math.abs(currentRPM - getDesiredVelocityRPM(position)) < tolerance);
   }
@@ -101,9 +101,9 @@ public class ShooterSubsystem extends SubsystemBase {
   public int getDesiredVelocityRPM(int position) {
     switch (position) {
       case shooterPositions.HUB: 
-        return 2050;
+        return 1700;
       case shooterPositions.TRENCH_FAR: 
-        return 3200;
+        return 2700;
       case shooterPositions.DEPOT:
         return 3700;
       case 3: // variable shooting using the photon distance with the inverse of a quadratic regression formula from an rpm vs. distance graph (soft limit of 5000 RPM)
@@ -135,8 +135,8 @@ public class ShooterSubsystem extends SubsystemBase {
     m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity);
     
     // figure out how much faster this should go
-    m_pidControllerFeeder.setSetpoint(getDesiredVelocityRPM(position)*9, SparkBase.ControlType.kVelocity);
-    m_pidControllerIndexer.setSetpoint(getDesiredVelocityRPM(position)*24, SparkBase.ControlType.kVelocity);
+    m_pidControllerFeeder.setSetpoint(4000, SparkBase.ControlType.kVelocity);
+    m_pidControllerIndexer.setSetpoint(3000, SparkBase.ControlType.kVelocity);
   }
 
   public void clearIndexer(){
