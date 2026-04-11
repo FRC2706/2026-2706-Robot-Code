@@ -27,6 +27,7 @@ public class PhotonDistanceCommand extends Command {
   @Override
   public void execute() {
     m_subsystem.getDistance();
+    System.out.println(m_subsystem.getDistance());
 
   }
 

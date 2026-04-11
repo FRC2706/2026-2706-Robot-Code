@@ -16,6 +16,9 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableEntry;
 
 // Class
 public class PhotonSubsystem extends SubsystemBase {
@@ -31,9 +34,22 @@ public class PhotonSubsystem extends SubsystemBase {
     public double m_planarDistance = 0;     
     public int m_roundedPlanarDistance = 0; // Rounded planar distance stored as int
     public double m_lastKnownDistance = 0; // Last known distance stored as double
-    public Alliance currentAlliance = Alliance.Red;
+    public Alliance currentAlliance = Alliance.Blue;
     private boolean printed_state = false; // Flag to track if "camera1 is null" has been printed
+    // NetworkTables entries for sharing vision data
+    private final NetworkTable m_ntTable;
+    private final NetworkTableEntry m_planarDistanceEntry;
+    private final NetworkTableEntry m_roundedPlanarDistanceEntry;
+    private final NetworkTableEntry m_hasTargetEntry;
+    private final NetworkTableEntry m_lastKnownDistanceEntry;
+
     public PhotonSubsystem() {
+        var inst = NetworkTableInstance.getDefault();
+        m_ntTable = inst.getTable("photon");
+        m_planarDistanceEntry = m_ntTable.getEntry("planarDistanceMeters");
+        m_roundedPlanarDistanceEntry = m_ntTable.getEntry("planarDistanceRounded");
+        m_hasTargetEntry = m_ntTable.getEntry("hasTarget");
+        m_lastKnownDistanceEntry = m_ntTable.getEntry("lastKnownDistanceMeters");
     }
 
     @Override
@@ -56,7 +72,7 @@ public class PhotonSubsystem extends SubsystemBase {
              if (tagPoseOpt.isEmpty()) {
                  return;
              }
-             Pose3d tagPose3d = tagPoseOpt.get();
+             // We have the tag pose if needed in the future
 
              // Find the distance between the camera and the target in meters. Convert degrees to radians because that's what Math.tan expects.
              double denominator = Math.tan(Math.toRadians(target.getPitch()) + Math.toRadians(kCameraPitch));
@@ -83,6 +99,15 @@ public class PhotonSubsystem extends SubsystemBase {
             target = null;
             result = null;
          }
+
+        // Publish values to NetworkTables for external consumers (defensive, don't throw)
+        try {
+            m_planarDistanceEntry.setDouble(m_planarDistance);
+            m_roundedPlanarDistanceEntry.setNumber(m_roundedPlanarDistance);
+            m_hasTargetEntry.setBoolean(hasTarget());
+            m_lastKnownDistanceEntry.setDouble(m_lastKnownDistance);
+        } catch (Exception ignored) {
+        }
      }
 
      // Returns true if the camera detects an AprilTag

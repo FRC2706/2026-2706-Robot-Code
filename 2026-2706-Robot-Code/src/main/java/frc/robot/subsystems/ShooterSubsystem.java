@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.UtilityConstants;
 import frc.robot.UtilityConstants.shooterConstants;
 import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor1;
@@ -20,6 +23,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax feederMotor;
   private final SparkMax indexerMotor;
   private final PhotonSubsystem m_PhotonSubsystem;
+  // NetworkTables entry to read planar distance (meters) published by PhotonSubsystem
+  private final NetworkTable m_photonTable;
+  private final NetworkTableEntry m_planarDistanceEntry;
   
   private final RelativeEncoder m_encoder;
   private final SparkClosedLoopController m_pidControllerShooter; // New
@@ -28,6 +34,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public ShooterSubsystem(PhotonSubsystem photonSubsystem) {
     m_PhotonSubsystem = photonSubsystem;
+    var inst = NetworkTableInstance.getDefault();
+    m_photonTable = inst.getTable("photon");
+    m_planarDistanceEntry = m_photonTable.getEntry("planarDistanceMeters");
     shooterMotor1 = new SparkMax(UtilityConstants.shooterConstants.MOTOR1_ID, MotorType.kBrushless);
     shooterMotor2 = new SparkMax(UtilityConstants.shooterConstants.MOTOR2_ID, MotorType.kBrushless);
     feederMotor = new SparkMax(UtilityConstants.shooterConstants.FEEDER_MOTOR_ID, MotorType.kBrushless);
@@ -108,7 +117,9 @@ public class ShooterSubsystem extends SubsystemBase {
         return 3700;
       case 3: // variable shooting using the photon distance with the inverse of a quadratic regression formula from an rpm vs. distance graph (soft limit of 5000 RPM)
         //return 0;  
-        return Math.min((int) Math.round(Math.sqrt((m_PhotonSubsystem.getDistance() + 19.73755)/(5.13131*Math.pow(10, -8)))-17562.4743), 5000); 
+        // Prefer NetworkTables value (allows external processes to override); fallback to PhotonSubsystem if NT missing
+        double ntDistance = m_planarDistanceEntry.getDouble(m_PhotonSubsystem.getDistance());
+        return Math.min((int) Math.round(Math.sqrt((ntDistance + 19.73755)/(5.13131*Math.pow(10, -8)))-17562.4743), 5000);
       case shooterPositions.TRENCH_CLOSE: 
         return 3150;
       case shooterPositions.OUTPOST:
