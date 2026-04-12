@@ -12,6 +12,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -44,6 +45,10 @@ public class PhotonSubsystem extends SubsystemBase {
     //private final DoublePublisher m_roundedPlanarDistanceEntry;
     private final BooleanPublisher m_hasTargetEntry;
     private final DoublePublisher m_lastKnownDistanceEntry;
+
+    public static final double shooterToRobotDist = 0;
+    public static double shooterToHubDist = 0;
+    public static double robotAlignmentYaw = 0;
 
     public PhotonSubsystem() {
         NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
@@ -179,5 +184,79 @@ public class PhotonSubsystem extends SubsystemBase {
      if (!hasTarget()) return 0.0;
      double heightDiff = kTargetHeight - kCameraHeight;
      return Math.hypot(m_planarDistance, heightDiff);
-}
+    }
+
+    //Calculates the optimal robot yaw and distance from the camera to the center of the hubgiven the robot position, hub position. Must be field relative
+    public void calculateYawToHub(Pose2d robotPose, Pose2d hubPose){
+        /*----------------- Finding distances -----------------*/
+        //Distance from center of robot to center of hub
+        double robotToHubDist;
+
+        //Calculate straightline distance using pythagorean theorem
+        robotToHubDist = Math.sqrt(Math.pow(robotPose.getX() - hubPose.getX(),2) + Math.pow(robotPose.getY() - hubPose.getY(),2));
+
+        //Calculate the distance from the shooter (front edge) to the hub using pythagorean theorem. Constant subtraction is the distance from 
+        //the center of the shooter to the camera
+        shooterToHubDist = Math.sqrt(Math.pow(robotToHubDist,2) - Math.pow(shooterToRobotDist,2)) - 0;
+
+        /*------------------ Finding yaw ---------------------- */
+        //Finding the angle between straightline distance of robot to hub and the projected position of the shooter
+        double alpha = Math.acos(shooterToRobotDist/robotToHubDist);
+        double omega = Math.toRadians(90) - alpha;
+
+        //Finding which quadrant the center of the hub is relative to the shooter
+        byte quadrant = 0;
+        if (robotPose.getX() > hubPose.getX()){
+            if (robotPose.getY() > hubPose.getY()){
+                quadrant = 4;
+            }
+            else{
+                quadrant = 3;
+            }
+        }
+        else{
+            if (robotPose.getY() > hubPose.getY()){
+                quadrant = 1;
+            }else{
+                quadrant = 2;
+            }
+        }
+
+        //Finding angle from zero on the robot the the straightline distance to the hub
+        double theta = Math.acos(Math.abs(robotPose.getX() - hubPose.getX())/robotToHubDist);
+        
+        //Calculate target yaw
+        switch (quadrant){
+            case 1:
+                {
+                    robotAlignmentYaw = -(theta - omega);
+                }
+                break;
+            case 2:
+                {
+                    robotAlignmentYaw = theta - omega;
+                }
+                break;
+            case 3:
+                {
+                    robotAlignmentYaw = -180 + (theta - omega);
+                }
+                break;
+            case 4:
+                {
+                    robotAlignmentYaw = 90 + (theta - omega);   
+                }
+                break;
+            default:
+                robotAlignmentYaw = 0;
+        }
+
+
+
+
+        
+
+
+        
+    }
 }
