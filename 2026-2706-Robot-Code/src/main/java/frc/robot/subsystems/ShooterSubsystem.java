@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkClosedLoopController; // New
@@ -45,10 +46,10 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkMaxConfig shooterConfig = new SparkMaxConfig();
     shooterConfig.inverted(false);
     
-    shooterConfig.closedLoop.p(shooterConstants.shooterkP);         
-    shooterConfig.closedLoop.i(shooterConstants.shooterkI);
-    shooterConfig.closedLoop.d(shooterConstants.shooterkD);
-    shooterConfig.closedLoop.feedForward.kV(shooterConstants.shooterkFF);
+    shooterConfig.closedLoop.p(shooterConstants.shooterkP,ClosedLoopSlot.kSlot0);         
+    shooterConfig.closedLoop.i(shooterConstants.shooterkI,ClosedLoopSlot.kSlot0);
+    shooterConfig.closedLoop.d(shooterConstants.shooterkD,ClosedLoopSlot.kSlot0);
+    shooterConfig.closedLoop.feedForward.kV(shooterConstants.shooterkFF,ClosedLoopSlot.kSlot0);
     shooterConfig.closedLoop.outputRange(-1, 1);
    
     shooterConfig.smartCurrentLimit(currentLimit);
@@ -56,6 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterMotor1.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig followerConfig = new SparkMaxConfig();
+    followerConfig.smartCurrentLimit(currentLimit);
     followerConfig.follow(shooterMotor1); // Tells motor 2 to do whatever motor 1 does
     shooterMotor2.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -87,13 +89,12 @@ public class ShooterSubsystem extends SubsystemBase {
     indexerConfig.smartCurrentLimit(currentLimit);
 
     indexerMotor.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
     //-------------------------//
   }
 
   public boolean isRPMinRange(int position) {
     double currentRPM = m_encoder.getVelocity();
-    double tolerance = 75;
+    double tolerance = 50;
 
     return (Math.abs(currentRPM - getDesiredVelocityRPM(position)) < tolerance);
   }
@@ -101,20 +102,15 @@ public class ShooterSubsystem extends SubsystemBase {
   public int getDesiredVelocityRPM(int position) {
     switch (position) {
       case shooterPositions.HUB: 
-        return 2050;
+        return 1750;
       case shooterPositions.TRENCH_FAR: 
-        return 3200;
-      case shooterPositions.DEPOT:
-        return 3700;
-      case 3: // variable shooting using the photon distance with the inverse of a quadratic regression formula from an rpm vs. distance graph (soft limit of 5000 RPM)
-        return 0;  
-      //return Math.min((int) Math.round(Math.sqrt((m_PhotonSubsystem.getDistance() + 19.73755)/(5.13131*Math.pow(10, -8)))-17562.4743), 5000); 
+        return 2750;
+      case shooterPositions.NEUTRAL:
+        return 3500;
       case shooterPositions.TRENCH_CLOSE: 
-        return 3150;
-      case shooterPositions.OUTPOST:
-        return 4030;
+        return 2690;
       default:
-        return 2650; // this is a fallback RPM, avg of other RPMs
+        return 2500; // fall back rpm
     }
   }
 
@@ -125,18 +121,18 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void spinningUp(int position) {
-    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity);
+    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity,ClosedLoopSlot.kSlot0);
     feederMotor.stopMotor();
     indexerMotor.stopMotor();
 
   }
 
   public void ready(int position) {
-    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity);
+    m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity,ClosedLoopSlot.kSlot0);
     
     // figure out how much faster this should go
-    m_pidControllerFeeder.setSetpoint(getDesiredVelocityRPM(position)*9, SparkBase.ControlType.kVelocity);
-    m_pidControllerIndexer.setSetpoint(getDesiredVelocityRPM(position)*24, SparkBase.ControlType.kVelocity);
+    m_pidControllerFeeder.setSetpoint(4000, SparkBase.ControlType.kVelocity);
+    m_pidControllerIndexer.setSetpoint(3000, SparkBase.ControlType.kVelocity);
   }
 
   public void clearIndexer(){
@@ -145,20 +141,5 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void stopIndexer(){
     indexerMotor.stopMotor();
-  }
-
-  //Feed the shooter at varying speeds depending on the position of the robot; Further positions require lower rpm (lower shooting rate)
-  public void feedShooter(int position){
-    switch(position){
-      case shooterPositions.HUB:
-        {
-          break;
-        }
-        
-      case shooterPositions.DEPOT:
-        {
-          break;
-        }
-    }
   }
 }
