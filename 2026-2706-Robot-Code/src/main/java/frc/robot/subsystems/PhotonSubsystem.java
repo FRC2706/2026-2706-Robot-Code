@@ -23,7 +23,6 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.math.geometry.Rotation3d;
 
-// Class
 public class PhotonSubsystem extends SubsystemBase {
 
     private final PhotonCamera camera1 = new PhotonCamera("Arducam_OV9281_USB_Camera");

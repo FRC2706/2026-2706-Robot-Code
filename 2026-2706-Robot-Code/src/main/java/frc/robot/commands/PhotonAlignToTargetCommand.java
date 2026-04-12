@@ -15,7 +15,7 @@ public class PhotonAlignToTargetCommand extends Command {
     private static final double kHubX = 4.619;
     private static final double kHubY = 4.027;
 
-    
+    // Ideal shooting distance from hub in meters (tune as needed)
     private static final double kStandoffDistance = 1.5;
 
 
