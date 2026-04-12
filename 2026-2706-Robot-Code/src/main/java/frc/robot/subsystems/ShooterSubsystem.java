@@ -102,7 +102,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public int getDesiredVelocityRPM(int position) {
     switch (position) {
       case shooterPositions.HUB: 
-        return 1700;
+        return 1750;
       case shooterPositions.TRENCH_FAR: 
         return 2750;
       case shooterPositions.NEUTRAL:
