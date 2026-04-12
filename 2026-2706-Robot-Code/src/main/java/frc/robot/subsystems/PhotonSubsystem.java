@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.io.File;
 // Imports
 import java.util.Optional;
 import org.photonvision.PhotonCamera;
@@ -16,12 +17,14 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.math.geometry.Rotation3d;
+import frc.robot.subsystems.SwerveSubsystem;
 
 public class PhotonSubsystem extends SubsystemBase {
 
@@ -43,18 +46,21 @@ public class PhotonSubsystem extends SubsystemBase {
     private final DoublePublisher m_planarDistanceEntry;
     private final BooleanPublisher m_hasTargetEntry;
     private final DoublePublisher m_lastKnownDistanceEntry;
-
-    private static final Transform3d kRobotToCamera = new Transform3d(
-        new Translation3d(0.001, 0.232, 0.45),
-        new Rotation3d(0.0, -Math.toRadians(30), 0.0)
-    );
-
-    public PhotonSubsystem() {
-        NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
-        NetworkTable networkTable = networkTableInstance.getTable("datatable");
-        m_planarDistanceEntry = networkTable.getDoubleTopic("planarDistanceMeters").publish();
-        m_hasTargetEntry = networkTable.getBooleanTopic("hasTarget").publish();
-        m_lastKnownDistanceEntry = networkTable.getDoubleTopic("lastKnownDistanceMeters").publish();
+    private SwerveSubsystem m_SwerveSubsystem;
+    
+        private static final Transform3d kRobotToCamera = new Transform3d(
+            new Translation3d(0, 0., 0.),
+            new Rotation3d(0.0, -Math.toRadians(30), 0.0)
+        );
+    
+        public PhotonSubsystem(SwerveSubsystem mSwerveSubsystem) {
+            NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
+            NetworkTable networkTable = networkTableInstance.getTable("datatable");
+            m_planarDistanceEntry = networkTable.getDoubleTopic("planarDistanceMeters").publish();
+            m_hasTargetEntry = networkTable.getBooleanTopic("hasTarget").publish();
+            m_lastKnownDistanceEntry = networkTable.getDoubleTopic("lastKnownDistanceMeters").publish();
+            final SwerveSubsystem m_SwerveSubsystem = mSwerveSubsystem;
+            this.m_SwerveSubsystem = m_SwerveSubsystem;
     }
 
     @Override
@@ -77,6 +83,7 @@ public class PhotonSubsystem extends SubsystemBase {
                     double dx = kHubX - robotPose.getX();
                     double dy = kHubY - robotPose.getY();
                     m_planarDistance = Math.hypot(dx, dy);
+                    System.out.println(robotPose);
                 } else {
                     // Fallback: raw camera-to-tag planar distance if pose estimation fails
                     Translation3d camTranslation = target.getBestCameraToTarget().getTranslation();
@@ -150,10 +157,7 @@ public class PhotonSubsystem extends SubsystemBase {
      * be estimated (no target, unknown tag id, etc.).
      */
     public Optional<Pose3d> getEstimatedRobotPose() {
-        Optional<Pose3d> camPoseOpt = getEstimatedCameraPose();
-        if (camPoseOpt.isEmpty()) return Optional.empty();
-        Pose3d cameraPose = camPoseOpt.get();
-        Pose3d robotPose = cameraPose.transformBy(kRobotToCamera.inverse());
+        Pose3d robotPose = new Pose3d(m_SwerveSubsystem.getPose());
         return Optional.of(robotPose);
     }
 
@@ -167,13 +171,13 @@ public class PhotonSubsystem extends SubsystemBase {
         if (targetId < 0) return -1;
 
         if (currentAlliance == Alliance.Red) {
-            if (targetId == 10) {
+            if (targetId == 9 || targetId == 10) {
                 return targetId;
             } else {
                 return -1;
             }
         } else if (currentAlliance == Alliance.Blue) {
-            if (targetId == 9 || targetId == 10 || targetId == 11) {
+            if (targetId == 9 || targetId == 10) {
                 return targetId;
             } else {
                 return -1;
