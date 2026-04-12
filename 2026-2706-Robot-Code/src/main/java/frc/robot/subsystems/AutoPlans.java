@@ -84,15 +84,11 @@ public class AutoPlans extends SubsystemBase {
 
             eventMap.put("StartShooterHub", new StartShooter(m_shooter,shooterPositions.HUB));
             eventMap.put("StartShooterTrench", new StartShooter(m_shooter,shooterPositions.TRENCH_CLOSE));
-            eventMap.put("StartShooterDepot", new StartShooter(m_shooter,shooterPositions.DEPOT));
-            eventMap.put("StartShooterOutpost", new StartShooter(m_shooter, shooterPositions.OUTPOST));
 
             eventMap.put("StopShooter", new StopShooter(m_shooter));
 
             eventMap.put("PrepareShooterHub", new PrepareShooterCommand(m_shooter,shooterPositions.HUB));
             eventMap.put("PrepareShooterTrench", new PrepareShooterCommand(m_shooter, shooterPositions.TRENCH_CLOSE));
-            eventMap.put("PrepareShooterDepot", new PrepareShooterCommand(m_shooter, shooterPositions.DEPOT));
-            eventMap.put("PrepareShooterOutpost", new PrepareShooterCommand(m_shooter, shooterPositions.OUTPOST));
 
             NamedCommands.registerCommands(eventMap);
         } catch (Throwable t) {
