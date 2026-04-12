@@ -39,7 +39,7 @@ public class AutoPlans extends SubsystemBase {
     private static final Field2d s_autoSelectorField = new Field2d();
 
     private PathPlannerAuto leftStartNeutralZoneAuto, rightStartNeutralZoneAuto;
-    private Command middleShootAuto, rightTrenchShootAuto, leftTrenchShootAuto;
+    private Command redMiddleShootAuto, redRightTrenchShootAuto, redLeftTrenchShootAuto, blueMiddleShootAuto, blueRightTrenchShootAuto, blueLeftTrenchShootAuto;
 
     // Mapping of auto mode index -> Pose2d used by the auto-selector visualization.
     private static final Map<Integer, Pose2d> s_autoModePoses = new HashMap<>();
@@ -72,10 +72,12 @@ public class AutoPlans extends SubsystemBase {
         try{
             leftStartNeutralZoneAuto = new PathPlannerAuto("Left Start Neutral Zone Auto");
             rightStartNeutralZoneAuto = new PathPlannerAuto("Right Start Neutral Zone Auto");
-            // UPDATE STARTING POS
-            middleShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians((270 + addInversion()) % 360)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.HUB)));
-            rightTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians(0 + addInversion())))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
-            leftTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(Math.toRadians((180 + addInversion()) % 360)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
+            redMiddleShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(13.006, 3.964, new Rotation2d(Math.toRadians(90)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.HUB)));
+            redRightTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(12.139, 7.280, new Rotation2d(Math.toRadians(180)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
+            redLeftTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(7.280, 0.781, new Rotation2d(Math.toRadians(0)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
+            blueMiddleShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(3.522, 4.067, new Rotation2d(Math.toRadians(270)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.HUB)));
+            blueRightTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(4.453, 0.781, new Rotation2d(Math.toRadians(0 )))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
+            blueLeftTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(4.104, 7.280, new Rotation2d(Math.toRadians(180)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(5), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
             
         } catch (Throwable t){
             System.out.println("Failed to create autos.");
@@ -172,11 +174,26 @@ public class AutoPlans extends SubsystemBase {
             case 0:
                 return null; //Do nothing
             case 1:
-                return middleShootAuto; 
+                if (m_swerveSubsystem.isRedAlliance()){
+                    return redMiddleShootAuto; 
+                }
+                else{
+                    return blueMiddleShootAuto;
+                }
             case 2:
-                return rightTrenchShootAuto; 
+                if (m_swerveSubsystem.isRedAlliance()){
+                    return redRightTrenchShootAuto; 
+                }
+                else{
+                    return blueRightTrenchShootAuto;
+                }
             case 3:
-                return leftTrenchShootAuto; 
+                if (m_swerveSubsystem.isRedAlliance()){
+                    return redLeftTrenchShootAuto; 
+                }
+                else{
+                    return blueLeftTrenchShootAuto;
+                }
             case 4:
                 return leftStartNeutralZoneAuto;
             case 5:
