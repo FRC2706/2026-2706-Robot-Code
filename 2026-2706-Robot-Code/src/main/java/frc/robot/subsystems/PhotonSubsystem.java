@@ -28,13 +28,16 @@ public class PhotonSubsystem extends SubsystemBase {
 
     private final PhotonCamera camera1 = new PhotonCamera("Arducam_OV9281_USB_Camera");
     private PhotonPipelineResult result;
-    private PhotonTrackedTarget target; 
+    private PhotonTrackedTarget target;
     public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-    private static final double kCameraHeight = 0.45; 
-    private static final double kTargetHeight = 1.13; 
-    private static double kCameraPitch = Math.toRadians(30); 
+
+    // Known hub position on the field (meters). Z is stored but only X/Y used for planar distance.
+    public static final double kHubX = 4.619;
+    public static final double kHubY = 4.027;
+    public static final double kHubZ = 1.13;
+
     public double m_planarDistance = 0;
-    public double m_lastKnownDistance = 0; 
+    public double m_lastKnownDistance = 0;
     public Alliance currentAlliance = Alliance.Blue;
 
     // NetworkTables entries for sharing vision data
@@ -42,10 +45,9 @@ public class PhotonSubsystem extends SubsystemBase {
     private final BooleanPublisher m_hasTargetEntry;
     private final DoublePublisher m_lastKnownDistanceEntry;
 
-
     private static final Transform3d kRobotToCamera = new Transform3d(
-        new edu.wpi.first.math.geometry.Translation3d(0.001, 0.232, 0.45),
-        new edu.wpi.first.math.geometry.Rotation3d(0.0, -Math.toRadians(30), 0.0)
+        new Translation3d(0.001, 0.232, 0.45),
+        new Rotation3d(0.0, -Math.toRadians(30), 0.0)
     );
 
     public PhotonSubsystem() {
@@ -58,7 +60,6 @@ public class PhotonSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-       
         target = null;
 
         try {
@@ -67,11 +68,22 @@ public class PhotonSubsystem extends SubsystemBase {
             if (result.hasTargets()) {
                 target = result.getBestTarget();
 
-              
-                Translation3d camTranslation = target.getBestCameraToTarget().getTranslation();
-                
-                m_planarDistance = Math.hypot(camTranslation.getX(), camTranslation.getY());
-               
+                // Compute distance using the robot's estimated field pose vs. the
+                // known hub position. This removes the AprilTag offset problem
+                // because we're measuring robot→hub in field coordinates, not
+                // camera→tag in camera coordinates.
+                Optional<Pose3d> robotPoseOpt = getEstimatedRobotPose();
+                if (robotPoseOpt.isPresent()) {
+                    Pose3d robotPose = robotPoseOpt.get();
+                    double dx = kHubX - robotPose.getX();
+                    double dy = kHubY - robotPose.getY();
+                    m_planarDistance = Math.hypot(dx, dy);
+                } else {
+                    // Fallback: raw camera-to-tag planar distance if pose estimation fails
+                    Translation3d camTranslation = target.getBestCameraToTarget().getTranslation();
+                    m_planarDistance = Math.hypot(camTranslation.getX(), camTranslation.getY());
+                }
+
                 m_lastKnownDistance = m_planarDistance;
             }
         } catch (Exception e) {
@@ -84,11 +96,9 @@ public class PhotonSubsystem extends SubsystemBase {
         m_lastKnownDistanceEntry.set(m_lastKnownDistance);
     }
 
-
     public boolean hasTarget() {
         return result != null && result.hasTargets();
     }
-
 
     public double getYaw() {
         if (hasTarget()) {
@@ -97,7 +107,6 @@ public class PhotonSubsystem extends SubsystemBase {
         return 0.0;
     }
 
-   
     public double getSkew() {
         if (hasTarget()) {
             return result.getBestTarget().getSkew();
@@ -105,7 +114,6 @@ public class PhotonSubsystem extends SubsystemBase {
         return 0.0;
     }
 
-   
     public double getPitch() {
         if (hasTarget()) {
             return result.getBestTarget().getPitch();
@@ -113,7 +121,6 @@ public class PhotonSubsystem extends SubsystemBase {
         return 0.0;
     }
 
- 
     public Transform3d cameraToTarget() {
         if (!hasTarget()) return new Transform3d();
         return target.getBestCameraToTarget();
@@ -185,18 +192,27 @@ public class PhotonSubsystem extends SubsystemBase {
         }
     }
 
+    /**
+     * Returns the planar (X/Y) distance from the robot to the hub center.
+     * When a tag is visible, this is computed from the robot's estimated field pose
+     * vs. the known hub coordinates — not from the raw camera-to-tag vector.
+     * Falls back to the last known distance when no tag is visible.
+     */
     public double getDistance() {
-    
         if (hasTarget()) {
             return m_planarDistance;
         }
         return m_lastKnownDistance;
     }
 
-    // Returns the 3D slant distance (direct line-of-sight distance to AprilTag)
+    /**
+     * Returns the 3D slant distance from the robot to the hub center,
+     * accounting for the height difference between the robot (ground level, Z=0)
+     * and the hub (Z = kHubZ).
+     */
     public double getSlantDistance() {
-        if (!hasTarget()) return 0.0;
-        double heightDiff = kTargetHeight - kCameraHeight;
-        return Math.hypot(m_planarDistance, heightDiff);
+        double planar = getDistance();
+        if (planar <= 0.0) return 0.0;
+        return Math.hypot(planar, kHubZ);
     }
 }
