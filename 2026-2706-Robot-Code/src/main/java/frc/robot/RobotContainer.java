@@ -154,17 +154,7 @@ public class RobotContainer {
     //Get the auto based on autonomous selector switch
     Command auto = m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode());
 
-    Consumer<Boolean> resetGyro = (b) -> {
-      if (b) {
-        if (!m_swerveSubsystem.isRedAlliance());
-        Pose2d swervePos = m_swerveSubsystem.getPose();
-        Rotation2d swerveRot = swervePos.getRotation();
-        swerveRot.rotateBy(new Rotation2d(Units.degreesToRadians(180)));
-        m_swerveSubsystem.resetOdometry(new Pose2d(swervePos.getTranslation(),swerveRot));
-      }
-    };
-
-    return auto.finallyDo((boolean b) -> resetGyro.accept(b));
+    return auto;
   }
   
 }
