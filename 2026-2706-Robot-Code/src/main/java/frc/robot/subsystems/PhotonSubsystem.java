@@ -44,7 +44,7 @@ public class PhotonSubsystem extends SubsystemBase {
 
 
     private static final Transform3d kRobotToCamera = new Transform3d(
-        new edu.wpi.first.math.geometry.Translation3d(0.395, 0.232, 0.45),
+        new edu.wpi.first.math.geometry.Translation3d(0.001, 0.232, 0.45),
         new edu.wpi.first.math.geometry.Rotation3d(0.0, -Math.toRadians(30), 0.0)
     );
 
@@ -161,7 +161,7 @@ public class PhotonSubsystem extends SubsystemBase {
         if (targetId < 0) return -1;
 
         if (currentAlliance == Alliance.Red) {
-            if (targetId == 9 || targetId == 10 || targetId == 11) {
+            if (targetId == 10) {
                 return targetId;
             } else {
                 return -1;
