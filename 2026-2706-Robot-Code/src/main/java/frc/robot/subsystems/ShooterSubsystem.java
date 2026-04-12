@@ -105,16 +105,12 @@ public class ShooterSubsystem extends SubsystemBase {
         return 1700;
       case shooterPositions.TRENCH_FAR: 
         return 2750;
-      case shooterPositions.DEPOT:
-        return 3000;
-      case 3:
-        return 2700;  //Random rpm -- to be replaced with vision equation
+      case shooterPositions.NEUTRAL:
+        return 3500;
       case shooterPositions.TRENCH_CLOSE: 
         return 2690;
-      case shooterPositions.OUTPOST:
-        return 3000;
       default:
-        return 2650; // this is a fallback RPM, avg of other RPMs
+        return 2500; // fall back rpm
     }
   }
 
