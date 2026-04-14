@@ -47,40 +47,45 @@ public class FMS_Subsystem extends SubsystemBase {
     
     @Override
     public void periodic(){
-    //more dashboard setup stuff
-    matchTime = DriverStation.getMatchTime();
-    matchTimePub.set(matchTime);
-    isHubActivePub.set(isHubActive());
-    isDSConnectedPub.set(DriverStation.isDSAttached());
-    isFMSConnectedPub.set(DriverStation.isFMSAttached());
-    isJoystickConnectedPub.set(DriverStation.isJoystickConnected(0) && DriverStation.isJoystickConnected(1));
-    
-    isHubActiveUpdate = isHubActive();
-    if (isHubActiveUpdate != hubCurrentState) {
-      System.out.println("Hub is now " + (isHubActiveUpdate ? "active" : "inactive"));
-    }
-    //Prevents constant stream of print commands.
-    hubCurrentState = isHubActiveUpdate;
+      try{
+        //more dashboard setup stuff
+        matchTime = DriverStation.getMatchTime();
+        matchTimePub.set(matchTime);
+        isHubActivePub.set(isHubActive());
+        isDSConnectedPub.set(DriverStation.isDSAttached());
+        isFMSConnectedPub.set(DriverStation.isFMSAttached());
+        isJoystickConnectedPub.set(DriverStation.isJoystickConnected(0) && DriverStation.isJoystickConnected(1));
+        
+        isHubActiveUpdate = isHubActive();
+        if (isHubActiveUpdate != hubCurrentState) {
+          System.out.println("Hub is now " + (isHubActiveUpdate ? "active" : "inactive"));
+        }
+        //Prevents constant stream of print commands.
+        hubCurrentState = isHubActiveUpdate;
 
-    // Rumble section
-    boolean isHubActiveUpdateRumble = isHubActive10Seconds();
-    // This tells us when our hub status changes, and what it changes to.
-    if (isHubActiveUpdateRumble != hubCurrentStateRumble) {
+        // Rumble section
+        boolean isHubActiveUpdateRumble = isHubActive10Seconds();
+        // This tells us when our hub status changes, and what it changes to.
+        if (isHubActiveUpdateRumble != hubCurrentStateRumble) {
 
-      // Controller rumble 
-      driver.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
-      operator.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
-      rumbleTimer.reset(); rumbleTimer.start(); rumbling = true;
-    }
-     // Prevents constant controller rumble
-    if (rumbling && rumbleTimer.hasElapsed(0.8)) {
-      driver.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
-      operator.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
-      rumbling = false;
-      rumbleTimer.stop();
-    }
-    // Prevents constant stream of print commands.
-    hubCurrentStateRumble = isHubActiveUpdateRumble;
+          // Controller rumble 
+          driver.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
+          operator.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
+          rumbleTimer.reset(); rumbleTimer.start(); rumbling = true;
+        }
+        // Prevents constant controller rumble
+        if (rumbling && rumbleTimer.hasElapsed(0.8)) {
+          driver.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
+          operator.setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
+          rumbling = false;
+          rumbleTimer.stop();
+        }
+        // Prevents constant stream of print commands.
+        hubCurrentStateRumble = isHubActiveUpdateRumble;
+      }
+      catch (Exception e){
+        
+      }
     }
     // Boolean that updates the hub status.
     public boolean isHubActive() {
