@@ -39,9 +39,9 @@ public class SwerveSubsystem extends SubsystemBase{
     // update the shared field via AutoPlans.setMainFieldRobotPose(...)
 
     //For auto-alignment
-    private static final double shooterToRobotDist = 0;
-    private static final double midShooterToFrontDist = 0;
-    private static final double halfHubDist = 0;
+    private static final double shooterToRobotDist = 0.2215;
+    private static final double midShooterToFrontDist = 0.3745;
+    private static final double halfHubDist = 23.5;
     private static final Pose2d blueHubPose2D = new Pose2d(4.625,4.025,new Rotation2d());
     private static final Pose2d redHubPose2D = new Pose2d(11.925,4.025, new Rotation2d());
     public double shooterToHubDist = 0;
@@ -409,8 +409,12 @@ public class SwerveSubsystem extends SubsystemBase{
                 System.out.println("No alignment");
         }
 
-        //Turn all values to positive if they're negative
-        if (robotAlignmentYaw < 0){
+        //Turn all values 180 - -180
+        robotAlignmentYaw = robotAlignmentYaw % 360;
+        if (robotAlignmentYaw > 180){
+            robotAlignmentYaw = -360 + robotAlignmentYaw;
+        }
+        else if (robotAlignmentYaw < -180){
             robotAlignmentYaw = 360 + robotAlignmentYaw;
         }
 
