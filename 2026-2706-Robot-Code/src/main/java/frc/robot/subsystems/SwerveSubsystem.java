@@ -39,9 +39,9 @@ public class SwerveSubsystem extends SubsystemBase{
     // update the shared field via AutoPlans.setMainFieldRobotPose(...)
 
     //For auto-alignment
-    private static final double shooterToRobotDist = 0;
-    private static final double midShooterToFrontDist = 0;
-    private static final double halfHubDist = 0;
+    private static final double shooterToRobotDist = 0.2215;
+    private static final double midShooterToFrontDist = 0.3745;
+    private static final double halfHubDist = 23.5;
     private static final Pose2d blueHubPose2D = new Pose2d(4.625,4.025,new Rotation2d());
     private static final Pose2d redHubPose2D = new Pose2d(11.925,4.025, new Rotation2d());
     public double shooterToHubDist = 0;
@@ -360,17 +360,43 @@ public class SwerveSubsystem extends SubsystemBase{
         // Use atan2 to get the angle from robot to hub in degrees. atan2 returns radians where 0 is +X and increases toward +Y.
         double angleToHubDeg = Math.toDegrees(Math.atan2(dy, dx));
 
-        // Normalize angle into [-180, 180]
-        double normalized = angleToHubDeg;
-        while (normalized > 180.0) normalized -= 360.0;
-        while (normalized <= -180.0) normalized += 360.0;
+        //Calculate target yaw
+        switch (quadrant){
+            case 1:
+                {
+                    robotAlignmentYaw = -(theta + omega) - 90;
+                }
+                break;
+            case 2:
+                {
+                    robotAlignmentYaw = theta - omega - 90;
+                }
+                break;
+            case 3:
+                {
+                    robotAlignmentYaw = 90 - (theta + omega);
+                }
+                break;
+            case 4:
+                {
+                    robotAlignmentYaw = 90 + (theta - omega);   
+                }
+                break;
+            default:
+                robotAlignmentYaw = 0;
+                System.out.println("No alignment");
+        }
 
-        // This is the desired robot heading (degrees, CCW positive) so that the front of the robot faces the hub
-        robotAlignmentYaw = normalized;
+        //Turn all values 180 - -180
+        robotAlignmentYaw = robotAlignmentYaw % 360;
+        if (robotAlignmentYaw > 180){
+            robotAlignmentYaw = -360 + robotAlignmentYaw;
+        }
+        else if (robotAlignmentYaw < -180){
+            robotAlignmentYaw = 360 + robotAlignmentYaw;
+        }
 
-        // Debug output: print desired yaw and distances
-        System.out.printf("calculateYawToHub: desiredYaw=%.2f, robotX=%.2f robotY=%.2f hubX=%.2f hubY=%.2f dist=%.2f\n",
-            robotAlignmentYaw, robotPose.getX(), robotPose.getY(), hubPose.getX(), hubPose.getY(), robotToHubDist);
+        System.out.println(robotAlignmentYaw);
     }
 
     //Returns the distance from the front of the shooter to the center of the hub (assuming the robot is aligned)
