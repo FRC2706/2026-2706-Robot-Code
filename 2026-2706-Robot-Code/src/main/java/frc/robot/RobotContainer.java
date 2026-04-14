@@ -103,7 +103,7 @@ public class RobotContainer {
     
     //Turn shooter on and off at different rpm's
     m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.TRENCH_FAR)).onFalse(new StopShooter(m_ShooterSubsystem)); 
-    m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.DEPOT)).onFalse(new StopShooter(m_ShooterSubsystem)); 
+    m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.NEUTRAL)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.HUB)).onFalse(new StopShooter(m_ShooterSubsystem)); 
   // When B is held: first align to the AprilTag, then start the shooter using photon distance
     m_operatorController.b().whileTrue(

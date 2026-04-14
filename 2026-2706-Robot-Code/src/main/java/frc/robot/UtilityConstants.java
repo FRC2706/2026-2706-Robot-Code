@@ -89,7 +89,7 @@ public final class UtilityConstants {
     public static final class shooterPositions{
       public static final byte HUB = 0;
       public static final byte TRENCH_FAR = 1;
-      public static final byte DEPOT = 2;
+      public static final byte NEUTRAL = 2;
       public static final byte TRENCH_CLOSE = 7;
       public static final byte OUTPOST = 8;
     }
