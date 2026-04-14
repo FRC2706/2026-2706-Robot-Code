@@ -8,6 +8,7 @@ import frc.robot.UtilityConstants.OperatorConstants;
 import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
 import frc.robot.commands.SwerveDriveCommand;
 import frc.robot.commands.ResetGyroCommand;
+import frc.robot.commands.AlignShooterCommand;
 import frc.robot.commands.ClearIndexerCommand;
 import frc.robot.commands.IntakeAgitateCommand;
 import frc.robot.commands.IntakeDownCommand;
@@ -15,31 +16,22 @@ import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.LockPoseCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
-import frc.robot.commands.IntakeMidCommand;
 import frc.robot.commands.StartShooter;
 import frc.robot.commands.StopShooter;
 
 import frc.robot.subsystems.AutoSelectorKnobSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PhotonSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.PhotonAlignToTargetCommand;
 
 import edu.wpi.first.wpilibj.Filesystem;
 
 import java.io.File;
-import java.util.function.Consumer;
 
 import frc.robot.commands.StopIndexerCommand;
 
@@ -59,7 +51,6 @@ public class RobotContainer {
   // Subsystem
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem(m_swerveSubsystem);
   private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
 
   // Pathplanner 
@@ -68,7 +59,7 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandXboxController m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
-  private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem(m_PhotonSubsystem);
+  private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -120,8 +111,8 @@ public class RobotContainer {
     ).onFalse(new StopShooter(m_ShooterSubsystem));   
     
     driverController.b().whileTrue(
-        new PhotonAlignToTargetCommand(m_PhotonSubsystem, m_swerveSubsystem)  
-    ).onFalse(new PhotonAlignToTargetCommand(m_PhotonSubsystem, m_swerveSubsystem).withTimeout(0));
+        new AlignShooterCommand(m_swerveSubsystem)  
+    ).onFalse(new AlignShooterCommand(m_swerveSubsystem).withTimeout(0));
     
     //Turn only the indexer when pressed
     m_operatorController.start().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));

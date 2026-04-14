@@ -23,21 +23,13 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor2;
   private final SparkMax feederMotor;
   private final SparkMax indexerMotor;
-  private final PhotonSubsystem m_PhotonSubsystem;
-  // NetworkTables entry to read planar distance (meters) published by PhotonSubsystem
-  private final NetworkTable m_photonTable;
-  private final NetworkTableEntry m_planarDistanceEntry;
   
   private final RelativeEncoder m_encoder;
   private final SparkClosedLoopController m_pidControllerShooter; // New
   private final SparkClosedLoopController m_pidControllerFeeder; // New
   private final SparkClosedLoopController m_pidControllerIndexer; // New
 
-  public ShooterSubsystem(PhotonSubsystem photonSubsystem) {
-    m_PhotonSubsystem = photonSubsystem;
-    var inst = NetworkTableInstance.getDefault();
-    m_photonTable = inst.getTable("photon");
-    m_planarDistanceEntry = m_photonTable.getEntry("planarDistanceMeters");
+  public ShooterSubsystem() {
     shooterMotor1 = new SparkMax(UtilityConstants.shooterConstants.MOTOR1_ID, MotorType.kBrushless);
     shooterMotor2 = new SparkMax(UtilityConstants.shooterConstants.MOTOR2_ID, MotorType.kBrushless);
     feederMotor = new SparkMax(UtilityConstants.shooterConstants.FEEDER_MOTOR_ID, MotorType.kBrushless);
@@ -119,7 +111,7 @@ public class ShooterSubsystem extends SubsystemBase {
       case 3: // variable shooting using the photon distance with the inverse of a quadratic regression formula from an rpm vs. distance graph (soft limit of 5000 RPM)
         //return 0;  
         // Prefer NetworkTables value (allows external processes to override); fallback to PhotonSubsystem if NT missing
-        double ntDistance = m_PhotonSubsystem.getDistance();
+        double ntDistance = 0;
         return 1694 + 283*ntDistance + -240*Math.pow(ntDistance, 2) + 82*Math.pow(ntDistance, 3) + -11.4*Math.pow(ntDistance, 4) + 0.688*Math.pow(ntDistance, 5) + -0.0146*Math.pow(ntDistance, 6);
       case shooterPositions.TRENCH_CLOSE: 
         return 3150;

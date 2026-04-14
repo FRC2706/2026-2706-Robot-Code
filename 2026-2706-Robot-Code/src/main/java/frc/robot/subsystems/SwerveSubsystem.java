@@ -38,6 +38,15 @@ public class SwerveSubsystem extends SubsystemBase{
     // Field2d visualization is now centralized in AutoPlans; SwerveSubsystem will
     // update the shared field via AutoPlans.setMainFieldRobotPose(...)
 
+    //For auto-alignment
+    private static final double shooterToRobotDist = 0;
+    private static final double midShooterToFrontDist = 0;
+    private static final double halfHubDist = 0;
+    private static final Pose2d blueHubPose2D = new Pose2d(4.625,4.025,new Rotation2d());
+    private static final Pose2d redHubPose2D = new Pose2d(11.925,4.025, new Rotation2d());
+    public double shooterToHubDist = 0;
+    public double robotAlignmentYaw = 0;
+
     // Provide swerve configuration file as arguement
     public SwerveSubsystem(File swerveJsonDirectory){
         
@@ -138,6 +147,13 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic(){
         updateOdometry();
+
+        if (isRedAlliance()){
+            calculateYawToHub(getPose(), redHubPose2D);
+        }
+        else{
+            calculateYawToHub(getPose(), blueHubPose2D);
+        }
     }
 
    /**
@@ -325,5 +341,92 @@ public class SwerveSubsystem extends SubsystemBase{
     //Return robot yaw in degrees
     public double getYaw(){
         return swerveDrive.getYaw().getDegrees();
+    }
+
+    //Calculates the optimal robot yaw and distance from the camera to the center of the hubgiven the robot position, hub position. Must be field relative
+    public void calculateYawToHub(Pose2d robotPose, Pose2d hubPose){
+        /*----------------- Finding distances -----------------*/
+        //Distance from center of robot to center of hub
+        double robotToHubDist;
+
+        //Calculate straightline distance using pythagorean theorem
+        robotToHubDist = Math.sqrt(Math.pow(robotPose.getX() - hubPose.getX(),2) + Math.pow(robotPose.getY() - hubPose.getY(),2));
+
+        //Calculate the distance from the shooter (front edge) to the hub using pythagorean theorem. Constant subtraction is the distance from 
+        //the center of the shooter to the camera
+        shooterToHubDist = Math.sqrt(Math.pow(robotToHubDist,2) - Math.pow(shooterToRobotDist,2)) - midShooterToFrontDist - halfHubDist;
+
+        /*------------------ Finding yaw ---------------------- */
+        //Finding the angle between straightline distance of robot to hub and the projected position of the shooter
+        double alpha = Math.toDegrees(Math.acos(shooterToRobotDist/robotToHubDist));
+        double omega = 90 - alpha;
+
+        //Finding which quadrant the center of the hub is relative to the shooter
+        byte quadrant = 0;
+        if (robotPose.getX() > hubPose.getX()){
+            if (robotPose.getY() > hubPose.getY()){
+                quadrant = 4;
+            }
+            else{
+                quadrant = 3;
+            }
+        }
+        else{
+            if (robotPose.getY() > hubPose.getY()){
+                quadrant = 1;
+            }else{
+                quadrant = 2;
+            }
+        }
+
+        //Finding angle from zero on the robot the the straightline distance to the hub
+        double theta = Math.toDegrees(Math.acos(Math.abs(robotPose.getX() - hubPose.getX())/robotToHubDist));
+
+        //Finding the angle from zero on the robot that is necessary (before applying inversions or any other changes)
+        double beta = theta - omega;
+
+        //Calculate target yaw
+        switch (quadrant){
+            case 1:
+                {
+                    robotAlignmentYaw = -(theta + omega);
+                }
+                break;
+            case 2:
+                {
+                    robotAlignmentYaw = theta - omega;
+                }
+                break;
+            case 3:
+                {
+                    robotAlignmentYaw = 180 - (theta + omega);
+                }
+                break;
+            case 4:
+                {
+                    robotAlignmentYaw = 180 + (theta - omega);   
+                }
+                break;
+            default:
+                robotAlignmentYaw = 0;
+                System.out.println("No alignment");
+        }
+
+        //Turn all values to positive if they're negative
+        if (robotAlignmentYaw < 0){
+            robotAlignmentYaw = 360 + robotAlignmentYaw;
+        }
+
+        System.out.println(robotAlignmentYaw);
+    }
+
+    //Returns the distance from the front of the shooter to the center of the hub (assuming the robot is aligned)
+    public double getShooterDist(){
+        return shooterToHubDist;
+    }
+
+    //Returns the yaw necessary for the shooter to be aimed at the center of the hub (in degrees). CCW positive
+    public double getAlignedYaw(){
+        return robotAlignmentYaw;
     }
 }
