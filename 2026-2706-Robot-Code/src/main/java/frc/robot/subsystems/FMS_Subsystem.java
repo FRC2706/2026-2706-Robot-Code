@@ -37,7 +37,7 @@ public class FMS_Subsystem extends SubsystemBase {
         this.operator = operator;
         // Dashboard setup includes Match time, hub status, and connection status of the driver station, FMS, and joysticks.
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTable table = inst.getTable("datatable");
+        NetworkTable table = inst.getTable("FMSInfo");
         matchTimePub = table.getDoubleTopic("MatchTime").publish();
         isHubActivePub = table.getBooleanTopic("IsHubActive").publish();
         isDSConnectedPub = table.getBooleanTopic("IsConnected").publish();
