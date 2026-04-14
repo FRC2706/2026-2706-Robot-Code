@@ -386,22 +386,22 @@ public class SwerveSubsystem extends SubsystemBase{
         switch (quadrant){
             case 1:
                 {
-                    robotAlignmentYaw = -(theta + omega);
+                    robotAlignmentYaw = -(theta + omega) - 90;
                 }
                 break;
             case 2:
                 {
-                    robotAlignmentYaw = theta - omega;
+                    robotAlignmentYaw = theta - omega - 90;
                 }
                 break;
             case 3:
                 {
-                    robotAlignmentYaw = 180 - (theta + omega);
+                    robotAlignmentYaw = 90 - (theta + omega);
                 }
                 break;
             case 4:
                 {
-                    robotAlignmentYaw = 180 + (theta - omega);   
+                    robotAlignmentYaw = 90 + (theta - omega);   
                 }
                 break;
             default:
