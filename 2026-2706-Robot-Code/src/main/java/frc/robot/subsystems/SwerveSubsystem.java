@@ -345,76 +345,32 @@ public class SwerveSubsystem extends SubsystemBase{
 
     //Calculates the optimal robot yaw and distance from the camera to the center of the hubgiven the robot position, hub position. Must be field relative
     public void calculateYawToHub(Pose2d robotPose, Pose2d hubPose){
-        /*----------------- Finding distances -----------------*/
-        //Distance from center of robot to center of hub
-        double robotToHubDist;
+        // Compute straight-line distance from robot center to hub center
+        double dx = hubPose.getX() - robotPose.getX();
+        double dy = hubPose.getY() - robotPose.getY();
+        double robotToHubDist = Math.hypot(dx, dy);
 
-        //Calculate straightline distance using pythagorean theorem
-        robotToHubDist = Math.sqrt(Math.pow(robotPose.getX() - hubPose.getX(),2) + Math.pow(robotPose.getY() - hubPose.getY(),2));
-
-        //Calculate the distance from the shooter (front edge) to the hub using pythagorean theorem. Constant subtraction is the distance from 
-        //the center of the shooter to the camera
-        shooterToHubDist = Math.sqrt(Math.pow(robotToHubDist,2) - Math.pow(shooterToRobotDist,2)) - midShooterToFrontDist - halfHubDist;
-
-        /*------------------ Finding yaw ---------------------- */
-        //Finding the angle between straightline distance of robot to hub and the projected position of the shooter
-        double alpha = Math.toDegrees(Math.acos(shooterToRobotDist/robotToHubDist));
-        double omega = 90 - alpha;
-
-        //Finding which quadrant the center of the hub is relative to the shooter
-        byte quadrant = 0;
-        if (robotPose.getX() > hubPose.getX()){
-            if (robotPose.getY() > hubPose.getY()){
-                quadrant = 4;
-            }
-            else{
-                quadrant = 3;
-            }
-        }
-        else{
-            if (robotPose.getY() > hubPose.getY()){
-                quadrant = 1;
-            }else{
-                quadrant = 2;
-            }
+        // Calculate shooter-to-hub distance (keep previous formula but guard against invalid values)
+        if (robotToHubDist > Math.abs(shooterToRobotDist)) {
+            shooterToHubDist = Math.sqrt(Math.max(0.0, robotToHubDist * robotToHubDist - shooterToRobotDist * shooterToRobotDist)) - midShooterToFrontDist - halfHubDist;
+        } else {
+            shooterToHubDist = 0.0;
         }
 
-        //Finding angle from zero on the robot the the straightline distance to the hub
-        double theta = Math.toDegrees(Math.acos(Math.abs(robotPose.getX() - hubPose.getX())/robotToHubDist));
+        // Use atan2 to get the angle from robot to hub in degrees. atan2 returns radians where 0 is +X and increases toward +Y.
+        double angleToHubDeg = Math.toDegrees(Math.atan2(dy, dx));
 
-        //Calculate target yaw
-        switch (quadrant){
-            case 1:
-                {
-                    robotAlignmentYaw = -(theta + omega) - 90;
-                }
-                break;
-            case 2:
-                {
-                    robotAlignmentYaw = theta - omega - 90;
-                }
-                break;
-            case 3:
-                {
-                    robotAlignmentYaw = 90 - (theta + omega);
-                }
-                break;
-            case 4:
-                {
-                    robotAlignmentYaw = 90 + (theta - omega);   
-                }
-                break;
-            default:
-                robotAlignmentYaw = 0;
-                System.out.println("No alignment");
-        }
+        // Normalize angle into [-180, 180]
+        double normalized = angleToHubDeg;
+        while (normalized > 180.0) normalized -= 360.0;
+        while (normalized <= -180.0) normalized += 360.0;
 
-        //Turn all values to positive if they're negative
-        if (robotAlignmentYaw < 0){
-            robotAlignmentYaw = 360 + robotAlignmentYaw;
-        }
+        // This is the desired robot heading (degrees, CCW positive) so that the front of the robot faces the hub
+        robotAlignmentYaw = normalized;
 
-        System.out.println(robotAlignmentYaw);
+        // Debug output: print desired yaw and distances
+        System.out.printf("calculateYawToHub: desiredYaw=%.2f, robotX=%.2f robotY=%.2f hubX=%.2f hubY=%.2f dist=%.2f\n",
+            robotAlignmentYaw, robotPose.getX(), robotPose.getY(), hubPose.getX(), hubPose.getY(), robotToHubDist);
     }
 
     //Returns the distance from the front of the shooter to the center of the hub (assuming the robot is aligned)
