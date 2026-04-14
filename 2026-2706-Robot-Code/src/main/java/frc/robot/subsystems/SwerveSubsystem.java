@@ -57,7 +57,7 @@ public class SwerveSubsystem extends SubsystemBase{
         // Set the verbosity of the telemetry.  HIGH is good for debugging, but may cause performance issues.  Adjust as needed.
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.INFO; 
 
-        // TODO: Set up different starting positions
+        
         if (redAlliance){
             // Units are in meters
             startingPose =  new Pose2d(new Translation2d(16, 4), Rotation2d.fromDegrees(180));
@@ -381,9 +381,6 @@ public class SwerveSubsystem extends SubsystemBase{
 
         //Finding angle from zero on the robot the the straightline distance to the hub
         double theta = Math.toDegrees(Math.acos(Math.abs(robotPose.getX() - hubPose.getX())/robotToHubDist));
-
-        //Finding the angle from zero on the robot that is necessary (before applying inversions or any other changes)
-        double beta = theta - omega;
 
         //Calculate target yaw
         switch (quadrant){

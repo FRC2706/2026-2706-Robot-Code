@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkClosedLoopController; // New
+import com.revrobotics.spark.SparkClosedLoopController; 
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.PersistMode;
@@ -15,9 +15,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.UtilityConstants;
 import frc.robot.UtilityConstants.shooterConstants;
 import frc.robot.UtilityConstants.shooterConstants.shooterPositions;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 
 public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor1;
@@ -26,9 +23,9 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax indexerMotor;
   
   private final RelativeEncoder m_encoder;
-  private final SparkClosedLoopController m_pidControllerShooter; // New
-  private final SparkClosedLoopController m_pidControllerFeeder; // New
-  private final SparkClosedLoopController m_pidControllerIndexer; // New
+  private final SparkClosedLoopController m_pidControllerShooter; 
+  private final SparkClosedLoopController m_pidControllerFeeder; 
+  private final SparkClosedLoopController m_pidControllerIndexer; 
 
   public ShooterSubsystem() {
     shooterMotor1 = new SparkMax(UtilityConstants.shooterConstants.MOTOR1_ID, MotorType.kBrushless);
@@ -69,7 +66,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkMaxConfig feederConfig = new SparkMaxConfig();
     feederConfig.inverted(true);
 
-    feederConfig.closedLoop.p(shooterConstants.feederkP); // will change later    
+    feederConfig.closedLoop.p(shooterConstants.feederkP);    
     feederConfig.closedLoop.i(shooterConstants.feederkI);
     feederConfig.closedLoop.d(shooterConstants.feederkD);
     feederConfig.closedLoop.feedForward.kV(shooterConstants.feederkFF);
@@ -83,7 +80,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SparkMaxConfig indexerConfig = new SparkMaxConfig();
     indexerConfig.inverted(true);
 
-    indexerConfig.closedLoop.p(shooterConstants.indexerkP);  // will change later   
+    indexerConfig.closedLoop.p(shooterConstants.indexerkP);     
     indexerConfig.closedLoop.i(shooterConstants.indexerkI);
     indexerConfig.closedLoop.d(shooterConstants.indexerkD);
     indexerConfig.closedLoop.feedForward.kV(shooterConstants.indexerkFF);
@@ -132,7 +129,6 @@ public class ShooterSubsystem extends SubsystemBase {
   public void ready(int position) {
     m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity,ClosedLoopSlot.kSlot0);
     
-    // figure out how much faster this should go
     m_pidControllerFeeder.setSetpoint(4000, SparkBase.ControlType.kVelocity);
     m_pidControllerIndexer.setSetpoint(3000, SparkBase.ControlType.kVelocity);
   }
