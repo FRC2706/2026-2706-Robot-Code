@@ -409,9 +409,13 @@ public class SwerveSubsystem extends SubsystemBase{
                 System.out.println("No alignment");
         }
 
-        //Turn all values to positive if they're negative
-        if (robotAlignmentYaw < 0){
+        //Map values to -180 - 180
+        robotAlignmentYaw = robotAlignmentYaw % 360;
+        if (robotAlignmentYaw < -180){
             robotAlignmentYaw = 360 + robotAlignmentYaw;
+        }
+        else if (robotAlignmentYaw > 180){
+            robotAlignmentYaw = -360 + robotAlignmentYaw;
         }
 
         System.out.println(robotAlignmentYaw);

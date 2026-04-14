@@ -20,8 +20,20 @@ public class AlignShooterCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    //lock swerve yaw between -180 and 180
+    double swerveYaw = m_swerveSubsystem.getYaw(); 
+
+    swerveYaw = swerveYaw % 360;
+    if (swerveYaw < -180){
+      swerveYaw = 360 + swerveYaw;
+    }
+    else if (swerveYaw > 180){
+      swerveYaw = -360 + swerveYaw;
+    }
+
     // Check how off we are from the rotation we want
-    double yawErrorDeg = m_swerveSubsystem.robotAlignmentYaw - m_swerveSubsystem.getYaw();
+    double yawErrorDeg = m_swerveSubsystem.robotAlignmentYaw - swerveYaw;
 
     double rotationVelocity = 0;
 
