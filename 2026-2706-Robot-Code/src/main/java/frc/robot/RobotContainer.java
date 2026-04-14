@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.Filesystem;
 
 import java.io.File;
-import edu.wpi.first.networktables.NetworkTableInstance;
 
 import frc.robot.commands.StopIndexerCommand;
 
@@ -111,7 +110,9 @@ public class RobotContainer {
         new StartShooter(m_ShooterSubsystem, 3)
     ).onFalse(new StopShooter(m_ShooterSubsystem));   
     
-  driverController.b().whileTrue(new AlignShooterCommand(m_swerveSubsystem));
+    driverController.b().whileTrue(
+        new AlignShooterCommand(m_swerveSubsystem)  
+    ).onFalse(new AlignShooterCommand(m_swerveSubsystem).withTimeout(0));
     
     //Turn only the indexer when pressed
     m_operatorController.start().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));
@@ -143,11 +144,6 @@ public class RobotContainer {
     
     //Locks the position of the robot to prevent moving when pressing "A" on the driver controller
     driverController.leftBumper().onTrue(new LockPoseCommand(m_swerveSubsystem)).onFalse(new LockPoseCommand(m_swerveSubsystem).withTimeout(0));
-
-    // Allow remote triggering of AlignShooterCommand via NetworkTables key:
-    // Set /commands/AlignShooter/Request = true (for example from Advantage Scope) to schedule the command.
-    Trigger ntAlignRequest = new Trigger(() -> NetworkTableInstance.getDefault().getTable("commands").getEntry("AlignShooter/Request").getBoolean(false));
-    ntAlignRequest.onTrue(new AlignShooterCommand(m_swerveSubsystem));
   }
   
   /** This function returns the autonomous command based on the knob position. */
