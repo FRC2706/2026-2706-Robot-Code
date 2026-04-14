@@ -14,6 +14,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,48 +50,32 @@ public class PhotonSubsystem extends SubsystemBase {
     public static final double shooterToRobotDist = 0;
     public static double shooterToHubDist = 0;
     public static double robotAlignmentYaw = 0;
+    public final SwerveSubsystem m_SwerveSubsystem;
 
-    public PhotonSubsystem() {
+
+    //4.6 x hub
+    //4.027 y hub
+
+    public PhotonSubsystem(SwerveSubsystem swerveSubsystem) {
         NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
         NetworkTable networkTable = networkTableInstance.getTable("datatable");
         m_planarDistanceEntry = networkTable.getDoubleTopic("planarDistanceMeters").publish();
         //m_roundedPlanarDistanceEntry = networkTable.getDoubleTopic("planarDistanceRounded").publish();
         m_hasTargetEntry = networkTable.getBooleanTopic("hasTarget").publish();
         m_lastKnownDistanceEntry = networkTable.getDoubleTopic("lastKnownDistanceMeters").publish();
+        m_SwerveSubsystem = swerveSubsystem;
     }
 
     @Override
      public void periodic() {
 
         try{
-        // Publish values to NetworkTables for external consumers (defensive, don't throw)
-        m_planarDistanceEntry.set(m_planarDistance);
-        //m_roundedPlanarDistanceEntry.set(m_roundedPlanarDistance);
-        m_hasTargetEntry.set(hasTarget());
-        m_lastKnownDistanceEntry.set(m_lastKnownDistance);
-
-      
-            printed_state = false; // reset printed state when camera is available
-             result = camera1.getLatestResult();
-
-            if (result.hasTargets()) {
-                 target = result.getBestTarget();
-
-             }
+            // Publish values to NetworkTables for external consumers (defensive, don't throw)
+            m_planarDistanceEntry.set(shooterToHubDist);
             
-             // Get the AprilTag's known field pose
-             //Optional<Pose3d> tagPoseOpt = kTagLayout.getTagPose(getTagID());
-             //if (tagPoseOpt.isEmpty()) {
-             //    return;
-             //}
-             // We have the tag pose if needed in the future
-
-             // Find the distance between the camera and the target in meters. Convert degrees to radians because that's what Math.tan expects.
-        
-                m_planarDistance = PhotonUtils.calculateDistanceToTargetMeters(kCameraHeight, kTargetHeight, kCameraPitch, Math.toRadians(target.getPitch()))/Math.cos(Math.toRadians(target.getYaw()));
-                m_lastKnownDistance = m_planarDistance;
-                 
-             }
+            calculateYawToHub(m_SwerveSubsystem.getPose(), new Pose2d(4.6,4.027,new Rotation2d(0)));
+            
+            }
              catch(Exception e){
                 System.out.println(e);
              }
@@ -225,6 +210,9 @@ public class PhotonSubsystem extends SubsystemBase {
         //Finding angle from zero on the robot the the straightline distance to the hub
         double theta = Math.acos(Math.abs(robotPose.getX() - hubPose.getX())/robotToHubDist);
         
+        theta = Math.toDegrees(theta);
+        omega = Math.toDegrees(omega);
+
         //Calculate target yaw
         switch (quadrant){
             case 1:
@@ -251,12 +239,6 @@ public class PhotonSubsystem extends SubsystemBase {
                 robotAlignmentYaw = 0;
         }
 
-
-
-
-        
-
-
-        
+        System.out.println(robotAlignmentYaw);
     }
 }

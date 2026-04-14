@@ -59,7 +59,7 @@ public class RobotContainer {
   // Subsystem
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
+  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem(m_swerveSubsystem);
   private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
 
   // Pathplanner 
@@ -121,7 +121,7 @@ public class RobotContainer {
     
     driverController.b().whileTrue(
         new PhotonAlignToTargetCommand(m_PhotonSubsystem, m_swerveSubsystem)  
-    ).onFalse(new ResetGyroCommand(m_swerveSubsystem).withTimeout(0));
+    ).onFalse(new PhotonAlignToTargetCommand(m_PhotonSubsystem, m_swerveSubsystem).withTimeout(0));
     
     //Turn only the indexer when pressed
     m_operatorController.start().whileTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));
@@ -161,17 +161,7 @@ public class RobotContainer {
     //Get the auto based on autonomous selector switch
     Command auto = m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode());
 
-    Consumer<Boolean> resetGyro = (b) -> {
-      if (b) {
-        if (!m_swerveSubsystem.isRedAlliance());
-        Pose2d swervePos = m_swerveSubsystem.getPose();
-        Rotation2d swerveRot = swervePos.getRotation();
-        swerveRot.rotateBy(new Rotation2d(Units.degreesToRadians(180)));
-        m_swerveSubsystem.resetOdometry(new Pose2d(swervePos.getTranslation(),swerveRot));
-      }
-    };
-
-    return auto.finallyDo((boolean b) -> resetGyro.accept(b));
+    return auto;
   }
   
 }

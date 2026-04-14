@@ -321,4 +321,9 @@ public class SwerveSubsystem extends SubsystemBase{
             edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
                                         );
     }
+
+    //Return robot yaw in degrees
+    public double getYaw(){
+        return swerveDrive.getYaw().getDegrees();
+    }
 }
