@@ -360,43 +360,17 @@ public class SwerveSubsystem extends SubsystemBase{
         // Use atan2 to get the angle from robot to hub in degrees. atan2 returns radians where 0 is +X and increases toward +Y.
         double angleToHubDeg = Math.toDegrees(Math.atan2(dy, dx));
 
-        //Calculate target yaw
-        switch (quadrant){
-            case 1:
-                {
-                    robotAlignmentYaw = -(theta + omega) - 90;
-                }
-                break;
-            case 2:
-                {
-                    robotAlignmentYaw = theta - omega - 90;
-                }
-                break;
-            case 3:
-                {
-                    robotAlignmentYaw = 90 - (theta + omega);
-                }
-                break;
-            case 4:
-                {
-                    robotAlignmentYaw = 90 + (theta - omega);   
-                }
-                break;
-            default:
-                robotAlignmentYaw = 0;
-                System.out.println("No alignment");
-        }
+        // Normalize angle into [-180, 180]
+        double normalized = angleToHubDeg;
+        while (normalized > 180.0) normalized -= 360.0;
+        while (normalized <= -180.0) normalized += 360.0;
 
-        //Turn all values 180 - -180
-        robotAlignmentYaw = robotAlignmentYaw % 360;
-        if (robotAlignmentYaw > 180){
-            robotAlignmentYaw = -360 + robotAlignmentYaw;
-        }
-        else if (robotAlignmentYaw < -180){
-            robotAlignmentYaw = 360 + robotAlignmentYaw;
-        }
+        // Desired robot heading so the front faces the hub (degrees, CCW positive)
+        robotAlignmentYaw = normalized;
 
-        System.out.println(robotAlignmentYaw);
+        // Debug output: print desired yaw and distances
+        System.out.printf("calculateYawToHub: desiredYaw=%.2f, robotX=%.2f robotY=%.2f hubX=%.2f hubY=%.2f dist=%.2f\n",
+            robotAlignmentYaw, robotPose.getX(), robotPose.getY(), hubPose.getX(), hubPose.getY(), robotToHubDist);
     }
 
     //Returns the distance from the front of the shooter to the center of the hub (assuming the robot is aligned)
