@@ -35,6 +35,15 @@ public class AlignShooterCommand extends Command {
     // Check how off we are from the rotation we want
     double yawErrorDeg = m_swerveSubsystem.robotAlignmentYaw - swerveYaw;
 
+    //Normalize yawError
+    yawErrorDeg %= 360;
+    if (yawErrorDeg < -180){
+      yawErrorDeg = 360 + yawErrorDeg;
+    }
+    else if (yawErrorDeg > 180){
+      yawErrorDeg = -360 + yawErrorDeg;
+    }
+
     double rotationVelocity = 0;
 
     if (Math.abs(yawErrorDeg) > kDeadbandDeg){
