@@ -37,7 +37,7 @@ public class AutoPlans extends SubsystemBase {
     private static final Field2d s_mainField = new Field2d();
     private static final Field2d s_autoSelectorField = new Field2d();
 
-    private PathPlannerAuto leftStartNeutralZoneAuto, rightStartNeutralZoneAuto;
+    private PathPlannerAuto leftStartNeutralZoneAuto, rightStartNeutralZoneAuto, leftStartMiddleAuto, rightStartMiddleAuto;
     private Command redMiddleShootAuto, redRightTrenchShootAuto, redLeftTrenchShootAuto, blueMiddleShootAuto, blueRightTrenchShootAuto, blueLeftTrenchShootAuto;
 
     // Mapping of auto mode index -> Pose2d used by the auto-selector visualization.
@@ -77,7 +77,8 @@ public class AutoPlans extends SubsystemBase {
             blueMiddleShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(3.522, 4.067, new Rotation2d(Math.toRadians(270)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(8), new StartShooter(m_shooter, shooterPositions.HUB)));
             blueRightTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(4.453, 0.781, new Rotation2d(Math.toRadians(0 )))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(8), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
             blueLeftTrenchShootAuto = new InstantCommand(() -> m_swerveSubsystem.resetOdometry(new Pose2d(4.104, 7.280, new Rotation2d(Math.toRadians(180)))), m_swerveSubsystem).andThen(new ParallelDeadlineGroup(new WaitCommand(8), new StartShooter(m_shooter, shooterPositions.TRENCH_CLOSE)));
-            
+            leftStartMiddleAuto = new PathPlannerAuto("Left Start Middle Auto");
+            rightStartMiddleAuto = new PathPlannerAuto("Right Start Middle Auto");
         } catch (Throwable t){
             System.out.println("Failed to create autos.");
         }
@@ -194,9 +195,9 @@ public class AutoPlans extends SubsystemBase {
             case 5:
                 return rightStartNeutralZoneAuto;
             case 6:
-                return null;
+                return leftStartMiddleAuto;
             case 7:
-                return null;
+                return rightStartMiddleAuto;
         }
     }
     
