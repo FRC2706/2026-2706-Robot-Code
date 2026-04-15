@@ -10,7 +10,7 @@ public class AlignShooterCommand extends Command {
   private static final double kDeadbandDeg = 1.0; // degrees within which we consider aligned
 
   // PID for rotation
-  private static final double rotationP = 0.05; 
+  private static final double rotationP = 0.1; 
 
   public AlignShooterCommand(SwerveSubsystem swerveSubsystem) {
     m_swerveSubsystem = swerveSubsystem;    
@@ -48,14 +48,14 @@ public class AlignShooterCommand extends Command {
     }
     
     //Rotate the robot
-    m_swerveSubsystem.drive(new Translation2d(0.0, 0.0), rotationVelocity, false);
+    m_swerveSubsystem.drive(new Translation2d(0.0, 0.0), rotationVelocity, true);
     
   }
 
   @Override
   public void end(boolean interrupted) {
     // Stop the robot when the command ends
-    m_swerveSubsystem.drive(new Translation2d(0, 0), 0, false);
+    m_swerveSubsystem.drive(new Translation2d(0, 0), 0, true);
   }
 
   // Command does not end until interrupted

@@ -105,7 +105,7 @@ public class RobotContainer {
     m_operatorController.x().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.TRENCH_FAR)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.a().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.NEUTRAL)).onFalse(new StopShooter(m_ShooterSubsystem)); 
     m_operatorController.y().whileTrue(new StartShooter(m_ShooterSubsystem, shooterPositions.HUB)).onFalse(new StopShooter(m_ShooterSubsystem)); 
-  // When B is held: first align to the AprilTag, then start the shooter using photon distance
+    
     m_operatorController.b().whileTrue(
         new StartShooter(m_ShooterSubsystem, 3)
     ).onFalse(new StopShooter(m_ShooterSubsystem));   
