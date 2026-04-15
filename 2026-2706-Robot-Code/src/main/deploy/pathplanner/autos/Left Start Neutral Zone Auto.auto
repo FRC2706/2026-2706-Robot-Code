@@ -13,7 +13,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R Trench to Neutral"
+            "pathName": "L Trench to Neutral"
           }
         },
         {
@@ -23,7 +23,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "R Neutral Pick Up"
+                  "pathName": "L Neutral Pick Up"
                 }
               },
               {
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R Neutral to Trench"
+            "pathName": "L Neutral to Trench"
           }
         },
         {
