@@ -74,32 +74,21 @@ public class RobotContainer {
 
     // Left joystick controls the robot's translation movements (up moves the robot up, left moves the robot left, e.t.c)
     // Right joystick controls the rate of rotation (left rotates the robot counter clock-wise, right rotates the robot clock-wise)
-    //If driving on red alliance, the controls should be flipped
-    if (m_swerveSubsystem.isRedAlliance()){
-      m_swerveSubsystem.setDefaultCommand(
-        new SwerveDriveCommand(
-            m_swerveSubsystem,
-            () -> driverController.getLeftY(), // Forward/backward
-            () -> driverController.getLeftX(), // Left/right
-            () -> -driverController.getRightX(),0.1,0.1)
-      );
-    }
-    else{
-      m_swerveSubsystem.setDefaultCommand(
-        new SwerveDriveCommand(
-            m_swerveSubsystem,
-            () -> -driverController.getLeftY(), // Forward/backward
-            () -> -driverController.getLeftX(), // Left/right
-            () -> -driverController.getRightX(),0.1,0.1)
-      );
-    }
+    m_swerveSubsystem.setDefaultCommand(
+      new SwerveDriveCommand(
+          m_swerveSubsystem,
+          () -> -driverController.getLeftY(), // Forward/backward
+          () -> -driverController.getLeftX(), // Left/right
+          () -> -driverController.getRightX(),0.1,0.1)
+    );
+    
 
     // Configure PathPlanner/AutoBuilder now that the swerve subsystem exists
     // This will configure AutoBuilder using the subsystem-provided callbacks.
     m_swerveSubsystem.setupPathPlanner();
 
     // Now that AutoBuilder is configured create autos
-    m_autoPlans = new AutoPlans(intakeSubsystem, m_autoSelectorKnobSubsystem, m_ShooterSubsystem);
+    m_autoPlans = new AutoPlans(intakeSubsystem, m_autoSelectorKnobSubsystem, m_ShooterSubsystem, m_swerveSubsystem);
 
     configureBindings();
     // CameraServer.startAutomaticCapture();
@@ -152,17 +141,7 @@ public class RobotContainer {
     //Get the auto based on autonomous selector switch
     Command auto = m_autoPlans.getAutonomousCommand(m_autoSelectorKnobSubsystem.getAutoMode());
 
-    Consumer<Boolean> resetGyro = (b) -> {
-      if (b) {
-        if (!m_swerveSubsystem.isRedAlliance());
-        Pose2d swervePos = m_swerveSubsystem.getPose();
-        Rotation2d swerveRot = swervePos.getRotation();
-        swerveRot.rotateBy(new Rotation2d(Units.degreesToRadians(180)));
-        m_swerveSubsystem.resetOdometry(new Pose2d(swervePos.getTranslation(),swerveRot));
-      }
-    };
-
-    return auto.finallyDo((boolean b) -> resetGyro.accept(b));
+    return auto;
   }
   
 }
