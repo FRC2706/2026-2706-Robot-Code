@@ -55,13 +55,6 @@ public class FMS_Subsystem extends SubsystemBase {
         isDSConnectedPub.set(DriverStation.isDSAttached());
         isFMSConnectedPub.set(DriverStation.isFMSAttached());
         isJoystickConnectedPub.set(DriverStation.isJoystickConnected(0) && DriverStation.isJoystickConnected(1));
-        
-        isHubActiveUpdate = isHubActive();
-        if (isHubActiveUpdate != hubCurrentState) {
-          System.out.println("Hub is now " + (isHubActiveUpdate ? "active" : "inactive"));
-        }
-        //Prevents constant stream of print commands.
-        hubCurrentState = isHubActiveUpdate;
 
         // Rumble section
         boolean isHubActiveUpdateRumble = isHubActive10Seconds();
