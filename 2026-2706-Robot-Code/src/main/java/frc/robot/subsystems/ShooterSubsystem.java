@@ -86,7 +86,7 @@ public class ShooterSubsystem extends SubsystemBase {
     indexerConfig.closedLoop.d(shooterConstants.indexerkD);
     indexerConfig.closedLoop.feedForward.kV(shooterConstants.indexerkFF);
     indexerConfig.closedLoop.outputRange(-1, 1);
-    indexerConfig.smartCurrentLimit(currentLimit);
+    indexerConfig.smartCurrentLimit(20,20);
 
     indexerMotor.configure(indexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     //-------------------------//
@@ -136,7 +136,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void clearIndexer(){
-    m_pidControllerIndexer.setSetpoint(4000, SparkBase.ControlType.kVelocity);
+    m_pidControllerIndexer.setSetpoint(500, SparkBase.ControlType.kVelocity);
   }
 
   public void stopIndexer(){
