@@ -7,7 +7,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class AlignShooterCommand extends Command {
   private final SwerveSubsystem m_swerveSubsystem;
 
-  private static final double kDeadbandDeg = 1.0; // degrees within which we consider aligned
+  private static final double kDeadbandDeg = 2.0; // degrees within which we consider aligned
 
   // PID for rotation
   private static final double rotationP = 0.5; 
@@ -24,7 +24,8 @@ public class AlignShooterCommand extends Command {
     //lock swerve yaw between -180 and 180
     double swerveYaw = m_swerveSubsystem.getYaw(); 
 
-    swerveYaw = swerveYaw % 360;
+    while (swerveYaw > 360){swerveYaw -=360;}
+    while(swerveYaw < -360){swerveYaw+=360;}
     if (swerveYaw < -180){
       swerveYaw = 360 + swerveYaw;
     }
@@ -36,7 +37,8 @@ public class AlignShooterCommand extends Command {
     double yawErrorDeg = m_swerveSubsystem.robotAlignmentYaw - swerveYaw;
 
     //Normalize yawError
-    yawErrorDeg %= 360;
+    while (yawErrorDeg > 360){yawErrorDeg -=360;}
+    while (yawErrorDeg < -360){yawErrorDeg += 360;}
     if (yawErrorDeg < -180){
       yawErrorDeg = 360 + yawErrorDeg;
     }
@@ -50,7 +52,7 @@ public class AlignShooterCommand extends Command {
       rotationVelocity = yawErrorDeg * rotationP;
 
       //Clamp rotation velocity
-      rotationVelocity = Math.toRadians(Math.max(-30, Math.min(30,rotationVelocity)));
+      rotationVelocity = Math.toRadians(Math.max(-90, Math.min(90,rotationVelocity)));
     }
     else{
       rotationVelocity = 0;
