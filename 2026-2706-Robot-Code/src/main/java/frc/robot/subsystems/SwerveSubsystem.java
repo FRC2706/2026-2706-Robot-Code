@@ -125,8 +125,8 @@ public class SwerveSubsystem extends SubsystemBase{
                 this::getRobotVelocity, // Pass method supplying robot relative chassis
                 (speedsRobotRelative, moduleFeedForwards) -> {this.drive(speedsRobotRelative);}, // Pass method that will drive the robot -- only robot relative chassis speeds
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                        new PIDConstants(5, 0.015, 0.02), // Translation PID constants
-                        new PIDConstants(0.0025, 0.0015, 0.0001) // Rotation PID constants
+                        new PIDConstants(5, 0.0000001, 0), // Translation PID constants
+                        new PIDConstants(5, 0.0000001, 0) // Rotation PID constants
                 ),  
                 config, // Pass on the config
                 () -> isRedAlliance(), // Check which alliance the robot is on
@@ -234,12 +234,15 @@ public class SwerveSubsystem extends SubsystemBase{
     //Resets the gyro angle to zero and resets odometry 
     public void resetGyro()
     {
+
+        Translation2d robotTranslation = swerveDrive.getPose().getTranslation();
+
         swerveDrive.zeroGyro();
         if (isRedAlliance()){
-            resetOdometry(new Pose2d(new Translation2d(0,0), new Rotation2d(Units.degreesToRadians(180))));
+            resetOdometry(new Pose2d(robotTranslation, new Rotation2d(Units.degreesToRadians(180))));
         }
         else{
-            resetOdometry(new Pose2d(new Translation2d(0,0), new Rotation2d(Units.degreesToRadians(0))));
+            resetOdometry(new Pose2d(robotTranslation, new Rotation2d(Units.degreesToRadians(0))));
         }
     }
 

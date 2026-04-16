@@ -20,6 +20,7 @@ import frc.robot.commands.StartShooter;
 import frc.robot.commands.StopShooter;
 
 import frc.robot.subsystems.AutoSelectorKnobSubsystem;
+import frc.robot.subsystems.FMS_Subsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -52,7 +53,6 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
   private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
-
   // Pathplanner 
   private final AutoPlans m_autoPlans;
 
@@ -60,38 +60,29 @@ public class RobotContainer {
   private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandXboxController m_operatorController = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
-
+  
+  // FMS
+  private final FMS_Subsystem m_FMS_Subsystem = new FMS_Subsystem(driverController, m_operatorController);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
     // Left joystick controls the robot's translation movements (up moves the robot up, left moves the robot left, e.t.c)
     // Right joystick controls the rate of rotation (left rotates the robot counter clock-wise, right rotates the robot clock-wise)
-    //If driving on red alliance, the controls should be flipped
-    if (m_swerveSubsystem.isRedAlliance()){
-      m_swerveSubsystem.setDefaultCommand(
-        new SwerveDriveCommand(
-            m_swerveSubsystem,
-            () -> driverController.getLeftY(), // Forward/backward
-            () -> driverController.getLeftX(), // Left/right
-            () -> -driverController.getRightX(),0.1,0.1)
-      );
-    }
-    else{
-      m_swerveSubsystem.setDefaultCommand(
-        new SwerveDriveCommand(
-            m_swerveSubsystem,
-            () -> -driverController.getLeftY(), // Forward/backward
-            () -> -driverController.getLeftX(), // Left/right
-            () -> -driverController.getRightX(),0.1,0.1)
-      );
-    }
+    m_swerveSubsystem.setDefaultCommand(
+      new SwerveDriveCommand(
+          m_swerveSubsystem,
+          () -> -driverController.getLeftY(), // Forward/backward
+          () -> -driverController.getLeftX(), // Left/right
+          () -> -driverController.getRightX(),0.1,0.1)
+    );
+    
 
     // Configure PathPlanner/AutoBuilder now that the swerve subsystem exists
     // This will configure AutoBuilder using the subsystem-provided callbacks.
     m_swerveSubsystem.setupPathPlanner();
 
     // Now that AutoBuilder is configured create autos
-    m_autoPlans = new AutoPlans(intakeSubsystem, m_autoSelectorKnobSubsystem, m_ShooterSubsystem);
+    m_autoPlans = new AutoPlans(intakeSubsystem, m_autoSelectorKnobSubsystem, m_ShooterSubsystem, m_swerveSubsystem);
 
     configureBindings();
     // CameraServer.startAutomaticCapture();
@@ -154,5 +145,4 @@ public class RobotContainer {
 
     return auto;
   }
-  
 }
