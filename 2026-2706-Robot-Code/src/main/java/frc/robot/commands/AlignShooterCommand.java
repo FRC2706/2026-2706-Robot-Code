@@ -10,7 +10,7 @@ public class AlignShooterCommand extends Command {
   private static final double kDeadbandDeg = 1.0; // degrees within which we consider aligned
 
   // PID for rotation
-  private static final double rotationP = 0.1; 
+  private static final double rotationP = 0.5; 
 
   public AlignShooterCommand(SwerveSubsystem swerveSubsystem) {
     m_swerveSubsystem = swerveSubsystem;    

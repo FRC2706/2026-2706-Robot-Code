@@ -413,7 +413,8 @@ public class SwerveSubsystem extends SubsystemBase{
         }
 
         //Map values to -180 - 180
-        robotAlignmentYaw = robotAlignmentYaw % 360;
+        while (robotAlignmentYaw > 360){robotAlignmentYaw -= 360;}
+        while (robotToHubDist < -360){robotAlignmentYaw += 360;}
         if (robotAlignmentYaw < -180){
             robotAlignmentYaw = 360 + robotAlignmentYaw;
         }
@@ -422,6 +423,7 @@ public class SwerveSubsystem extends SubsystemBase{
         }
 
         System.out.println(robotAlignmentYaw);
+        System.out.println(quadrant);
     }
 
     //Returns the distance from the front of the shooter to the center of the hub (assuming the robot is aligned)
