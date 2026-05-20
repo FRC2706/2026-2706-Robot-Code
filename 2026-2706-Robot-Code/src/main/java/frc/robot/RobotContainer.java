@@ -13,6 +13,7 @@ import frc.robot.commands.IntakeAgitateCommand;
 import frc.robot.commands.IntakeDownCommand;
 import frc.robot.commands.IntakeUpCommand;
 import frc.robot.commands.LockPoseCommand;
+import frc.robot.commands.PhotonAlignToTargetCommand;
 import frc.robot.commands.RunIntakeCommandForward;
 import frc.robot.commands.RunIntakeCommandReversed;
 import frc.robot.commands.IntakeMidCommand;
@@ -40,6 +41,8 @@ import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
 import java.util.function.Consumer;
 
+import org.opencv.photo.Photo;
+
 import frc.robot.commands.StopIndexerCommand;
 
 
@@ -59,7 +62,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 
-  //private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
+  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
   private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
   // Pathplanner 
   private final AutoPlans m_autoPlans;
@@ -81,7 +84,7 @@ public class RobotContainer {
           m_swerveSubsystem,
           () -> -driverController.getLeftY(), // Forward/backward
           () -> -driverController.getLeftX(), // Left/right
-          () -> -driverController.getRightX(),0.1,0.1)
+          () -> -driverController.getRightX(),0.05,0.05)
     );
     
 
@@ -135,6 +138,18 @@ public class RobotContainer {
     
     //Locks the position of the robot to prevent moving when pressing "A" on the driver controller
     driverController.leftBumper().onTrue(new LockPoseCommand(m_swerveSubsystem)).onFalse(new LockPoseCommand(m_swerveSubsystem).withTimeout(0));
+  
+    //X marks the spot -- "Bohan"
+    driverController.x().onTrue(new PhotonAlignToTargetCommand(m_PhotonSubsystem, 
+                                                                  m_swerveSubsystem, 
+                                                                  () -> -driverController.getLeftY(), // Forward/backward
+                                                                  () -> -driverController.getLeftX(), // Left/right
+                                                                  () -> -driverController.getRightX(), 0.05, 0.05))
+                        .onFalse(new PhotonAlignToTargetCommand(m_PhotonSubsystem, 
+                                                                  m_swerveSubsystem, 
+                                                                  () -> -driverController.getLeftY(), // Forward/backward
+                                                                  () -> -driverController.getLeftX(), // Left/right
+                                                                  () -> -driverController.getRightX(), 0.05, 0.05).withTimeout(0));
   }
   
   /** This function returns the autonomous command based on the knob position. */

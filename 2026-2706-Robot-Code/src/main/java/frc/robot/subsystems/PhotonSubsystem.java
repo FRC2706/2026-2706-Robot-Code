@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 // Class
 public class PhotonSubsystem extends SubsystemBase {
 
-    private final PhotonCamera camera1 = new PhotonCamera("Arducam_OV9281_USB_Camera"); //make sure this name matches the camera name in photonvision interface
+    public final PhotonCamera camera1 = new PhotonCamera("Arducam_OV9281_USB_Camera"); //make sure this name matches the camera name in photonvision interface
      //declares new camera object, not sure if it should be private or private final
     private PhotonPipelineResult result;
     private PhotonTrackedTarget target;
@@ -34,7 +34,7 @@ public class PhotonSubsystem extends SubsystemBase {
     public Alliance currentAlliance = Alliance.Blue;
     public PhotonSubsystem() {
     }
-    /* 
+     
     @Override
      public void periodic() {
          if (camera1 != null) {
@@ -168,5 +168,5 @@ public class PhotonSubsystem extends SubsystemBase {
      double heightDiff = kTargetHeight - kCameraHeight;
      return Math.hypot(m_planarDistance, heightDiff);
    }
-     */
+     
 }
