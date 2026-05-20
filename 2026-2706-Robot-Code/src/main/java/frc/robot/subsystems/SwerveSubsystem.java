@@ -31,7 +31,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class SwerveSubsystem extends SubsystemBase{
 
-    double maximumSpeed = 3;
+    double maximumSpeed = 0.5;
 
     // Swerve drive object
     private final SwerveDrive swerveDrive; 

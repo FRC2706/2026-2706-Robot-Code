@@ -102,15 +102,15 @@ public class ShooterSubsystem extends SubsystemBase {
   public int getDesiredVelocityRPM(int position) {
     switch (position) {
       case shooterPositions.HUB: 
-        return 1783;
+        return 1600;
       case shooterPositions.TRENCH_FAR: 
-        return 2750;
+        return 0;
       case shooterPositions.NEUTRAL:
-        return 3500;
+        return 0;
       case shooterPositions.TRENCH_CLOSE: 
-        return 2615;
+        return 0;
       default:
-        return 2500; // fall back rpm
+        return 0; // fall back rpm
     }
   }
 
@@ -132,11 +132,11 @@ public class ShooterSubsystem extends SubsystemBase {
     
     // figure out how much faster this should go
     m_pidControllerFeeder.setSetpoint(4000, SparkBase.ControlType.kVelocity);
-    m_pidControllerIndexer.setSetpoint(3000, SparkBase.ControlType.kVelocity);
+    m_pidControllerIndexer.setSetpoint(1500, SparkBase.ControlType.kVelocity);
   }
 
   public void clearIndexer(){
-    m_pidControllerIndexer.setSetpoint(4000, SparkBase.ControlType.kVelocity);
+    m_pidControllerIndexer.setSetpoint(500, SparkBase.ControlType.kVelocity);
   }
 
   public void stopIndexer(){
