@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkClosedLoopController; // New
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -52,11 +53,11 @@ public class ShooterSubsystem extends SubsystemBase {
    
     shooterConfig.smartCurrentLimit(currentLimit);
 
-    shooterMotor1.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    shooterMotor1.configure(shooterConfig, com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     SparkMaxConfig followerConfig = new SparkMaxConfig();
     followerConfig.follow(shooterMotor1); // Tells motor 2 to do whatever motor 1 does
-    shooterMotor2.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    shooterMotor2.configure(followerConfig, com.revrobotics.spark.SparkBase.ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 
     //-------Feeder & Indexer configuration & PID-----------//
