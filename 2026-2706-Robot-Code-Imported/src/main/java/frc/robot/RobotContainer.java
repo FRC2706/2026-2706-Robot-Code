@@ -27,7 +27,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PhotonSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -57,7 +56,6 @@ public class RobotContainer {
   // Subsystem
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final SwerveSubsystem m_swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private final PhotonSubsystem m_PhotonSubsystem = new PhotonSubsystem();
   private final AutoSelectorKnobSubsystem m_autoSelectorKnobSubsystem = new AutoSelectorKnobSubsystem();
 
   // Pathplanner 

@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 // Imports
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.PhotonSubsystem;
+/*import frc.robot.subsystems.PhotonSubsystem;
 
 public class PhotonDistanceCommand extends Command {
   @SuppressWarnings("PMD.UnusedPrivateField")
@@ -15,7 +15,7 @@ public class PhotonDistanceCommand extends Command {
   /**
    * @param subsystem The subsystem used by this command.
    */
-  public PhotonDistanceCommand(PhotonSubsystem subsystem) {
+  /*public PhotonDistanceCommand(PhotonSubsystem subsystem) {
     m_subsystem = subsystem;
   }
 
@@ -36,5 +36,5 @@ public class PhotonDistanceCommand extends Command {
   @Override
   public boolean isFinished() {
     return false;
-  }
-}
+  } 
+}*/
