@@ -24,7 +24,6 @@ public class ShooterSubsystem extends SubsystemBase {
   
   private final RelativeEncoder m_encoder;
   private final SparkClosedLoopController m_pidControllerShooter; // New
-  private final SparkClosedLoopController m_pidControllerFeeder; // New
   private final SparkClosedLoopController m_pidControllerIndexer; // New
 
   public ShooterSubsystem() {
@@ -36,7 +35,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     m_encoder = shooterMotor1.getEncoder();
     m_pidControllerShooter = shooterMotor1.getClosedLoopController();
-    m_pidControllerFeeder = feederMotor.getClosedLoopController();
     m_pidControllerIndexer = indexerMotor.getClosedLoopController();
 
     int currentLimit = 35;
@@ -122,17 +120,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void spinningUp(int position) {
     m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity,ClosedLoopSlot.kSlot0);
-    feederMotor.stopMotor();
+    feederMotor.set(0.6);
     indexerMotor.stopMotor();
 
   }
 
   public void ready(int position) {
     m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity,ClosedLoopSlot.kSlot0);
-    
-    // figure out how much faster this should go
-    m_pidControllerFeeder.setSetpoint(4000, SparkBase.ControlType.kVelocity);
-    m_pidControllerIndexer.setSetpoint(3000, SparkBase.ControlType.kVelocity);
+    feederMotor.set(0.6);
+    m_pidControllerIndexer.setSetpoint(5000, SparkBase.ControlType.kVelocity);
   }
 
   public void clearIndexer(){

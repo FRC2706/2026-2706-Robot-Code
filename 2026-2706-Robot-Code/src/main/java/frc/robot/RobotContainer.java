@@ -130,8 +130,12 @@ public class RobotContainer {
     intakeToggleButton.toggleOnTrue(new RunIntakeCommandForward(intakeSubsystem));
     reverseButton.whileTrue(new RunIntakeCommandReversed(intakeSubsystem));
 
-    //Moves the intake up and down while turning the intake Defaults to moving it down after finishing
+    //When the intake is running, also run the indexer
+    intakeToggleButton.toggleOnTrue(new ClearIndexerCommand(m_ShooterSubsystem));
+
+    //Moves the intake up and down while turning the intake Defaults to moving it down after finishing. At the same time, run the indexer
     m_operatorController.back().onTrue(new IntakeAgitateCommand(intakeSubsystem)).onFalse(new IntakeUpCommand(intakeSubsystem));
+    m_operatorController.back().onTrue(new ClearIndexerCommand(m_ShooterSubsystem)).onFalse(new StopIndexerCommand(m_ShooterSubsystem));
     
     //Locks the position of the robot to prevent moving when pressing "A" on the driver controller
     driverController.leftBumper().onTrue(new LockPoseCommand(m_swerveSubsystem)).onFalse(new LockPoseCommand(m_swerveSubsystem).withTimeout(0));
