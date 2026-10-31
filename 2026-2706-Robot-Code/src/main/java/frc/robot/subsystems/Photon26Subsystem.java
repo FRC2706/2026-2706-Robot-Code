@@ -1,16 +1,23 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
 // imports
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 
 public class Photon26Subsystem extends SubsystemBase{
+    PhotonTrackedTarget target;
+    int tagId = target.getFiducialId();
+    public static final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     private final PhotonCamera camera = new PhotonCamera("Arducam_OV9281_USB_Camera"); //make sure this name matches the camera name in photonvision interface
-    
+
     public Photon26Subsystem() {
         camera.setPipelineIndex(0); // sets camera to use first pipeline in the list
     }
@@ -20,9 +27,9 @@ public class Photon26Subsystem extends SubsystemBase{
         PhotonPipelineResult result = camera.getLatestResult();
 
         if (result.hasTargets()) {
-            PhotonTrackedTarget target = result.getBestTarget(); // get best target in view
+            target = result.getBestTarget(); // get best target in view
 
-            int tagId = target.getFiducialId();
+            tagId = target.getFiducialId();
 
             Transform3d cameraToTarget = target.getBestCameraToTarget(); //3d position relative to camera lens
 
@@ -36,4 +43,12 @@ public class Photon26Subsystem extends SubsystemBase{
             System.out.println("Seeing TagId: " + tagId + " | Range: " + xDistance + "m | Yaw: " + yaw);
         }
     }
+
+    public void getRobotPosition(){
+        // Calculate robot's field relative pose
+        if(aprilTagFieldLayout.getTagPose(tagId).isPresent()){
+            Pose3d robotPosition = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), aprilTagFieldLayout.getTagPose(target.getFiducialId()), cameraToRobot);
+        }
+    }
+    
 }
