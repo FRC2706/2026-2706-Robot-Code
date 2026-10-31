@@ -6,16 +6,19 @@ package frc.robot.subsystems;
 
 // Imports
 import java.util.Optional;
+
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.DriverStation;
 
 // Class
 public class PhotonSubsystem extends SubsystemBase {
@@ -116,16 +119,16 @@ public class PhotonSubsystem extends SubsystemBase {
     }
 
 
-// Returns AprilTag ID of the detected target, or -1 if no target (or if targets are not one of the 3 listed for each alliance)
-public int getTagID() {
-    Optional<Alliance> allianceOpt = DriverStation.getAlliance();
-    allianceOpt.ifPresent(a -> currentAlliance = a);
-    currentAlliance = allianceOpt.get(); // Update current alliance before checking targets
-    if (!hasTarget()) return -1;
-    
-    int targetId = target.getFiducialId();
-    if (targetId < 0) return -1;
- 
+    // Returns AprilTag ID of the detected target, or -1 if no target (or if targets are not one of the 3 listed for each alliance)
+    public int getTagID() {
+        Optional<Alliance> allianceOpt = DriverStation.getAlliance();
+        allianceOpt.ifPresent(a -> currentAlliance = a);
+        currentAlliance = allianceOpt.get(); // Update current alliance before checking targets
+        if (!hasTarget()) return -1;
+        
+        int targetId = target.getFiducialId();
+        if (targetId < 0) return -1;
+
     if (currentAlliance == Alliance.Red) {
         // RED ALLIANCE CODE: only accept 8, 2, 10
         if (targetId == 8 || targetId == 2 || targetId == 10) {
@@ -142,30 +145,38 @@ public int getTagID() {
         }
     }
 
-    return -1;
-}
+        return -1;
+    }
 
-public void setLastKnownDistance(double fallbackDistance) {
+    public void setLastKnownDistance(double fallbackDistance) {
     if (hasTarget() && m_planarDistance >= 0) { // only use measurement if there is a valid target and distance is non-negative
         m_lastKnownDistance = (double) m_planarDistance; // store the last known distance as a double for more precise fallback calculations
     } 
     else {
         m_lastKnownDistance = fallbackDistance;
     }
-}
+    }
 
-  public double getDistance() {
+    public double getDistance() {
     // If there's no detected target, distance is set to the last known value, but if there has never been a target, return 0
     if (hasTarget() == true) {
         return m_planarDistance;
     }
         return m_lastKnownDistance;
-  }
+    }
 
-  // Returns the 3D slant distance (direct distance to AprilTag)
-  public double getSlantDistance() {
-    if (!hasTarget()) return 0.0;
-    double heightDiff = kTargetHeight - kCameraHeight;
-    return Math.hypot(m_planarDistance, heightDiff);
-  }
+    // Returns the 3D slant distance (direct distance to AprilTag)
+    public double getSlantDistance() {
+        if (!hasTarget()) {return 0.0;}
+        double heightDiff = kTargetHeight - kCameraHeight;
+        return Math.hypot(m_planarDistance, heightDiff);
+        }
+
+    public void getRobotPose(){
+        if (kTagLayout.getTagPose(target.getFiducialId()).isPresent()) {
+            Pose3d robotPosition = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), kTagLayout.getTagPose(target.getFiducialId()).get(), cameraToTarget());
+    }
+    }
+
+
 }
