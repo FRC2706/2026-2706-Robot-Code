@@ -20,6 +20,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private final SparkMax shooterMotor2;
   private final SparkMax feederMotor;
   private final SparkMax indexerMotor;
+  private boolean isShooting = false;
   //private final PhotonSubsystem m_PhotonSubsystem;
   
   private final RelativeEncoder m_encoder;
@@ -112,6 +113,10 @@ public class ShooterSubsystem extends SubsystemBase {
     }
   }
 
+  public void setShootingBol(boolean shooting){
+    isShooting = shooting;
+  }
+
   public void stop() {
     shooterMotor1.stopMotor(); 
     feederMotor.stopMotor();
@@ -120,12 +125,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void spinningUp(int position) {
     m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity,ClosedLoopSlot.kSlot0);
-    feederMotor.set(0.6);
+    if (isShooting){
+      feederMotor.set(0.6);
+    }
     indexerMotor.stopMotor();
 
   }
 
   public void ready(int position) {
+    setShootingBol(true);
     m_pidControllerShooter.setSetpoint(getDesiredVelocityRPM(position), SparkBase.ControlType.kVelocity,ClosedLoopSlot.kSlot0);
     feederMotor.set(0.6);
     m_pidControllerIndexer.setSetpoint(5000, SparkBase.ControlType.kVelocity);
