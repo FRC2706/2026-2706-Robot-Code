@@ -1,5 +1,12 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -7,11 +14,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.Optional;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Photon26Subsystem extends SubsystemBase {
     private PhotonTrackedTarget target;
@@ -40,9 +42,11 @@ public class Photon26Subsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        
         PhotonPipelineResult result = camera.getLatestResult();
 
         if (result.hasTargets()) {
+            System.out.println("has target");
             target = result.getBestTarget();
             tagId = target.getFiducialId();
 
@@ -51,6 +55,7 @@ public class Photon26Subsystem extends SubsystemBase {
             double yaw = target.getYaw();
 
             System.out.println("TagId: " + tagId+ " | Range: " + xDistance+ "m | Yaw: " + yaw);
+            
         } else {
             target = null;
             tagId = -1;
@@ -70,11 +75,7 @@ public class Photon26Subsystem extends SubsystemBase {
         }
 
         return Optional.of(
-            PhotonUtils.estimateFieldToRobotAprilTag(
-                target.getBestCameraToTarget(),
-                tagPose.get(),
-                cameraToRobot
-            )
+            PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),tagPose.get(),cameraToRobot)
         );
     }
 }
