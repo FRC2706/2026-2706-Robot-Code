@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Photon26Subsystem extends SubsystemBase {
     private PhotonTrackedTarget target;
     private int tagId = -1;
+    private double xDistance = 0;
 
     // Replace these zeros with camera's position relative to the robot origin.
     // Translation: meters (forward, left, up).
@@ -33,11 +34,11 @@ public class Photon26Subsystem extends SubsystemBase {
         AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
     // This must match the camera name in the PhotonVision interface.
-    private final PhotonCamera camera =
-        new PhotonCamera("Arducam_OV9281_USB_Camera");
+    private final PhotonCamera camera =new PhotonCamera("Arducam_OV9281_USB_Camera");
 
     public Photon26Subsystem() {
         camera.setPipelineIndex(0);
+        camera.setFPSLimit(-1);
     }
 
     @Override
@@ -51,15 +52,19 @@ public class Photon26Subsystem extends SubsystemBase {
             tagId = target.getFiducialId();
 
             Transform3d cameraToTarget = target.getBestCameraToTarget();
-            double xDistance = cameraToTarget.getX();
+            xDistance = cameraToTarget.getX();
             double yaw = target.getYaw();
 
-            System.out.println("TagId: " + tagId+ " | Range: " + xDistance+ "m | Yaw: " + yaw);
+                System.out.println("TagId: " + tagId+ " | Range: " + xDistance+ "m | Yaw: " + yaw);
             
         } else {
             target = null;
             tagId = -1;
         }
+    }
+
+    public double getxDistance(){
+        return xDistance;
     }
 
     // Returns an empty Optional if no target or known field tag is available.
